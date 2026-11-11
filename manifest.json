@@ -1,8 +1,10 @@
 {
+  "$schema": "https://json.schemastore.org/web-manifest.json",
+  "id": "/stock-ai-pwa/?v=cake2",
   "name": "為你股掌",
   "short_name": "為你股掌",
-  "description": "為你股掌 · T-K-Q 多模型股票決策中樞（TradingAgents × Kronos × Qlib）",
-  "start_url": "./index.html",
+  "description": "為你股掌 · T-K-Q 多模型股票決策中樞（千層蛋糕版）",
+  "start_url": "./index.html?v=cake2",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
@@ -11,16 +13,28 @@
   "categories": ["finance", "productivity", "utilities"],
   "icons": [
     {
-      "src": "./icons/icon-192.png",
+      "src": "./icons/cake-192.png?v=cake2",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "./icons/icon-512.png",
+      "src": "./icons/cake-192.png?v=cake2",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icons/cake-512.png?v=cake2",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/cake-512.png?v=cake2",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

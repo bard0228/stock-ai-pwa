@@ -8,9 +8,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="為你股掌" />
   <meta name="description" content="為你股掌 · T-K-Q 多模型股票決策中樞" />
-  <link rel="manifest" href="./manifest.json" />
-  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
-  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="manifest" href="./manifest.json?v=cake2" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/cake-192.png?v=cake2" />
+  <link rel="apple-touch-icon" href="./icons/cake-192.png?v=cake2" />
   <title>為你股掌</title>
   <!-- 引入 Google Fonts: 英數 Plus Jakarta Sans + 中文 Noto Sans TC -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -291,7 +291,7 @@
     <header class="relative z-30 liquid-glass px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2.5">
       <div class="flex items-center gap-2">
         <div class="w-8 h-8 rounded-[8px] overflow-hidden flex items-center justify-center border border-white/70 shadow-sm bg-black shrink-0">
-          <img src="./icons/icon-192.png" alt="千層蛋糕" class="w-full h-full object-cover" />
+          <img src="./icons/cake-192.png?v=cake2" alt="千層蛋糕" class="w-full h-full object-cover" />
         </div>
         <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-800">為你股掌</h1>
       </div>
@@ -1229,7 +1229,9 @@
       });
 
       if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-        navigator.serviceWorker.register("./sw.js").catch(() => {});
+        navigator.serviceWorker.register("./sw.js?v=cake2").then((reg) => {
+          reg.update();
+        }).catch(() => {});
       }
     }
 
