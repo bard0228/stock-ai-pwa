@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#f0f3f8" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="為你股掌" />
+  <meta name="description" content="為你股掌 · T-K-Q 多模型股票決策中樞" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <title>為你股掌</title>
+  <!-- 引入 Google Fonts: 英數 Plus Jakarta Sans + 中文 Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    :root {
+      --bg-base: #f0f3f8;
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --glass-border: rgba(255, 255, 255, 0.70);
+      --glass-border-subtle: rgba(255, 255, 255, 0.55);
+    }
+
+    /* 全域消除瀏覽器毛邊，視網膜螢幕高精緻度呈現 */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      letter-spacing: -0.005em;
+    }
+
+    html, body, input, button, select, textarea {
+      font-family: "Plus Jakarta Sans", "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      letter-spacing: -0.005em;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* 數字字體規範：Plus Jakarta Sans 搭配 tabular-nums，千分位與小數點切齊且無等寬字體死板感 */
+    .num-col,
+    .tabular-nums {
+      font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif !important;
+      font-variant-numeric: tabular-nums !important;
+      font-feature-settings: "tnum" 1 !important;
+    }
+
+    /* 防禦性 SVG 尺寸保護（確保任何載入時序下圖示都不會異常放大） */
+    svg {
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+      max-width: 100%;
+    }
+    .w-3 { width: 0.75rem; height: 0.75rem; }
+    .w-3\.5 { width: 0.875rem; height: 0.875rem; }
+    .w-4 { width: 1rem; height: 1rem; }
+    .w-5 { width: 1.25rem; height: 1.25rem; }
+    .w-8 { width: 2rem; height: 2rem; }
+    .h-3 { height: 0.75rem; }
+    .h-3\.5 { height: 0.875rem; }
+    .h-4 { height: 1rem; }
+    .h-5 { height: 1.25rem; }
+    .h-8 { height: 2rem; }
+
+    /* iOS 淺色液態環境漫射光暈 */
+    .ambient-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 12% 14%, rgba(193, 218, 248, 0.55), transparent 42%),
+        radial-gradient(circle at 88% 16%, rgba(200, 235, 220, 0.48), transparent 45%),
+        radial-gradient(circle at 50% 80%, rgba(226, 220, 246, 0.42), transparent 50%),
+        linear-gradient(180deg, #f7f9fd 0%, #edf2f7 50%, #e6ecf4 100%);
+    }
+
+    /* 真實 iOS 液態玻璃通透質感 (Authentic Liquid Glass) + 克制圓角 (14px) */
+    .liquid-glass {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.32) 100%);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      box-shadow:
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.85),
+        inset 0 -1px 1px 0 rgba(255, 255, 255, 0.25),
+        0 8px 24px -4px rgba(71, 85, 105, 0.06),
+        0 2px 6px -1px rgba(71, 85, 105, 0.03);
+      border-radius: 14px;
+    }
+
+    /* 下拉選單懸浮液態毛玻璃 (12px 圓角 + 高層級堆疊) */
+    .liquid-glass-popover {
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 254, 0.80) 100%);
+      backdrop-filter: blur(28px) saturate(190%);
+      -webkit-backdrop-filter: blur(28px) saturate(190%);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      box-shadow:
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.9),
+        0 16px 36px -8px rgba(51, 65, 85, 0.16),
+        0 4px 12px -2px rgba(51, 65, 85, 0.06);
+      border-radius: 12px;
+    }
+
+    /* 內層膠囊卡片、輸入框 (10px 圓角 + 通透玻璃) */
+    .liquid-pill {
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--glass-border-subtle);
+      box-shadow:
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.75),
+        0 2px 6px -1px rgba(71, 85, 105, 0.04);
+      border-radius: 10px;
+    }
+
+    /* 靠近時微浮 (Squircle Hover Float) */
+    .float-interactive {
+      transition:
+        transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+        background-color 0.20s ease,
+        border-color 0.20s ease;
+      will-change: transform;
+    }
+
+    .float-interactive:hover,
+    .float-interactive:focus-visible {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.95);
+      background-color: rgba(255, 255, 255, 0.65);
+      box-shadow:
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.9),
+        0 10px 20px -4px rgba(71, 85, 105, 0.10),
+        0 2px 6px -1px rgba(71, 85, 105, 0.04);
+    }
+
+    .float-interactive:active {
+      transform: translateY(-0.5px) scale(0.995);
+    }
+
+    /* 手風琴流暢動畫 */
+    .accordion-shell {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      transition:
+        grid-template-rows 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+        margin-top 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+      pointer-events: none;
+    }
+
+    .accordion-shell.is-open {
+      grid-template-rows: 1fr;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .accordion-content {
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* 下拉選單錨點與堆疊層級修復 */
+    .dropdown-anchor {
+      position: relative;
+    }
+
+    .dropdown-anchor.is-open-trigger {
+      z-index: 1000 !important;
+    }
+
+    .dropdown-menu-accordion {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      transform: translateY(-3px);
+      transition:
+        grid-template-rows 0.30s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+      pointer-events: none;
+    }
+
+    .dropdown-menu-accordion.is-open {
+      grid-template-rows: 1fr;
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .chevron-icon {
+      transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .is-open-trigger .chevron-icon {
+      transform: rotate(180deg);
+    }
+
+    /* 低飽和度沉穩灰藍毛玻璃按鈕 */
+    .btn-muted-glass {
+      background: linear-gradient(135deg, rgba(82, 102, 126, 0.85) 0%, rgba(64, 82, 103, 0.90) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: #ffffff;
+      box-shadow:
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.30),
+        0 4px 12px -2px rgba(64, 82, 103, 0.28);
+      border-radius: 10px;
+    }
+
+    .btn-muted-glass:hover {
+      background: linear-gradient(135deg, rgba(94, 116, 142, 0.90) 0%, rgba(74, 94, 117, 0.95) 100%);
+      box-shadow:
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.40),
+        0 6px 16px -2px rgba(64, 82, 103, 0.35);
+    }
+
+    /* 低飽和度語意標籤 */
+    .badge-buy {
+      background: rgba(16, 185, 129, 0.12);
+      color: #047857;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: 7px;
+    }
+
+    .badge-hold {
+      background: rgba(245, 158, 11, 0.12);
+      color: #b45309;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 7px;
+    }
+
+    .badge-sell {
+      background: rgba(239, 68, 68, 0.12);
+      color: #b91c1c;
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      border-radius: 7px;
+    }
+
+    .badge-slate {
+      background: rgba(100, 116, 139, 0.12);
+      color: #334155;
+      border: 1px solid rgba(100, 116, 139, 0.22);
+      border-radius: 7px;
+    }
+
+    .thin-scroll::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .thin-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .thin-scroll::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.35);
+      border-radius: 999px;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-slate-300 selection:text-slate-900">
+  <div class="ambient-canvas"></div>
+
+  <!-- 縮小上下左右邊距，緊湊精緻佈局 -->
+  <div class="max-w-4xl mx-auto px-3 sm:px-4 pt-3 pb-8 space-y-3">
+    <!-- 頂部導覽列：簡潔「為你股掌」 -->
+    <header class="relative z-30 liquid-glass px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2.5">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-[8px] flex items-center justify-center bg-slate-500/10 border border-white/70 shadow-inner">
+          <svg class="w-4 h-4 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 17l6-6 4 4 8-8" />
+            <path d="M17 7h4v4" />
+          </svg>
+        </div>
+        <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-800">為你股掌</h1>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="btnSyncNow" type="button" class="liquid-pill float-interactive px-2.5 py-1 text-xs text-slate-700 flex items-center gap-1.5 cursor-pointer font-medium" title="點擊同步最新雲端報告">
+          <span id="syncDot" class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span id="syncStatusText">已同步</span>
+        </button>
+
+        <button id="btnInstallPwa" type="button" class="liquid-pill float-interactive px-2.5 py-1 text-xs text-slate-800 flex items-center gap-1 cursor-pointer font-medium">
+          <svg class="w-3 h-3 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/>
+          </svg>
+          <span>安裝 App</span>
+        </button>
+
+        <!-- 齒輪設定按鈕 -->
+        <button id="btnToggleSettings" type="button" class="liquid-pill float-interactive p-1.5 text-slate-600 hover:text-slate-900 cursor-pointer" title="雲端橋接設定">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- 齒輪設定抽屜（已刪除 Android Chrome 安裝文字） -->
+    <div id="settingsAccordion" class="relative z-25 accordion-shell">
+      <div class="accordion-content">
+        <div class="liquid-glass p-3.5 space-y-2.5">
+          <div class="flex items-center justify-between border-b border-slate-200/60 pb-2">
+            <h2 class="text-xs font-semibold text-slate-800">雲端橋接設定</h2>
+            <button id="btnCloseSettings" type="button" class="liquid-pill float-interactive px-2.5 py-1 text-[11px] text-slate-600 font-medium cursor-pointer">收合</button>
+          </div>
+          <div class="space-y-1.5">
+            <div class="text-[11px] text-slate-600">Google Apps Script Web App 網址 (選填)</div>
+            <div class="flex gap-2">
+              <input id="inputGasUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3 py-1.5 text-xs rounded-[8px] bg-white/60 border border-slate-300 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-500" />
+              <button id="btnSaveGasUrl" type="button" class="btn-muted-glass float-interactive px-3 py-1.5 text-xs font-medium shrink-0 cursor-pointer">儲存</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 區塊 2：想分析... (搜尋與啟動分析，已刪除多餘說明與快速帶入) -->
+    <section id="sectionSearchPanel" class="relative z-40 liquid-glass p-3.5 sm:p-4 space-y-2.5">
+      <h2 class="text-sm font-semibold text-slate-800">想分析...</h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 items-start">
+        <div class="sm:col-span-7 dropdown-anchor" id="searchDropdownAnchor">
+          <div class="liquid-pill float-interactive flex items-center px-3 py-2 gap-2">
+            <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input
+              id="stockSearchInput"
+              type="text"
+              autocomplete="off"
+              placeholder="輸入股票代號或名稱..."
+              class="w-full bg-transparent text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none font-medium"
+            />
+            <button id="btnClearSearch" type="button" class="hidden text-[11px] text-slate-500 hover:text-slate-800 px-1.5 py-0.5 rounded-[6px]">清除</button>
+          </div>
+
+          <div id="searchSuggestMenu" class="dropdown-menu-accordion">
+            <div class="accordion-content">
+              <div class="liquid-glass-popover p-1 max-h-56 overflow-y-auto thin-scroll space-y-0.5" id="searchSuggestList"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 下拉選單：純粹「標準模式」與「強制重算」 -->
+        <div class="sm:col-span-3 dropdown-anchor" id="modeDropdownAnchor">
+          <button
+            id="modeDropdownTrigger"
+            type="button"
+            class="w-full liquid-pill float-interactive px-3 py-2 text-xs sm:text-sm text-slate-800 flex items-center justify-between gap-1.5 cursor-pointer font-medium"
+          >
+            <span id="modeDropdownLabel" class="truncate">標準模式</span>
+            <svg class="w-3.5 h-3.5 text-slate-500 chevron-icon shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div id="modeDropdownMenu" class="dropdown-menu-accordion">
+            <div class="accordion-content">
+              <div class="liquid-glass-popover p-1 space-y-0.5">
+                <button type="button" data-mode="cache" class="mode-option w-full text-left px-3 py-1.5 rounded-[8px] text-xs text-slate-800 hover:bg-slate-100/70 transition flex items-center justify-between cursor-pointer font-medium">
+                  <span>標準模式</span>
+                  <span class="text-emerald-700 text-xs font-bold mode-check">✓</span>
+                </button>
+                <button type="button" data-mode="rebuild" class="mode-option w-full text-left px-3 py-1.5 rounded-[8px] text-xs text-slate-800 hover:bg-slate-100/70 transition flex items-center justify-between cursor-pointer font-medium">
+                  <span>強制重算</span>
+                  <span class="text-emerald-700 text-xs font-bold mode-check hidden">✓</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 啟動分析按鈕：低飽和度色彩 -->
+        <div class="sm:col-span-2">
+          <button
+            id="btnDispatchStock"
+            type="button"
+            class="w-full btn-muted-glass float-interactive py-2 px-3 text-xs sm:text-sm font-medium flex items-center justify-center gap-1.5 cursor-pointer"
+          >
+            <span>啟動分析</span>
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 佇列狀態 -->
+      <div id="queueStatusAccordion" class="accordion-shell">
+        <div class="accordion-content">
+          <div id="queueStatusBanner" class="liquid-pill px-3 py-2 flex flex-wrap items-center justify-between gap-1.5 text-xs text-slate-700">
+            <div class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+              <span id="queueStatusMsg" class="font-medium">已送出分析任務...</span>
+            </div>
+            <span id="queueStatusSub" class="text-[11px] text-slate-500">預計 35～50 秒完成並自動更新</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 區塊 3：已分析股數與去重統計 -->
+    <section class="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <div class="liquid-glass float-interactive p-3">
+        <div class="text-[11px] font-medium text-slate-500">已分析股數</div>
+        <div class="mt-1 flex items-baseline justify-between">
+          <span id="kpiTotalCount" class="text-xl font-bold num-col tabular-nums text-slate-800">0</span>
+          <span class="text-[10px] font-medium text-slate-500">檔</span>
+        </div>
+      </div>
+      <div class="liquid-glass float-interactive p-3">
+        <div class="text-[11px] font-medium text-slate-500">偏多 / 買進評級</div>
+        <div class="mt-1 flex items-baseline justify-between">
+          <span id="kpiBullCount" class="text-xl font-bold num-col tabular-nums text-emerald-700">0</span>
+          <span class="text-[10px] font-medium text-emerald-700">偏多</span>
+        </div>
+      </div>
+      <div class="liquid-glass float-interactive p-3">
+        <div class="text-[11px] font-medium text-slate-500">區間持有 / 觀望</div>
+        <div class="mt-1 flex items-baseline justify-between">
+          <span id="kpiHoldCount" class="text-xl font-bold num-col tabular-nums text-amber-700">0</span>
+          <span class="text-[10px] font-medium text-amber-700">觀望</span>
+        </div>
+      </div>
+      <div class="liquid-glass float-interactive p-3">
+        <div class="text-[11px] font-medium text-slate-500">減碼 / 風險警示</div>
+        <div class="mt-1 flex items-baseline justify-between">
+          <span id="kpiBearCount" class="text-xl font-bold num-col tabular-nums text-rose-700">0</span>
+          <span class="text-[10px] font-medium text-rose-700">減碼</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 區塊 4：分析結果 (已刪除多餘輔助文字) -->
+    <section class="relative z-20 liquid-glass p-3.5 sm:p-4 space-y-2.5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-2">
+        <h2 class="text-sm font-semibold text-slate-800">分析結果</h2>
+
+        <div class="grid grid-cols-3 gap-2 sm:w-auto w-full">
+          <div class="dropdown-anchor" id="filterMarketAnchor">
+            <button type="button" class="filter-trigger w-full liquid-pill float-interactive px-2.5 py-1.5 text-xs text-slate-800 flex items-center justify-between gap-1 cursor-pointer font-medium">
+              <span id="filterMarketLabel" class="truncate">全部市場</span>
+              <svg class="w-3.5 h-3.5 text-slate-500 chevron-icon shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="dropdown-menu-accordion">
+              <div class="accordion-content">
+                <div class="liquid-glass-popover p-1 space-y-0.5">
+                  <button type="button" data-filter-market="ALL" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-slate-800 hover:bg-slate-100 font-medium cursor-pointer">全部市場</button>
+                  <button type="button" data-filter-market="TW" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-slate-800 hover:bg-slate-100 font-medium cursor-pointer">台股 (TW)</button>
+                  <button type="button" data-filter-market="US" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-slate-800 hover:bg-slate-100 font-medium cursor-pointer">美股 (US)</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dropdown-anchor" id="filterRatingAnchor">
+            <button type="button" class="filter-trigger w-full liquid-pill float-interactive px-2.5 py-1.5 text-xs text-slate-800 flex items-center justify-between gap-1.5 cursor-pointer font-medium">
+              <span id="filterRatingLabel" class="truncate">全部評級</span>
+              <svg class="w-3.5 h-3.5 text-slate-500 chevron-icon shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="dropdown-menu-accordion">
+              <div class="accordion-content">
+                <div class="liquid-glass-popover p-1 space-y-0.5">
+                  <button type="button" data-filter-rating="ALL" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-slate-800 hover:bg-slate-100 font-medium cursor-pointer">全部評級</button>
+                  <button type="button" data-filter-rating="BUY" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-emerald-700 hover:bg-emerald-50 font-medium cursor-pointer">買進 / 偏多</button>
+                  <button type="button" data-filter-rating="HOLD" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-amber-700 hover:bg-amber-50 font-medium cursor-pointer">持有 / 觀望</button>
+                  <button type="button" data-filter-rating="SELL" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-rose-700 hover:bg-rose-50 font-medium cursor-pointer">減碼 / 賣出</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dropdown-anchor" id="filterSortAnchor">
+            <button type="button" class="filter-trigger w-full liquid-pill float-interactive px-2.5 py-1.5 text-xs text-slate-800 flex items-center justify-between gap-1.5 cursor-pointer font-medium">
+              <span id="filterSortLabel" class="truncate">最新日期</span>
+              <svg class="w-3.5 h-3.5 text-slate-500 chevron-icon shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="dropdown-menu-accordion">
+              <div class="accordion-content">
+                <div class="liquid-glass-popover p-1 space-y-0.5">
+                  <button type="button" data-filter-sort="DATE" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-slate-800 hover:bg-slate-100 font-medium cursor-pointer">最新分析日期</button>
+                  <button type="button" data-filter-sort="KRONOS" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-slate-800 hover:bg-slate-100 font-medium cursor-pointer">Kronos 預測漲幅</button>
+                  <button type="button" data-filter-sort="QLIB" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-slate-800 hover:bg-slate-100 font-medium cursor-pointer">Qlib 量化排名</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="overviewCardsContainer" class="space-y-2"></div>
+    </section>
+  </div>
+
+  <script>
+    // 預設最新種子資料
+    const SEED_RECORDS = [
+      {
+        id: "p1SE_myKUjbN6Pvowd_M1Q",
+        code: "0050",
+        yf: "0050.TW",
+        name: "元大台灣50",
+        market: "TW",
+        trade_date: "2026-11-11",
+        updated_at: "2026-11-11T14:14:00+00:00",
+        status: "done",
+        rating: "賣出（Sell）",
+        rating_note: "現價 103.20 元位於 20 日均線 104.51 與 60 日均線 107.57 元之下，建議優先避險出場",
+        target_price: "116.60 元",
+        stop_price: "94.29 元",
+        horizon: "1～3 個月",
+        confirm_price: "日線收盤站穩 107.57 元",
+        close: 103.2,
+        chg_1d_pct: 3.51,
+        per: null,
+        eps_this: null,
+        eps_next: null,
+        consensus_badge: "【短線動能強但基本面保守・嚴設停利】",
+        consensus_advice: "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
+        t_side: "偏空",
+        k_side: "偏多",
+        q_side: "偏空",
+        k_median_20d_pct: 7.2,
+        q_percentile: 12.0,
+        summary_pdf_url: "https://drive.google.com/file/d/13ZpTSnRqAfEiVozamzXm0FmQ-RfkIwo2/view",
+        full_pdf_url: "https://drive.google.com/file/d/1fwB14iqAbgJGsc4H5hbAFbsM7Pikug_8/view",
+        kronos_png_url: "https://drive.google.com/file/d/1wohlcdQd7VOqgvxhRaRUJhWDyd-Rf_G3/view"
+      },
+      {
+        id: "Z-NrmsAFSuMBi3l1XfMo9w",
+        code: "2330",
+        yf: "2330.TW",
+        name: "台積電",
+        market: "TW",
+        trade_date: "2026-11-11",
+        updated_at: "2026-11-11T13:09:43+00:00",
+        status: "done",
+        rating: "加碼（Overweight）",
+        rating_note: "現價 2395.00 元維持多頭結構，可於 20 日均線 2357.50 元附近偏多配置",
+        target_price: "3409.80 元",
+        stop_price: "2180.49 元",
+        horizon: "1～3 個月",
+        confirm_price: "日線收盤站穩 2416.67 元",
+        close: 2395.0,
+        chg_1d_pct: 4.81,
+        per: 27.76,
+        eps_this: 110.63,
+        eps_next: 149.53,
+        consensus_badge: "【基本面與量化/型態背離・分批慢買】",
+        consensus_advice: "T 模型基本面與中長期邏輯看多，但 Q 量化動能或 K 短期走勢偏弱（常見於價值股左側打底或短線漲多修正），建議拉長布局週期、縮小單筆部位，靜待技術面站上轉強確認價。",
+        t_side: "偏多",
+        k_side: "偏多",
+        q_side: "偏空",
+        k_median_20d_pct: 5.11,
+        q_percentile: 26.0,
+        summary_pdf_url: "https://drive.google.com/file/d/1a5hFZvTX8AhjtZU8wekXL7iWUG9XRbZd/view",
+        full_pdf_url: "https://drive.google.com/file/d/1WGxbL2wnhQ3KxAImmW19nUbjqRigxmzf/view",
+        kronos_png_url: "https://drive.google.com/file/d/1tlTdHxLXENapG8lf4HxTeAbo2z6Rr-PR/view"
+      },
+      {
+        id: "jO9lEDsu6dIGaEFS1s1H1g",
+        code: "3037",
+        yf: "3037.TW",
+        name: "欣興",
+        market: "TW",
+        trade_date: "2026-11-11",
+        updated_at: "2026-11-11T13:13:59+00:00",
+        status: "done",
+        rating: "減碼／偏低配（Underweight）",
+        rating_note: "現價 864.00 元跌破 20 日均線 987.35 元，動能轉弱建議逢反彈減碼",
+        target_price: "1427.37 元",
+        stop_price: "717.55 元",
+        horizon: "1～3 個月",
+        confirm_price: "日線收盤站穩 1057.25 元",
+        close: 864.0,
+        chg_1d_pct: 4.35,
+        per: 44.72,
+        eps_this: 24.55,
+        eps_next: 42.13,
+        consensus_badge: "【短線動能強但基本面保守・嚴設停利】",
+        consensus_advice: "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
+        t_side: "偏空",
+        k_side: "偏多",
+        q_side: "偏空",
+        k_median_20d_pct: 10.06,
+        q_percentile: 9.0,
+        summary_pdf_url: "https://drive.google.com/file/d/19Ld7cercWZDStxgHjOQ386JjGgmuYAcY/view",
+        full_pdf_url: "https://drive.google.com/file/d/1lmtkQKxo5fuTZ0j0X-Tpbt4u3qqouzL6/view",
+        kronos_png_url: "https://drive.google.com/file/d/1KfOcfWzidQV-tZ8FvhkKjzxV84G1MIiy/view"
+      },
+      {
+        id: "WqK1ha3gsQZTsqCT_tYQvw",
+        code: "NVDA",
+        yf: "NVDA",
+        name: "輝達 (NVIDIA)",
+        market: "US",
+        trade_date: "2026-11-10",
+        updated_at: "2026-11-11T13:14:50+00:00",
+        status: "done",
+        rating: "減碼／偏低配（Underweight）",
+        rating_note: "現價 168.89 美元跌破 20 日均線 206.18 美元，動能轉弱建議逢反彈減碼",
+        target_price: "325.78 美元",
+        stop_price: "175.36 美元",
+        horizon: "1～3 個月",
+        confirm_price: "日線收盤站穩 217.77 美元",
+        close: 168.89,
+        chg_1d_pct: -5.47,
+        per: 21.35,
+        eps_this: 9.32,
+        eps_next: 15.93,
+        consensus_badge: "【短線動能強但基本面保守・嚴設停利】",
+        consensus_advice: "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
+        t_side: "偏空",
+        k_side: "偏多",
+        q_side: "偏空",
+        k_median_20d_pct: 20.01,
+        q_percentile: 3.0,
+        summary_pdf_url: "https://drive.google.com/file/d/1brbDj2bV0tovVf6EJdGYhBNtQdkay2Ug/view",
+        full_pdf_url: "https://drive.google.com/file/d/11GwI1iuUD6JYt7CI_3bXx-6IptazsX3j/view",
+        kronos_png_url: "https://drive.google.com/file/d/1GDULtj2N-AIXGR76i70lCLviefpVYZhc/view"
+      }
+    ];
+
+    const FALLBACK_STOCKS = [
+      { code: "2330", name: "台積電", yf: "2330.TW", market: "TW" },
+      { code: "3037", name: "欣興", yf: "3037.TW", market: "TW" },
+      { code: "2317", name: "鴻海", yf: "2317.TW", market: "TW" },
+      { code: "2454", name: "聯發科", yf: "2454.TW", market: "TW" },
+      { code: "2382", name: "廣達", yf: "2382.TW", market: "TW" },
+      { code: "2308", name: "台達電", yf: "2308.TW", market: "TW" },
+      { code: "3017", name: "奇鋐", yf: "3017.TW", market: "TW" },
+      { code: "3231", name: "緯創", yf: "3231.TW", market: "TW" },
+      { code: "6669", name: "緯穎", yf: "6669.TW", market: "TW" },
+      { code: "2603", name: "長榮", yf: "2603.TW", market: "TW" },
+      { code: "2881", name: "富邦金", yf: "2881.TW", market: "TW" },
+      { code: "2882", name: "國泰金", yf: "2882.TW", market: "TW" },
+      { code: "NVDA", name: "輝達 (NVIDIA)", yf: "NVDA", market: "US" },
+      { code: "MRVL", name: "邁威爾 (Marvell)", yf: "MRVL", market: "US" },
+      { code: "AAPL", name: "蘋果 (Apple)", yf: "AAPL", market: "US" },
+      { code: "MSFT", name: "微軟 (Microsoft)", yf: "MSFT", market: "US" },
+      { code: "AVGO", name: "博通 (Broadcom)", yf: "AVGO", market: "US" },
+      { code: "AMD", name: "超微 (AMD)", yf: "AMD", market: "US" },
+      { code: "TSM", name: "台積電 ADR", yf: "TSM", market: "US" },
+      { code: "TSLA", name: "特斯拉 (Tesla)", yf: "TSLA", market: "US" }
+    ];
+
+    const state = {
+      records: [...SEED_RECORDS],
+      stockIndex: [...FALLBACK_STOCKS],
+      analysisMode: "cache",
+      filterMarket: "ALL",
+      filterRating: "ALL",
+      filterSort: "DATE",
+      expandedIds: new Set([SEED_RECORDS[0].id]),
+      gasUrl: localStorage.getItem("stock_ai_gas_url") || "",
+      deferredPrompt: null
+    };
+
+    function classifyRating(ratingText = "") {
+      const s = String(ratingText);
+      if (s.includes("買進") || s.includes("加碼") || s.includes("Buy") || s.includes("Overweight") || s.includes("偏多")) {
+        return { key: "BUY", cls: "badge-buy" };
+      }
+      if (s.includes("賣出") || s.includes("減碼") || s.includes("Sell") || s.includes("Underweight") || s.includes("偏空")) {
+        return { key: "SELL", cls: "badge-sell" };
+      }
+      return { key: "HOLD", cls: "badge-hold" };
+    }
+
+    function sideBadgeClass(side = "") {
+      if (side.includes("多")) return "badge-buy";
+      if (side.includes("空")) return "badge-sell";
+      return "badge-hold";
+    }
+
+    // 去重統計：每支股票只取最新一筆分析紀錄
+    function getDeduplicatedRecords(allRecords) {
+      const map = new Map();
+      for (const r of allRecords) {
+        const key = (r.code || r.yf || "").toUpperCase();
+        if (!key) continue;
+        if (!map.has(key)) {
+          map.set(key, r);
+        } else {
+          const prev = map.get(key);
+          const prevDate = `${prev.trade_date || ""} ${prev.updated_at || ""}`;
+          const curDate = `${r.trade_date || ""} ${r.updated_at || ""}`;
+          if (curDate > prevDate) {
+            map.set(key, r);
+          }
+        }
+      }
+      return Array.from(map.values());
+    }
+
+    function closeAllDropdowns(exceptMenu = null) {
+      document.querySelectorAll(".dropdown-menu-accordion").forEach((menu) => {
+        if (menu !== exceptMenu) {
+          menu.classList.remove("is-open");
+          const parent = menu.closest(".dropdown-anchor");
+          if (parent) parent.classList.remove("is-open-trigger");
+        }
+      });
+      const panel = document.getElementById("sectionSearchPanel");
+      if (panel && !document.querySelector(".dropdown-menu-accordion.is-open")) {
+        panel.style.zIndex = "40";
+      }
+    }
+
+    function toggleDropdown(anchorEl) {
+      const menu = anchorEl.querySelector(".dropdown-menu-accordion");
+      if (!menu) return;
+      const willOpen = !menu.classList.contains("is-open");
+      closeAllDropdowns(menu);
+      menu.classList.toggle("is-open", willOpen);
+      anchorEl.classList.toggle("is-open-trigger", willOpen);
+
+      const panel = document.getElementById("sectionSearchPanel");
+      if (panel) {
+        panel.style.zIndex = willOpen ? "100" : "40";
+      }
+    }
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".dropdown-anchor")) {
+        closeAllDropdowns();
+      }
+    });
+
+    async function loadStocksIndex() {
+      try {
+        const res = await fetch("./stocks_index.json");
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            state.stockIndex = data;
+          }
+        }
+      } catch (_) {}
+    }
+
+    function renderSearchSuggestions(query) {
+      const q = String(query || "").trim().toLowerCase();
+      const menu = document.getElementById("searchSuggestMenu");
+      const listEl = document.getElementById("searchSuggestList");
+      const clearBtn = document.getElementById("btnClearSearch");
+
+      clearBtn.classList.toggle("hidden", !q);
+      if (!q) {
+        menu.classList.remove("is-open");
+        return;
+      }
+
+      const matches = [];
+      for (const item of state.stockIndex) {
+        const code = String(item.code || "").toLowerCase();
+        const name = String(item.name || "").toLowerCase();
+        const yf = String(item.yf || "").toLowerCase();
+        if (code.startsWith(q) || name.includes(q) || yf.startsWith(q) || code.includes(q)) {
+          matches.push(item);
+          if (matches.length >= 8) break;
+        }
+      }
+
+      if (matches.length === 0) {
+        listEl.innerHTML = `
+          <div class="px-3 py-1.5 text-xs text-slate-600 flex items-center justify-between">
+            <span>分析「<strong class="text-slate-800">${query}</strong>」</span>
+            <span class="text-[10px] badge-slate px-1.5 py-0.5">Enter 啟動</span>
+          </div>
+        `;
+      } else {
+        listEl.innerHTML = matches.map((m) => `
+          <button type="button" data-pick="${m.code} ${m.name}" class="suggest-item w-full text-left px-3 py-1.5 rounded-[8px] hover:bg-slate-100/80 transition flex items-center justify-between gap-2 cursor-pointer">
+            <div class="flex items-center gap-2">
+              <span class="num-col text-xs font-semibold text-slate-800">${m.code}</span>
+              <span class="text-xs text-slate-700 font-medium">${m.name}</span>
+            </div>
+            <span class="text-[9px] px-1.5 py-0.5 ${m.market === 'TW' ? 'badge-slate' : 'badge-hold'}">${m.market || 'TW'}</span>
+          </button>
+        `).join("");
+      }
+
+      closeAllDropdowns(menu);
+      menu.classList.add("is-open");
+      document.getElementById("searchDropdownAnchor").classList.add("is-open-trigger");
+      const panel = document.getElementById("sectionSearchPanel");
+      if (panel) panel.style.zIndex = "100";
+
+      listEl.querySelectorAll(".suggest-item").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const val = btn.getAttribute("data-pick");
+          document.getElementById("stockSearchInput").value = val;
+          closeAllDropdowns();
+        });
+      });
+    }
+
+    function renderOverview() {
+      const allRecords = state.records || [];
+      // 關鍵要求 7：同一支股票多次分析僅計 1 次，以最新一次為準
+      const deduped = getDeduplicatedRecords(allRecords);
+
+      let buyCount = 0, holdCount = 0, sellCount = 0;
+      deduped.forEach((r) => {
+        const c = classifyRating(r.rating).key;
+        if (c === "BUY") buyCount++;
+        else if (c === "SELL") sellCount++;
+        else holdCount++;
+      });
+
+      document.getElementById("kpiTotalCount").textContent = deduped.length;
+      document.getElementById("kpiBullCount").textContent = buyCount;
+      document.getElementById("kpiHoldCount").textContent = holdCount;
+      document.getElementById("kpiBearCount").textContent = sellCount;
+
+      const filtered = deduped.filter((r) => {
+        if (state.filterMarket !== "ALL" && r.market !== state.filterMarket) return false;
+        if (state.filterRating !== "ALL" && classifyRating(r.rating).key !== state.filterRating) return false;
+        return true;
+      });
+
+      filtered.sort((a, b) => {
+        if (state.filterSort === "KRONOS") {
+          return (Number(b.k_median_20d_pct) || -999) - (Number(a.k_median_20d_pct) || -999);
+        }
+        if (state.filterSort === "QLIB") {
+          return (Number(b.q_percentile) || -1) - (Number(a.q_percentile) || -1);
+        }
+        const da = `${a.trade_date || ""} ${a.updated_at || ""}`;
+        const db = `${b.trade_date || ""} ${b.updated_at || ""}`;
+        return db.localeCompare(da);
+      });
+
+      const container = document.getElementById("overviewCardsContainer");
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="liquid-pill p-6 text-center text-xs text-slate-500">
+            目前無符合條件的個股紀錄。
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map((r) => {
+        const ratingMeta = classifyRating(r.rating);
+        const isExpanded = state.expandedIds.has(r.id || r.code);
+        const chgVal = Number(r.chg_1d_pct);
+        const chgStr = Number.isFinite(chgVal) ? `${chgVal >= 0 ? "+" : ""}${chgVal.toFixed(2)}%` : "—";
+        const chgCls = chgVal > 0 ? "text-emerald-700 font-semibold" : (chgVal < 0 ? "text-rose-700 font-semibold" : "text-slate-600");
+        const kPct = Number.isFinite(Number(r.k_median_20d_pct))
+          ? `${Number(r.k_median_20d_pct) >= 0 ? "+" : ""}${Number(r.k_median_20d_pct).toFixed(2)}%`
+          : "—";
+        const qPct = Number.isFinite(Number(r.q_percentile))
+          ? `Top ${(100 - Number(r.q_percentile)).toFixed(0)}% (${Number(r.q_percentile).toFixed(0)}分位)`
+          : "—";
+
+        return `
+          <article class="liquid-pill float-interactive p-3 sm:p-3.5 transition-all" data-card-id="${r.id || r.code}">
+            <div class="card-header-toggle cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-2" data-toggle-id="${r.id || r.code}">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2 py-0.5 text-[10px] num-col font-bold badge-slate">${r.market || "TW"} · ${r.code}</span>
+                <h3 class="text-sm sm:text-base font-bold text-slate-900">${r.name || r.code}</h3>
+                <span class="px-2.5 py-0.5 text-[11px] font-semibold ${ratingMeta.cls}">${r.rating || "持有"}</span>
+                <span class="px-2 py-0.5 text-[11px] font-medium badge-slate">${r.consensus_badge || "【多模型完成】"}</span>
+              </div>
+
+              <div class="flex flex-wrap items-center justify-between sm:justify-end gap-3 text-xs">
+                <div class="flex items-center gap-3">
+                  <div>
+                    <span class="text-slate-500">收盤</span>
+                    <span class="ml-1 num-col font-bold text-slate-800">${r.close != null ? r.close : "—"}</span>
+                    <span class="ml-1 num-col ${chgCls}">(${chgStr})</span>
+                  </div>
+                  <div class="hidden sm:block">
+                    <span class="text-slate-500">Kronos 20日</span>
+                    <span class="ml-1 num-col font-semibold text-slate-700">${kPct}</span>
+                  </div>
+                  <div class="hidden md:block">
+                    <span class="text-slate-500">日期</span>
+                    <span class="ml-1 num-col text-slate-600">${r.trade_date || "—"}</span>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-1.5">
+                  ${r.summary_pdf_url ? `
+                    <a href="${r.summary_pdf_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="liquid-pill float-interactive px-2 py-1 text-[11px] text-slate-700 hover:text-slate-900 flex items-center font-medium">
+                      <span>摘要 PDF</span>
+                    </a>
+                  ` : ""}
+                  ${r.full_pdf_url ? `
+                    <a href="${r.full_pdf_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="btn-muted-glass float-interactive px-2 py-1 text-[11px] font-medium flex items-center">
+                      <span>完整報告 PDF</span>
+                    </a>
+                  ` : ""}
+                  <button type="button" class="p-1 rounded-[6px] text-slate-400 hover:text-slate-700">
+                    <svg class="w-3.5 h-3.5 chevron-icon ${isExpanded ? 'rotate-180' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 手風琴展開抽屜 -->
+            <div class="accordion-shell ${isExpanded ? 'is-open mt-3' : ''}" id="drawer-${r.id || r.code}">
+              <div class="accordion-content">
+                <div class="pt-3 border-t border-slate-200/50 space-y-2.5 text-xs">
+                  <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
+                    <div class="liquid-pill p-2.5">
+                      <div class="text-[10px] font-medium text-slate-500">目標價 / 停損參考</div>
+                      <div class="mt-0.5 num-col font-semibold text-slate-800">目標 ${r.target_price || "—"} ｜ 停損 ${r.stop_price || "—"}</div>
+                    </div>
+                    <div class="liquid-pill p-2.5">
+                      <div class="text-[10px] font-medium text-slate-500">轉強確認條件</div>
+                      <div class="mt-0.5 font-medium text-slate-800">${r.confirm_price || "等待帶量突破均線"}</div>
+                    </div>
+                    <div class="liquid-pill p-2.5">
+                      <div class="text-[10px] font-medium text-slate-500">本益比 (PER) / EPS</div>
+                      <div class="mt-0.5 num-col font-semibold text-slate-800">PER ${r.per != null ? Number(r.per).toFixed(1) + 'x' : '—'} ｜ EPS ${r.eps_this != null ? Number(r.eps_this).toFixed(2) : '—'}</div>
+                    </div>
+                    <div class="liquid-pill p-2.5">
+                      <div class="text-[10px] font-medium text-slate-500">建議投資期間</div>
+                      <div class="mt-0.5 font-medium text-slate-800">${r.horizon || "1～3 個月"}</div>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <div class="liquid-pill p-2.5 space-y-1">
+                      <div class="flex items-center justify-between">
+                        <span class="font-bold text-slate-800">T 模型（3輪辯論）</span>
+                        <span class="px-1.5 py-0.5 text-[10px] font-semibold ${sideBadgeClass(r.t_side)}">${r.t_side || "中性"}</span>
+                      </div>
+                      <p class="text-slate-600 leading-relaxed text-[11px]">${r.rating_note || "多輪辯論綜合結論。"}</p>
+                    </div>
+
+                    <div class="liquid-pill p-2.5 space-y-1">
+                      <div class="flex items-center justify-between">
+                        <span class="font-bold text-slate-800">K 模型（Kronos 時序預測）</span>
+                        <span class="px-1.5 py-0.5 text-[10px] font-semibold ${sideBadgeClass(r.k_side)}">${r.k_side || "中性"}</span>
+                      </div>
+                      <p class="text-slate-600 leading-relaxed text-[11px]">20 日中位數預期變動：<strong class="num-col text-slate-800">${kPct}</strong></p>
+                    </div>
+
+                    <div class="liquid-pill p-2.5 space-y-1">
+                      <div class="flex items-center justify-between">
+                        <span class="font-bold text-slate-800">Q 模型（Qlib 因子）</span>
+                        <span class="px-1.5 py-0.5 text-[10px] font-semibold ${sideBadgeClass(r.q_side)}">${r.q_side || "中性"}</span>
+                      </div>
+                      <p class="text-slate-600 leading-relaxed text-[11px]">量化因子分位：<strong class="num-col text-slate-800">${qPct}</strong></p>
+                    </div>
+                  </div>
+
+                  <div class="liquid-pill px-3 py-2 flex flex-wrap items-center justify-between gap-2">
+                    <div class="text-slate-700 text-[11px]">
+                      <strong class="text-slate-800 font-bold">綜合建議：</strong>${r.consensus_advice || "請依據區間分批配置。"}
+                    </div>
+                    <div class="flex items-center gap-2">
+                      ${r.kronos_png_url ? `
+                        <a href="${r.kronos_png_url}" target="_blank" rel="noopener" class="liquid-pill float-interactive px-2 py-1 text-[11px] text-slate-700 font-medium">查看 Kronos 預測圖</a>
+                      ` : ""}
+                      <button type="button" data-rerun="${r.code} ${r.name}" class="btn-rerun liquid-pill float-interactive px-2 py-1 text-[11px] text-slate-700 font-semibold cursor-pointer">重新分析</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      container.querySelectorAll(".card-header-toggle").forEach((hdr) => {
+        hdr.addEventListener("click", () => {
+          const id = hdr.getAttribute("data-toggle-id");
+          const drawer = document.getElementById(`drawer-${id}`);
+          const chevron = hdr.querySelector(".chevron-icon");
+          if (!drawer) return;
+          const willOpen = !drawer.classList.contains("is-open");
+          drawer.classList.toggle("is-open", willOpen);
+          drawer.classList.toggle("mt-3", willOpen);
+          if (chevron) chevron.classList.toggle("rotate-180", willOpen);
+          if (willOpen) state.expandedIds.add(id);
+          else state.expandedIds.delete(id);
+        });
+      });
+
+      container.querySelectorAll(".btn-rerun").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const stock = btn.getAttribute("data-rerun");
+          document.getElementById("stockSearchInput").value = stock;
+          dispatchStockAnalysis(stock, true);
+        });
+      });
+    }
+
+    async function fetchOverviewState(forceSync = false) {
+      const syncDot = document.getElementById("syncDot");
+      const syncText = document.getElementById("syncStatusText");
+      syncDot.className = "w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse";
+      syncText.textContent = "同步中";
+
+      try {
+        const res = await fetch(`./api/overview${forceSync ? '?sync=1' : ''}`, { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.overview && Array.isArray(data.overview.records) && data.overview.records.length > 0) {
+            state.records = data.overview.records;
+            renderOverview();
+          }
+          updateQueueBanner(data.queue || []);
+          syncDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
+          syncText.textContent = "已連線";
+          return;
+        }
+      } catch (_) {}
+
+      if (state.gasUrl) {
+        try {
+          const res = await fetch(`${state.gasUrl}?action=overview`, { cache: "no-store" });
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.overview && Array.isArray(data.overview.records)) {
+              state.records = data.overview.records;
+              renderOverview();
+            }
+            updateQueueBanner(data.queue || []);
+            syncDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
+            syncText.textContent = "已連線 GAS";
+            return;
+          }
+        } catch (_) {}
+      }
+
+      syncDot.className = "w-1.5 h-1.5 rounded-full bg-slate-400";
+      syncText.textContent = "離線預覽";
+    }
+
+    function updateQueueBanner(queueList = []) {
+      const active = queueList.filter((t) => t.status === "queued" || t.status === "analyzing");
+      const acc = document.getElementById("queueStatusAccordion");
+      const msg = document.getElementById("queueStatusMsg");
+      if (active.length > 0) {
+        const cur = active[0];
+        msg.textContent = `正在分析「${cur.name || cur.stock}」（佇列尚有 ${active.length} 筆）...`;
+        acc.classList.add("is-open");
+      } else {
+        acc.classList.remove("is-open");
+      }
+    }
+
+    async function dispatchStockAnalysis(rawInput, forceOverride = null) {
+      const stock = String(rawInput || document.getElementById("stockSearchInput").value || "").trim();
+      if (!stock) {
+        document.getElementById("stockSearchInput").focus();
+        return;
+      }
+      const forceRebuild = forceOverride !== null ? forceOverride : (state.analysisMode === "rebuild");
+      const acc = document.getElementById("queueStatusAccordion");
+      const msg = document.getElementById("queueStatusMsg");
+      msg.textContent = `已送出「${stock}」分析任務...`;
+      acc.classList.add("is-open");
+      closeAllDropdowns();
+
+      try {
+        const res = await fetch("./api/enqueue", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ stock, force_rebuild: forceRebuild })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.state && data.state.overview && Array.isArray(data.state.overview.records)) {
+            state.records = data.state.overview.records;
+            renderOverview();
+          }
+          return;
+        }
+      } catch (_) {}
+
+      if (state.gasUrl) {
+        try {
+          await fetch(state.gasUrl, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ stock, force_rebuild: forceRebuild })
+          });
+          msg.textContent = `已透過 Google Drive 佇列派發「${stock}」！`;
+          return;
+        } catch (_) {}
+      }
+
+      msg.textContent = `已記錄「${stock}」分析請求。`;
+    }
+
+    function initEvents() {
+      const searchInput = document.getElementById("stockSearchInput");
+      searchInput.addEventListener("input", (e) => renderSearchSuggestions(e.target.value));
+      searchInput.addEventListener("focus", (e) => {
+        if (e.target.value.trim()) renderSearchSuggestions(e.target.value);
+      });
+      searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          dispatchStockAnalysis(searchInput.value);
+        }
+      });
+
+      document.getElementById("btnClearSearch").addEventListener("click", () => {
+        searchInput.value = "";
+        renderSearchSuggestions("");
+        searchInput.focus();
+      });
+
+      const modeAnchor = document.getElementById("modeDropdownAnchor");
+      document.getElementById("modeDropdownTrigger").addEventListener("click", () => toggleDropdown(modeAnchor));
+      modeAnchor.querySelectorAll(".mode-option").forEach((opt) => {
+        opt.addEventListener("click", () => {
+          state.analysisMode = opt.getAttribute("data-mode");
+          document.getElementById("modeDropdownLabel").textContent =
+            state.analysisMode === "rebuild" ? "強制重算" : "標準模式";
+          modeAnchor.querySelectorAll(".mode-check").forEach((c) => c.classList.add("hidden"));
+          opt.querySelector(".mode-check").classList.remove("hidden");
+          closeAllDropdowns();
+        });
+      });
+
+      document.getElementById("btnDispatchStock").addEventListener("click", () => {
+        dispatchStockAnalysis(searchInput.value);
+      });
+
+      ["filterMarketAnchor", "filterRatingAnchor", "filterSortAnchor"].forEach((id) => {
+        const anchor = document.getElementById(id);
+        anchor.querySelector(".filter-trigger").addEventListener("click", () => toggleDropdown(anchor));
+      });
+
+      document.querySelectorAll("[data-filter-market]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.filterMarket = btn.getAttribute("data-filter-market");
+          document.getElementById("filterMarketLabel").textContent = btn.textContent;
+          closeAllDropdowns();
+          renderOverview();
+        });
+      });
+
+      document.querySelectorAll("[data-filter-rating]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.filterRating = btn.getAttribute("data-filter-rating");
+          document.getElementById("filterRatingLabel").textContent = btn.textContent;
+          closeAllDropdowns();
+          renderOverview();
+        });
+      });
+
+      document.querySelectorAll("[data-filter-sort]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.filterSort = btn.getAttribute("data-filter-sort");
+          document.getElementById("filterSortLabel").textContent = btn.textContent;
+          closeAllDropdowns();
+          renderOverview();
+        });
+      });
+
+      const settingsAcc = document.getElementById("settingsAccordion");
+      document.getElementById("btnToggleSettings").addEventListener("click", () => {
+        settingsAcc.classList.toggle("is-open");
+      });
+      document.getElementById("btnCloseSettings").addEventListener("click", () => {
+        settingsAcc.classList.remove("is-open");
+      });
+
+      const gasInput = document.getElementById("inputGasUrl");
+      gasInput.value = state.gasUrl;
+      document.getElementById("btnSaveGasUrl").addEventListener("click", () => {
+        state.gasUrl = gasInput.value.trim();
+        localStorage.setItem("stock_ai_gas_url", state.gasUrl);
+        fetchOverviewState(true);
+      });
+
+      document.getElementById("btnSyncNow").addEventListener("click", () => {
+        fetchOverviewState(true);
+      });
+
+      window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        state.deferredPrompt = e;
+      });
+
+      document.getElementById("btnInstallPwa").addEventListener("click", async () => {
+        if (state.deferredPrompt) {
+          state.deferredPrompt.prompt();
+          await state.deferredPrompt.userChoice;
+          state.deferredPrompt = null;
+        } else {
+          settingsAcc.classList.add("is-open");
+        }
+      });
+
+      if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      }
+    }
+
+    initEvents();
+    renderOverview();
+    loadStocksIndex();
+    fetchOverviewState(false);
+    setInterval(() => fetchOverviewState(false), 10000);
+  </script>
+</body>
+</html>

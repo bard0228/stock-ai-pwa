@@ -1,0 +1,26 @@
+{
+  "name": "為你股掌",
+  "short_name": "為你股掌",
+  "description": "為你股掌 · T-K-Q 多模型股票決策中樞（TradingAgents × Kronos × Qlib）",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f0f3f8",
+  "theme_color": "#f0f3f8",
+  "categories": ["finance", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
