@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-12T12:01:44+00:00",
+ "updated_at": "2026-11-12T12:02:48+00:00",
  "count": 10,
  "records": [
   {
@@ -65,13 +65,13 @@
    "kronos_png_url": "https://drive.google.com/file/d/1YFT1rVS98MLUi_MVMrwbjgmGeFjkiTgZ/view"
   },
   {
-   "id": "qQmI-dbziVXMzEeGcGGZTw",
+   "id": "KpX1mgZIw_24gq2fZ-8-Ww",
    "code": "NVDA",
    "yf": "NVDA",
    "name": "輝達 (NVIDIA)",
    "market": "US",
    "trade_date": "2026-11-11",
-   "updated_at": "2026-11-12T12:01:43+00:00",
+   "updated_at": "2026-11-12T12:02:47+00:00",
    "status": "done",
    "rating": "減碼／偏低配（Underweight）",
    "rating_note": "現價 173.73 美元跌破 20 日均線 203.80 美元，動能轉弱建議逢反彈減碼",
