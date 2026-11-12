@@ -1,14 +1,14 @@
-const CACHE_NAME = 'stock-ai-cake-v2';
+const CACHE_NAME = 'stock-ai-cake-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
-  './manifest.json?v=cake2',
+  './manifest.json?v=cake3',
   './stocks_index.json',
   './icons/cake-192.png',
-  './icons/cake-192.png?v=cake2',
+  './icons/cake-192.png?v=cake3',
   './icons/cake-512.png',
-  './icons/cake-512.png?v=cake2'
+  './icons/cake-512.png?v=cake3'
 ];
 
 self.addEventListener('install', (event) => {
@@ -37,7 +37,8 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET') return;
 
   const url = new URL(req.url);
-  // API or GAS bridge requests always use network first without caching stale state
+
+  // API 或 GAS 請求一律走網路
   if (url.pathname.startsWith('/api/') || url.hostname.includes('script.google.com')) {
     event.respondWith(
       fetch(req).catch(() => new Response(JSON.stringify({ ok: false, offline: true }), {
@@ -47,18 +48,35 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Network first for manifest and icons to prevent stale icon issues
-  if (url.pathname.endsWith('manifest.json') || url.pathname.includes('/icons/')) {
+  // HTML 文件導航：嚴格「網路優先（Network First）」，保證永遠載入最新程式碼
+  if (req.mode === 'navigate' || req.destination === 'document' || url.pathname.endsWith('.html') || url.pathname.endsWith('/')) {
     event.respondWith(
       fetch(req).then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+        if (res && res.status === 200) {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+        }
+        return res;
+      }).catch(() => caches.match(req).then((cached) => cached || caches.match('./index.html')))
+    );
+    return;
+  }
+
+  // Manifest, JSON, 圖示一律網路優先避免舊圖示快取
+  if (url.pathname.endsWith('manifest.json') || url.pathname.endsWith('.json') || url.pathname.includes('/icons/')) {
+    event.respondWith(
+      fetch(req).then((res) => {
+        if (res && res.status === 200) {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+        }
         return res;
       }).catch(() => caches.match(req))
     );
     return;
   }
 
+  // 其餘靜態資源快取優先
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;

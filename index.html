@@ -1239,7 +1239,14 @@
       });
 
       if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-        navigator.serviceWorker.register("./sw.js?v=cake2").then((reg) => {
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          if (!refreshing) {
+            refreshing = true;
+            window.location.reload();
+          }
+        });
+        navigator.serviceWorker.register("./sw.js?v=cake3").then((reg) => {
           reg.update();
         }).catch(() => {});
       }
