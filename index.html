@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="為你股掌" />
   <meta name="description" content="為你股掌 · T-K-Q 多模型股票決策中樞" />
-  <link rel="manifest" href="./manifest.json?v=cake2" />
+  <link rel="manifest" href="./manifest.json?v=cake4" />
   <link rel="icon" type="image/png" sizes="192x192" href="./icons/cake-192.png?v=cake2" />
   <link rel="apple-touch-icon" href="./icons/cake-192.png?v=cake2" />
   <title>為你股掌</title>
@@ -301,123 +301,10 @@
           <span id="syncDot" class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
           <span id="syncStatusText">已同步</span>
         </button>
-
-        <!-- 齒輪設定按鈕 -->
-        <button id="btnToggleSettings" type="button" class="liquid-pill float-interactive p-1.5 text-slate-600 hover:text-slate-900 cursor-pointer" title="雲端橋接設定">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-          </svg>
-        </button>
       </div>
     </header>
 
-    <!-- 齒輪設定抽屜（置頂層級） -->
-    <div id="settingsAccordion" class="sticky top-[62px] z-45 accordion-shell">
-      <div class="accordion-content">
-        <div class="liquid-glass p-3.5 space-y-2.5">
-          <div class="flex items-center justify-between border-b border-slate-200/60 pb-2">
-            <h2 class="text-xs font-semibold text-slate-800">雲端橋接設定</h2>
-            <button id="btnCloseSettings" type="button" class="liquid-pill float-interactive px-2.5 py-1 text-[11px] text-slate-600 font-medium cursor-pointer">收合</button>
-          </div>
-          <div class="space-y-1.5">
-            <div class="text-[11px] text-slate-600">Google Apps Script Web App 網址 (選填)</div>
-            <div class="flex gap-2">
-              <input id="inputGasUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3 py-1.5 text-xs rounded-[8px] bg-white/60 border border-slate-300 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-500" />
-              <button id="btnSaveGasUrl" type="button" class="btn-muted-glass float-interactive px-3 py-1.5 text-xs font-medium shrink-0 cursor-pointer">儲存</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 區塊 2：想分析... (搜尋與啟動分析，已刪除多餘說明與快速帶入) -->
-    <section id="sectionSearchPanel" class="relative z-40 liquid-glass p-3.5 sm:p-4 space-y-2.5">
-      <h2 class="text-sm font-semibold text-slate-800">想分析...</h2>
-
-      <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 items-start">
-        <div class="sm:col-span-7 dropdown-anchor" id="searchDropdownAnchor">
-          <div class="h-10 liquid-pill float-interactive flex items-center px-3 gap-2">
-            <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <input
-              id="stockSearchInput"
-              type="text"
-              autocomplete="off"
-              placeholder="輸入股票代號或名稱..."
-              class="flex-1 min-w-0 bg-transparent text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none font-medium"
-            />
-            <button id="btnClearSearch" type="button" class="hidden whitespace-nowrap shrink-0 text-[11px] text-slate-500 hover:text-slate-800 px-1.5 py-0.5 rounded-[6px]">清除</button>
-          </div>
-
-          <div id="searchSuggestMenu" class="dropdown-menu-accordion">
-            <div class="accordion-content">
-              <div class="liquid-glass-popover p-1 max-h-56 overflow-y-auto thin-scroll space-y-0.5" id="searchSuggestList"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 下拉選單：純粹「標準模式」與「強制重算」 -->
-        <div class="sm:col-span-3 dropdown-anchor" id="modeDropdownAnchor">
-          <button
-            id="modeDropdownTrigger"
-            type="button"
-            class="w-full h-10 liquid-pill float-interactive px-3 text-xs sm:text-sm text-slate-800 flex items-center justify-between gap-1.5 cursor-pointer font-medium whitespace-nowrap shrink-0"
-          >
-            <span id="modeDropdownLabel" class="truncate">標準模式</span>
-            <svg class="w-3.5 h-3.5 text-slate-500 chevron-icon shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </button>
-          <div id="modeDropdownMenu" class="dropdown-menu-accordion">
-            <div class="accordion-content">
-              <div class="liquid-glass-popover p-1 space-y-0.5">
-                <button type="button" data-mode="cache" class="mode-option w-full text-left px-3 py-1.5 rounded-[8px] text-xs text-slate-800 hover:bg-slate-100/70 transition flex items-center justify-between cursor-pointer font-medium">
-                  <span>標準模式</span>
-                  <span class="text-emerald-700 text-xs font-bold mode-check">✓</span>
-                </button>
-                <button type="button" data-mode="rebuild" class="mode-option w-full text-left px-3 py-1.5 rounded-[8px] text-xs text-slate-800 hover:bg-slate-100/70 transition flex items-center justify-between cursor-pointer font-medium">
-                  <span>強制重算</span>
-                  <span class="text-emerald-700 text-xs font-bold mode-check hidden">✓</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 分析按鈕：低飽和度色彩，高度與標準模式一致，不換行 -->
-        <div class="sm:col-span-2">
-          <button
-            id="btnDispatchStock"
-            type="button"
-            class="w-full h-10 btn-muted-glass float-interactive px-3 text-xs sm:text-sm font-medium flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
-          >
-            <span>分析</span>
-            <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- 佇列狀態 -->
-      <div id="queueStatusAccordion" class="accordion-shell">
-        <div class="accordion-content">
-          <div id="queueStatusBanner" class="liquid-pill px-3 py-2 flex flex-wrap items-center justify-between gap-1.5 text-xs text-slate-700">
-            <div class="flex items-center gap-2">
-              <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-              <span id="queueStatusMsg" class="font-medium">已送出分析任務...</span>
-            </div>
-            <span id="queueStatusSub" class="text-[11px] text-slate-500">預計 35～50 秒完成並自動更新</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 區塊 3：已分析股數與去重統計 -->
+    <!-- 區塊：已分析股數與去重統計 -->
     <section class="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-2">
       <div class="liquid-glass float-interactive p-3">
         <div class="text-[11px] font-medium text-slate-500">已分析股數</div>
@@ -449,12 +336,34 @@
       </div>
     </section>
 
-    <!-- 區塊 4：分析結果 (已刪除多餘輔助文字) -->
+    <!-- 區塊：分析結果 -->
     <section class="relative z-20 liquid-glass p-3.5 sm:p-4 space-y-2.5">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-2">
-        <h2 class="text-sm font-semibold text-slate-800">分析結果</h2>
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-2.5 border-b border-slate-200/60 pb-2.5">
+        <div class="flex items-center gap-2">
+          <h2 class="text-sm font-semibold text-slate-800 shrink-0">分析結果</h2>
+          <span class="text-[10px] text-slate-500 badge-slate px-1.5 py-0.5 font-medium">全維度報告</span>
+        </div>
 
-        <div class="grid grid-cols-3 gap-2 sm:w-auto w-full">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+          <!-- 搜尋已分析股票 -->
+          <div class="relative w-full sm:w-48">
+            <div class="h-8 liquid-pill float-interactive flex items-center px-2.5 gap-1.5">
+              <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input
+                id="stockFilterInput"
+                type="text"
+                autocomplete="off"
+                placeholder="搜尋已分析標的..."
+                class="w-full bg-transparent text-xs text-slate-900 placeholder-slate-400 focus:outline-none font-medium"
+              />
+              <button id="btnClearFilter" type="button" class="hidden whitespace-nowrap shrink-0 text-[10px] text-slate-400 hover:text-slate-700 px-1">✕</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-1.5 sm:w-auto w-full shrink-0">
           <div class="dropdown-anchor" id="filterMarketAnchor">
             <button type="button" class="filter-trigger w-full liquid-pill float-interactive px-2.5 py-1.5 text-xs text-slate-800 flex items-center justify-between gap-1 cursor-pointer font-medium">
               <span id="filterMarketLabel" class="truncate">全部市場</span>
@@ -508,9 +417,9 @@
                 </div>
               </div>
             </div>
-          </div>
         </div>
       </div>
+    </div>
 
       <div id="overviewCardsContainer" class="space-y-2"></div>
     </section>
@@ -519,131 +428,286 @@
   <script>
     // 預設最新種子資料
     const SEED_RECORDS = [
-      {
-        id: "p1SE_myKUjbN6Pvowd_M1Q",
-        code: "0050",
-        yf: "0050.TW",
-        name: "元大台灣50",
-        market: "TW",
-        trade_date: "2026-11-11",
-        updated_at: "2026-11-11T14:14:00+00:00",
-        status: "done",
-        rating: "賣出（Sell）",
-        rating_note: "現價 103.20 元位於 20 日均線 104.51 與 60 日均線 107.57 元之下，建議優先避險出場",
-        target_price: "116.60 元",
-        stop_price: "94.29 元",
-        horizon: "1～3 個月",
-        confirm_price: "日線收盤站穩 107.57 元",
-        close: 103.2,
-        chg_1d_pct: 3.51,
-        per: null,
-        eps_this: null,
-        eps_next: null,
-        consensus_badge: "【短線動能強但基本面保守・嚴設停利】",
-        consensus_advice: "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
-        t_side: "偏空",
-        k_side: "偏多",
-        q_side: "偏空",
-        k_median_20d_pct: 7.2,
-        q_percentile: 12.0,
-        summary_pdf_url: "https://drive.google.com/file/d/13ZpTSnRqAfEiVozamzXm0FmQ-RfkIwo2/view",
-        full_pdf_url: "https://drive.google.com/file/d/1fwB14iqAbgJGsc4H5hbAFbsM7Pikug_8/view",
-        kronos_png_url: "https://drive.google.com/file/d/1wohlcdQd7VOqgvxhRaRUJhWDyd-Rf_G3/view"
-      },
-      {
-        id: "Z-NrmsAFSuMBi3l1XfMo9w",
-        code: "2330",
-        yf: "2330.TW",
-        name: "台積電",
-        market: "TW",
-        trade_date: "2026-11-11",
-        updated_at: "2026-11-11T13:09:43+00:00",
-        status: "done",
-        rating: "加碼（Overweight）",
-        rating_note: "現價 2395.00 元維持多頭結構，可於 20 日均線 2357.50 元附近偏多配置",
-        target_price: "3409.80 元",
-        stop_price: "2180.49 元",
-        horizon: "1～3 個月",
-        confirm_price: "日線收盤站穩 2416.67 元",
-        close: 2395.0,
-        chg_1d_pct: 4.81,
-        per: 27.76,
-        eps_this: 110.63,
-        eps_next: 149.53,
-        consensus_badge: "【基本面與量化/型態背離・分批慢買】",
-        consensus_advice: "T 模型基本面與中長期邏輯看多，但 Q 量化動能或 K 短期走勢偏弱（常見於價值股左側打底或短線漲多修正），建議拉長布局週期、縮小單筆部位，靜待技術面站上轉強確認價。",
-        t_side: "偏多",
-        k_side: "偏多",
-        q_side: "偏空",
-        k_median_20d_pct: 5.11,
-        q_percentile: 26.0,
-        summary_pdf_url: "https://drive.google.com/file/d/1a5hFZvTX8AhjtZU8wekXL7iWUG9XRbZd/view",
-        full_pdf_url: "https://drive.google.com/file/d/1WGxbL2wnhQ3KxAImmW19nUbjqRigxmzf/view",
-        kronos_png_url: "https://drive.google.com/file/d/1tlTdHxLXENapG8lf4HxTeAbo2z6Rr-PR/view"
-      },
-      {
-        id: "jO9lEDsu6dIGaEFS1s1H1g",
-        code: "3037",
-        yf: "3037.TW",
-        name: "欣興",
-        market: "TW",
-        trade_date: "2026-11-11",
-        updated_at: "2026-11-11T13:13:59+00:00",
-        status: "done",
-        rating: "減碼／偏低配（Underweight）",
-        rating_note: "現價 864.00 元跌破 20 日均線 987.35 元，動能轉弱建議逢反彈減碼",
-        target_price: "1427.37 元",
-        stop_price: "717.55 元",
-        horizon: "1～3 個月",
-        confirm_price: "日線收盤站穩 1057.25 元",
-        close: 864.0,
-        chg_1d_pct: 4.35,
-        per: 44.72,
-        eps_this: 24.55,
-        eps_next: 42.13,
-        consensus_badge: "【短線動能強但基本面保守・嚴設停利】",
-        consensus_advice: "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
-        t_side: "偏空",
-        k_side: "偏多",
-        q_side: "偏空",
-        k_median_20d_pct: 10.06,
-        q_percentile: 9.0,
-        summary_pdf_url: "https://drive.google.com/file/d/19Ld7cercWZDStxgHjOQ386JjGgmuYAcY/view",
-        full_pdf_url: "https://drive.google.com/file/d/1lmtkQKxo5fuTZ0j0X-Tpbt4u3qqouzL6/view",
-        kronos_png_url: "https://drive.google.com/file/d/1KfOcfWzidQV-tZ8FvhkKjzxV84G1MIiy/view"
-      },
-      {
-        id: "WqK1ha3gsQZTsqCT_tYQvw",
-        code: "NVDA",
-        yf: "NVDA",
-        name: "輝達 (NVIDIA)",
-        market: "US",
-        trade_date: "2026-11-10",
-        updated_at: "2026-11-11T13:14:50+00:00",
-        status: "done",
-        rating: "減碼／偏低配（Underweight）",
-        rating_note: "現價 168.89 美元跌破 20 日均線 206.18 美元，動能轉弱建議逢反彈減碼",
-        target_price: "325.78 美元",
-        stop_price: "175.36 美元",
-        horizon: "1～3 個月",
-        confirm_price: "日線收盤站穩 217.77 美元",
-        close: 168.89,
-        chg_1d_pct: -5.47,
-        per: 21.35,
-        eps_this: 9.32,
-        eps_next: 15.93,
-        consensus_badge: "【短線動能強但基本面保守・嚴設停利】",
-        consensus_advice: "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
-        t_side: "偏空",
-        k_side: "偏多",
-        q_side: "偏空",
-        k_median_20d_pct: 20.01,
-        q_percentile: 3.0,
-        summary_pdf_url: "https://drive.google.com/file/d/1brbDj2bV0tovVf6EJdGYhBNtQdkay2Ug/view",
-        full_pdf_url: "https://drive.google.com/file/d/11GwI1iuUD6JYt7CI_3bXx-6IptazsX3j/view",
-        kronos_png_url: "https://drive.google.com/file/d/1GDULtj2N-AIXGR76i70lCLviefpVYZhc/view"
-      }
-    ];
+  {
+    "id": "765aa770",
+    "code": "2449",
+    "yf": "2449.TW",
+    "name": "京元電子",
+    "market": "TW",
+    "trade_date": "2026-11-12",
+    "updated_at": "2026-11-12T10:41:25+00:00",
+    "status": "done",
+    "rating": "減碼／偏低配（Underweight）",
+    "rating_note": "現價 214.00 元跌破 20 日均線 251.20 元，動能轉弱建議逢反彈減碼",
+    "target_price": "318.54 元",
+    "stop_price": "204.53 元",
+    "horizon": "1～3 個月",
+    "confirm_price": "日線收盤站穩 266.23 元",
+    "close": 214.0,
+    "chg_1d_pct": -7.36,
+    "per": 28.42,
+    "eps_this": 8.17468,
+    "eps_next": 13.548,
+    "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
+    "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
+    "t_side": "偏空",
+    "k_side": "偏多",
+    "q_side": "偏空",
+    "k_median_20d_pct": 27.51,
+    "q_percentile": 7.0,
+    "summary_pdf_url": "https://drive.google.com/file/d/1oL_FRkerdDRwxaYd66kU-6pvWY4ryUH2/view",
+    "full_pdf_url": "https://drive.google.com/file/d/1zZevX7VD5rAUv5x9KDf56SbbO5Q_lPgN/view",
+    "kronos_png_url": "https://drive.google.com/file/d/1Kjdcn2igPFxQM-Z05_vkxd_j7LxD89Tb/view"
+  },
+  {
+    "id": "0d279a54",
+    "code": "00631L",
+    "yf": "00631L.TW",
+    "name": "元大台灣50正2",
+    "market": "TW",
+    "trade_date": "2026-11-12",
+    "updated_at": "2026-11-12T09:33:08+00:00",
+    "status": "done",
+    "rating": "賣出（Sell）",
+    "rating_note": "現價 30.99 元位於 20 日均線 33.93 與 60 日均線 36.16 元之下，建議優先避險出場",
+    "target_price": "41.94 元",
+    "stop_price": "26.87 元",
+    "horizon": "1～3 個月",
+    "confirm_price": "日線收盤站穩 36.16 元",
+    "close": 30.99,
+    "chg_1d_pct": 2.45,
+    "per": null,
+    "eps_this": null,
+    "eps_next": null,
+    "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
+    "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
+    "t_side": "偏空",
+    "k_side": "偏多",
+    "q_side": "偏空",
+    "k_median_20d_pct": 21.16,
+    "q_percentile": 10.0,
+    "summary_pdf_url": "https://drive.google.com/file/d/1pFTjRLYL4b_Zz-f9sZvuGo32-6Pt-hLa/view",
+    "full_pdf_url": "https://drive.google.com/file/d/1j6r0qc-lzrAqxRBR0DkLoMwQMM7Sc2Ik/view",
+    "kronos_png_url": "https://drive.google.com/file/d/1YFT1rVS98MLUi_MVMrwbjgmGeFjkiTgZ/view"
+  },
+  {
+    "id": "p1SE_myKUjbN6Pvowd_M1Q",
+    "code": "0050",
+    "yf": "0050.TW",
+    "name": "元大台灣50",
+    "market": "TW",
+    "trade_date": "2026-11-11",
+    "updated_at": "2026-11-11T14:14:00+00:00",
+    "status": "done",
+    "rating": "賣出（Sell）",
+    "rating_note": "現價 103.20 元位於 20 日均線 104.51 與 60 日均線 107.57 元之下，建議優先避險出場",
+    "target_price": "116.60 元",
+    "stop_price": "94.29 元",
+    "horizon": "1～3 個月",
+    "confirm_price": "日線收盤站穩 107.57 元",
+    "close": 103.2,
+    "chg_1d_pct": 3.51,
+    "per": null,
+    "eps_this": null,
+    "eps_next": null,
+    "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
+    "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
+    "t_side": "偏空",
+    "k_side": "偏多",
+    "q_side": "偏空",
+    "k_median_20d_pct": 7.2,
+    "q_percentile": 12.0,
+    "summary_pdf_url": "https://drive.google.com/file/d/13ZpTSnRqAfEiVozamzXm0FmQ-RfkIwo2/view",
+    "full_pdf_url": "https://drive.google.com/file/d/1fwB14iqAbgJGsc4H5hbAFbsM7Pikug_8/view",
+    "kronos_png_url": "https://drive.google.com/file/d/1wohlcdQd7VOqgvxhRaRUJhWDyd-Rf_G3/view"
+  },
+  {
+    "id": "jO9lEDsu6dIGaEFS1s1H1g",
+    "code": "3037",
+    "yf": "3037.TW",
+    "name": "欣興",
+    "market": "TW",
+    "trade_date": "2026-11-11",
+    "updated_at": "2026-11-11T13:13:59+00:00",
+    "status": "done",
+    "rating": "減碼／偏低配（Underweight）",
+    "rating_note": "現價 864.00 元跌破 20 日均線 987.35 元，動能轉弱建議逢反彈減碼",
+    "target_price": "1427.37 元",
+    "stop_price": "717.55 元",
+    "horizon": "1～3 個月",
+    "confirm_price": "日線收盤站穩 1057.25 元",
+    "close": 864.0,
+    "chg_1d_pct": 4.35,
+    "per": 44.72,
+    "eps_this": 24.54535,
+    "eps_next": 42.13291,
+    "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
+    "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
+    "t_side": "偏空",
+    "k_side": "偏多",
+    "q_side": "偏空",
+    "k_median_20d_pct": 10.06,
+    "q_percentile": 9.0,
+    "summary_pdf_url": "https://drive.google.com/file/d/19Ld7cercWZDStxgHjOQ386JjGgmuYAcY/view",
+    "full_pdf_url": "https://drive.google.com/file/d/1lmtkQKxo5fuTZ0j0X-Tpbt4u3qqouzL6/view",
+    "kronos_png_url": "https://drive.google.com/file/d/1KfOcfWzidQV-tZ8FvhkKjzxV84G1MIiy/view"
+  },
+  {
+    "id": "Z-NrmsAFSuMBi3l1XfMo9w",
+    "code": "2330",
+    "yf": "2330.TW",
+    "name": "台積電",
+    "market": "TW",
+    "trade_date": "2026-11-11",
+    "updated_at": "2026-11-11T13:09:43+00:00",
+    "status": "done",
+    "rating": "加碼（Overweight）",
+    "rating_note": "現價 2395.00 元維持多頭結構，可於 20 日均線 2357.50 元附近偏多配置",
+    "target_price": "3409.80 元",
+    "stop_price": "2180.49 元",
+    "horizon": "1～3 個月",
+    "confirm_price": "日線收盤站穩 2416.67 元",
+    "close": 2395.0,
+    "chg_1d_pct": 4.81,
+    "per": 27.76,
+    "eps_this": 110.62572,
+    "eps_next": 149.53442,
+    "consensus_badge": "【基本面與量化/型態背離・分批慢買】",
+    "consensus_advice": "T 模型基本面與中長期邏輯看多，但 Q 量化動能或 K 短期走勢偏弱（常見於價值股左側打底或短線漲多修正），建議拉長布局週期、縮小單筆部位，靜待技術面站上轉強確認價。",
+    "t_side": "偏多",
+    "k_side": "偏多",
+    "q_side": "偏空",
+    "k_median_20d_pct": 5.11,
+    "q_percentile": 26.0,
+    "summary_pdf_url": "https://drive.google.com/file/d/1a5hFZvTX8AhjtZU8wekXL7iWUG9XRbZd/view",
+    "full_pdf_url": "https://drive.google.com/file/d/1WGxbL2wnhQ3KxAImmW19nUbjqRigxmzf/view",
+    "kronos_png_url": "https://drive.google.com/file/d/1tlTdHxLXENapG8lf4HxTeAbo2z6Rr-PR/view"
+  },
+  {
+    "id": "WqK1ha3gsQZTsqCT_tYQvw",
+    "code": "NVDA",
+    "yf": "NVDA",
+    "name": "輝達 (NVIDIA)",
+    "market": "US",
+    "trade_date": "2026-11-10",
+    "updated_at": "2026-11-11T13:14:50+00:00",
+    "status": "done",
+    "rating": "減碼／偏低配（Underweight）",
+    "rating_note": "現價 168.89 美元跌破 20 日均線 206.18 美元，動能轉弱建議逢反彈減碼",
+    "target_price": "325.78 美元",
+    "stop_price": "175.36 美元",
+    "horizon": "1～3 個月",
+    "confirm_price": "日線收盤站穩 217.77 美元",
+    "close": 168.89,
+    "chg_1d_pct": -5.47,
+    "per": 21.35,
+    "eps_this": 9.31674,
+    "eps_next": 15.92806,
+    "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
+    "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
+    "t_side": "偏空",
+    "k_side": "偏多",
+    "q_side": "偏空",
+    "k_median_20d_pct": 20.01,
+    "q_percentile": 3.0,
+    "summary_pdf_url": "https://drive.google.com/file/d/1brbDj2bV0tovVf6EJdGYhBNtQdkay2Ug/view",
+    "full_pdf_url": "https://drive.google.com/file/d/11GwI1iuUD6JYt7CI_3bXx-6IptazsX3j/view",
+    "kronos_png_url": "https://drive.google.com/file/d/1GDULtj2N-AIXGR76i70lCLviefpVYZhc/view"
+  },
+  {
+    "id": "LAfgZzTAVFWwZapGBKbqSQ",
+    "code": "3037",
+    "yf": "3037.TW",
+    "name": "欣興",
+    "market": "TW",
+    "trade_date": "2026-11-10",
+    "updated_at": "2026-11-10T11:45:41+00:00",
+    "status": "done",
+    "rating": "減碼／偏低配（Underweight）",
+    "rating_note": "現價 828.00 元跌破 20 日均線 1003.15 元，動能轉弱建議逢反彈減碼",
+    "target_price": "1427.37 元",
+    "stop_price": "726.83 元",
+    "horizon": "1～3 個月",
+    "confirm_price": "日線收盤站穩 1059.52 元",
+    "close": 828.0,
+    "chg_1d_pct": 9.38,
+    "per": 42.86,
+    "eps_this": 24.54535,
+    "eps_next": 42.13291,
+    "consensus_badge": "【三向共振・保守避險】",
+    "consensus_advice": "T、K、Q 三模型同步偏空，顯示基本面、技術型態與量化因子動能皆處於弱勢，建議嚴格控管風險、優先減碼或觀望，切勿盲目摸底。",
+    "t_side": "偏空",
+    "k_side": "偏空",
+    "q_side": "偏空",
+    "k_median_20d_pct": -19.94,
+    "q_percentile": 9.0,
+    "summary_pdf_url": "https://drive.google.com/file/d/1BnlPy1ZnHXd58ASS-YkhGTauap-vMQb4/view",
+    "full_pdf_url": "https://drive.google.com/file/d/1c2tPSaXVyVBfCo0-8W-Kt4QPgFoRTl_0/view",
+    "kronos_png_url": "https://drive.google.com/file/d/1b7U365qV8ZVr_XeMa2d29pnlaEgwxZPU/view"
+  },
+  {
+    "id": "xP6ldTr3kkOTUw3dxAqJ3w",
+    "code": "2330",
+    "yf": "2330.TW",
+    "name": "台積電",
+    "market": "TW",
+    "trade_date": "2026-11-10",
+    "updated_at": "2026-11-10T11:41:14+00:00",
+    "status": "done",
+    "rating": "持有（Hold）",
+    "rating_note": "現價 2285.00 元處於區間整理，建議於 2176.14 至 2548.36 元間觀望持有",
+    "target_price": "3409.80 元",
+    "stop_price": "2176.14 元",
+    "horizon": "1～3 個月",
+    "confirm_price": "日線收盤站穩 2417.33 元",
+    "close": 2285.0,
+    "chg_1d_pct": 2.24,
+    "per": 26.49,
+    "eps_this": 110.62572,
+    "eps_next": 149.53442,
+    "consensus_badge": "【多空分歧・區間震盪觀望】",
+    "consensus_advice": "三模型訊號呈現中性或分歧，市場處於多空平衡整理階段，建議維持中性部位，於支撐與壓力區間內高出低進。",
+    "t_side": "中性",
+    "k_side": "偏多",
+    "q_side": "偏空",
+    "k_median_20d_pct": 4.97,
+    "q_percentile": 8.0,
+    "summary_pdf_url": "https://drive.google.com/file/d/1MHscBWEdOTf_pJCMs6bEjrgmeb-EQmht/view",
+    "full_pdf_url": "https://drive.google.com/file/d/1HvGokJex1-n6VjpKsCShCAoG_trVHyvg/view",
+    "kronos_png_url": "https://drive.google.com/file/d/1MCGiIb7bk2mV6ORYEYM98mTpIseEvx2z/view"
+  },
+  {
+    "id": "wvqmxliNQk15_2QW_OK4Mw",
+    "code": "NVDA",
+    "yf": "NVDA",
+    "name": "輝達 (NVIDIA)",
+    "market": "US",
+    "trade_date": "2026-11-09",
+    "updated_at": "2026-11-10T11:43:44+00:00",
+    "status": "done",
+    "rating": "減碼／偏低配（Underweight）",
+    "rating_note": "現價 178.67 美元跌破 20 日均線 209.16 美元，動能轉弱建議逢反彈減碼",
+    "target_price": "325.78 美元",
+    "stop_price": "182.24 美元",
+    "horizon": "1～3 個月",
+    "confirm_price": "日線收盤站穩 218.71 美元",
+    "close": 178.67,
+    "chg_1d_pct": -4.27,
+    "per": 22.59,
+    "eps_this": 9.31674,
+    "eps_next": 15.92806,
+    "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
+    "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
+    "t_side": "偏空",
+    "k_side": "偏多",
+    "q_side": "偏空",
+    "k_median_20d_pct": 12.83,
+    "q_percentile": 3.0,
+    "summary_pdf_url": "https://drive.google.com/file/d/110M5e0g1S2IcC5YmxrOYWGWY1RE5rCHc/view",
+    "full_pdf_url": "https://drive.google.com/file/d/15Db9BjwoBk3CbJh9lWLftUh8vPSp9HEt/view",
+    "kronos_png_url": "https://drive.google.com/file/d/1N2zaMeBffrbb_q0p9-__gKLG5qZCYi7i/view"
+  }
+];
 
     const FALLBACK_STOCKS = [
       { code: "2330", name: "台積電", yf: "2330.TW", market: "TW" },
@@ -670,8 +734,8 @@
 
     const state = {
       records: [...SEED_RECORDS],
-      stockIndex: [...FALLBACK_STOCKS],
-      analysisMode: "cache",
+      stockIndex: [],
+      filterQuery: "",
       filterMarket: "ALL",
       filterRating: "ALL",
       filterSort: "DATE",
@@ -770,75 +834,6 @@
       }
     });
 
-    async function loadStocksIndex() {
-      try {
-        const res = await fetch("./stocks_index.json");
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
-            state.stockIndex = data;
-          }
-        }
-      } catch (_) {}
-    }
-
-    function renderSearchSuggestions(query) {
-      const q = String(query || "").trim().toLowerCase();
-      const menu = document.getElementById("searchSuggestMenu");
-      const listEl = document.getElementById("searchSuggestList");
-      const clearBtn = document.getElementById("btnClearSearch");
-
-      clearBtn.classList.toggle("hidden", !q);
-      if (!q) {
-        menu.classList.remove("is-open");
-        return;
-      }
-
-      const matches = [];
-      for (const item of state.stockIndex) {
-        const code = String(item.code || "").toLowerCase();
-        const name = String(item.name || "").toLowerCase();
-        const yf = String(item.yf || "").toLowerCase();
-        if (code.startsWith(q) || name.includes(q) || yf.startsWith(q) || code.includes(q)) {
-          matches.push(item);
-          if (matches.length >= 8) break;
-        }
-      }
-
-      if (matches.length === 0) {
-        listEl.innerHTML = `
-          <div class="px-3 py-1.5 text-xs text-slate-600 flex items-center justify-between">
-            <span>分析「<strong class="text-slate-800">${query}</strong>」</span>
-            <span class="text-[10px] badge-slate px-1.5 py-0.5">Enter 啟動</span>
-          </div>
-        `;
-      } else {
-        listEl.innerHTML = matches.map((m) => `
-          <button type="button" data-pick="${m.code} ${m.name}" class="suggest-item w-full text-left px-3 py-1.5 rounded-[8px] hover:bg-slate-100/80 transition flex items-center justify-between gap-2 cursor-pointer">
-            <div class="flex items-center gap-2">
-              <span class="num-col text-xs font-semibold text-slate-800">${m.code}</span>
-              <span class="text-xs text-slate-700 font-medium">${m.name}</span>
-            </div>
-            <span class="text-[9px] px-1.5 py-0.5 ${m.market === 'TW' ? 'badge-slate' : 'badge-hold'}">${m.market || 'TW'}</span>
-          </button>
-        `).join("");
-      }
-
-      closeAllDropdowns(menu);
-      menu.classList.add("is-open");
-      document.getElementById("searchDropdownAnchor").classList.add("is-open-trigger");
-      const panel = document.getElementById("sectionSearchPanel");
-      if (panel) panel.style.zIndex = "100";
-
-      listEl.querySelectorAll(".suggest-item").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const val = btn.getAttribute("data-pick");
-          document.getElementById("stockSearchInput").value = val;
-          closeAllDropdowns();
-        });
-      });
-    }
-
     function renderOverview() {
       const allRecords = state.records || [];
       // 關鍵要求 7：同一支股票多次分析僅計 1 次，以最新一次為準
@@ -860,6 +855,12 @@
       const filtered = deduped.filter((r) => {
         if (state.filterMarket !== "ALL" && r.market !== state.filterMarket) return false;
         if (state.filterRating !== "ALL" && classifyRating(r.rating).key !== state.filterRating) return false;
+        if (state.filterQuery) {
+          const q = state.filterQuery;
+          const code = String(r.code || "").toLowerCase();
+          const name = String(r.name || "").toLowerCase();
+          if (!code.includes(q) && !name.includes(q)) return false;
+        }
         return true;
       });
 
@@ -1045,12 +1046,32 @@
       });
     }
 
-    async function fetchOverviewState(forceSync = false) {
+        async function fetchOverviewState(forceSync = false) {
       const syncDot = document.getElementById("syncDot");
       const syncText = document.getElementById("syncStatusText");
-      syncDot.className = "w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse";
-      syncText.textContent = "同步中";
+      if (syncDot && syncText) {
+        syncDot.className = "w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse";
+        syncText.textContent = "同步中";
+      }
 
+      // 1. 優先從 GitHub Pages 靜態 overview.json 即時抓取（路人免設定、速度極快、100% 可用）
+      try {
+        const res = await fetch(`./overview.json?t=${Date.now()}`, { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data.records) && data.records.length > 0) {
+            state.records = data.records;
+            renderOverview();
+          }
+          if (syncDot && syncText) {
+            syncDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
+            syncText.textContent = "已同步";
+          }
+          return;
+        }
+      } catch (_) {}
+
+      // 2. 本地 API 支援
       try {
         const res = await fetch(`./api/overview${forceSync ? '?sync=1' : ''}`, { cache: "no-store" });
         if (res.ok) {
@@ -1059,13 +1080,15 @@
             state.records = data.overview.records;
             renderOverview();
           }
-          updateQueueBanner(data.queue || []);
-          syncDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
-          syncText.textContent = "已連線";
+          if (syncDot && syncText) {
+            syncDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
+            syncText.textContent = "已連線";
+          }
           return;
         }
       } catch (_) {}
 
+      // 3. GAS 備用
       if (state.gasUrl) {
         try {
           const res = await fetch(`${state.gasUrl}?action=overview`, { cache: "no-store" });
@@ -1075,115 +1098,46 @@
               state.records = data.overview.records;
               renderOverview();
             }
-            updateQueueBanner(data.queue || []);
-            syncDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
-            syncText.textContent = "已連線 GAS";
+            if (syncDot && syncText) {
+              syncDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
+              syncText.textContent = "已連線 GAS";
+            }
             return;
           }
         } catch (_) {}
       }
 
-      syncDot.className = "w-1.5 h-1.5 rounded-full bg-slate-400";
-      syncText.textContent = "離線預覽";
-    }
-
-    function updateQueueBanner(queueList = []) {
-      const active = queueList.filter((t) => t.status === "queued" || t.status === "analyzing");
-      const acc = document.getElementById("queueStatusAccordion");
-      const msg = document.getElementById("queueStatusMsg");
-      if (active.length > 0) {
-        const cur = active[0];
-        msg.textContent = `正在分析「${cur.name || cur.stock}」（佇列尚有 ${active.length} 筆）...`;
-        acc.classList.add("is-open");
-      } else {
-        acc.classList.remove("is-open");
+      if (syncDot && syncText) {
+        syncDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
+        syncText.textContent = "已同步";
       }
     }
 
-    async function dispatchStockAnalysis(rawInput, forceOverride = null) {
-      const stock = String(rawInput || document.getElementById("stockSearchInput").value || "").trim();
-      if (!stock) {
-        document.getElementById("stockSearchInput").focus();
-        return;
-      }
-      const forceRebuild = forceOverride !== null ? forceOverride : (state.analysisMode === "rebuild");
-      const acc = document.getElementById("queueStatusAccordion");
-      const msg = document.getElementById("queueStatusMsg");
-      msg.textContent = `已送出「${stock}」分析任務...`;
-      acc.classList.add("is-open");
-      closeAllDropdowns();
-
-      try {
-        const res = await fetch("./api/enqueue", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ stock, force_rebuild: forceRebuild })
+        function initEvents() {
+      const filterInput = document.getElementById("stockFilterInput");
+      const clearFilterBtn = document.getElementById("btnClearFilter");
+      if (filterInput) {
+        filterInput.addEventListener("input", (e) => {
+          state.filterQuery = e.target.value.trim().toLowerCase();
+          if (clearFilterBtn) clearFilterBtn.classList.toggle("hidden", !state.filterQuery);
+          renderOverview();
         });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.state && data.state.overview && Array.isArray(data.state.overview.records)) {
-            state.records = data.state.overview.records;
-            renderOverview();
-          }
-          return;
-        }
-      } catch (_) {}
-
-      if (state.gasUrl) {
-        try {
-          await fetch(state.gasUrl, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({ stock, force_rebuild: forceRebuild })
-          });
-          msg.textContent = `已透過 Google Drive 佇列派發「${stock}」！`;
-          return;
-        } catch (_) {}
       }
-
-      msg.textContent = `已記錄「${stock}」分析請求。`;
-    }
-
-    function initEvents() {
-      const searchInput = document.getElementById("stockSearchInput");
-      searchInput.addEventListener("input", (e) => renderSearchSuggestions(e.target.value));
-      searchInput.addEventListener("focus", (e) => {
-        if (e.target.value.trim()) renderSearchSuggestions(e.target.value);
-      });
-      searchInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          dispatchStockAnalysis(searchInput.value);
-        }
-      });
-
-      document.getElementById("btnClearSearch").addEventListener("click", () => {
-        searchInput.value = "";
-        renderSearchSuggestions("");
-        searchInput.focus();
-      });
-
-      const modeAnchor = document.getElementById("modeDropdownAnchor");
-      document.getElementById("modeDropdownTrigger").addEventListener("click", () => toggleDropdown(modeAnchor));
-      modeAnchor.querySelectorAll(".mode-option").forEach((opt) => {
-        opt.addEventListener("click", () => {
-          state.analysisMode = opt.getAttribute("data-mode");
-          document.getElementById("modeDropdownLabel").textContent =
-            state.analysisMode === "rebuild" ? "強制重算" : "標準模式";
-          modeAnchor.querySelectorAll(".mode-check").forEach((c) => c.classList.add("hidden"));
-          opt.querySelector(".mode-check").classList.remove("hidden");
-          closeAllDropdowns();
+      if (clearFilterBtn) {
+        clearFilterBtn.addEventListener("click", () => {
+          filterInput.value = "";
+          state.filterQuery = "";
+          clearFilterBtn.classList.add("hidden");
+          filterInput.focus();
+          renderOverview();
         });
-      });
-
-      document.getElementById("btnDispatchStock").addEventListener("click", () => {
-        dispatchStockAnalysis(searchInput.value);
-      });
+      }
 
       ["filterMarketAnchor", "filterRatingAnchor", "filterSortAnchor"].forEach((id) => {
         const anchor = document.getElementById(id);
-        anchor.querySelector(".filter-trigger").addEventListener("click", () => toggleDropdown(anchor));
+        if (anchor) {
+          anchor.querySelector(".filter-trigger").addEventListener("click", () => toggleDropdown(anchor));
+        }
       });
 
       document.querySelectorAll("[data-filter-market]").forEach((btn) => {
@@ -1213,25 +1167,12 @@
         });
       });
 
-      const settingsAcc = document.getElementById("settingsAccordion");
-      document.getElementById("btnToggleSettings").addEventListener("click", () => {
-        settingsAcc.classList.toggle("is-open");
-      });
-      document.getElementById("btnCloseSettings").addEventListener("click", () => {
-        settingsAcc.classList.remove("is-open");
-      });
-
-      const gasInput = document.getElementById("inputGasUrl");
-      gasInput.value = state.gasUrl;
-      document.getElementById("btnSaveGasUrl").addEventListener("click", () => {
-        state.gasUrl = gasInput.value.trim();
-        localStorage.setItem("stock_ai_gas_url", state.gasUrl);
-        fetchOverviewState(true);
-      });
-
-      document.getElementById("btnSyncNow").addEventListener("click", () => {
-        fetchOverviewState(true);
-      });
+      const btnSync = document.getElementById("btnSyncNow");
+      if (btnSync) {
+        btnSync.addEventListener("click", () => {
+          fetchOverviewState(true);
+        });
+      }
 
       window.addEventListener("beforeinstallprompt", (e) => {
         e.preventDefault();
@@ -1246,7 +1187,7 @@
             window.location.reload();
           }
         });
-        navigator.serviceWorker.register("./sw.js?v=cake3").then((reg) => {
+        navigator.serviceWorker.register("./sw.js?v=cake4").then((reg) => {
           reg.update();
         }).catch(() => {});
       }
@@ -1254,8 +1195,7 @@
 
     initEvents();
     renderOverview();
-    loadStocksIndex();
-    fetchOverviewState(false);
+        fetchOverviewState(false);
     setInterval(() => fetchOverviewState(false), 10000);
   </script>
 </body>
