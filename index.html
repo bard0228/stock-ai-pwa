@@ -8,9 +8,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="為你股掌" />
   <meta name="description" content="為你股掌 · T-K-Q 多模型股票決策中樞" />
-  <link rel="manifest" href="./manifest.json?v=cake6" />
-  <link rel="icon" type="image/png" sizes="192x192" href="./icons/cake-192.png?v=cake2" />
-  <link rel="apple-touch-icon" href="./icons/cake-192.png?v=cake2" />
+  <link rel="manifest" href="./manifest.json?v=cake7" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/cake-192.png?v=cake7" />
+  <link rel="apple-touch-icon" href="./icons/cake-192.png?v=cake7" />
   <title>為你股掌</title>
   <!-- 引入 Google Fonts: 英數 Plus Jakarta Sans + 中文 Noto Sans TC -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -288,12 +288,12 @@
   <!-- 縮小上下左右邊距，緊湊精緻佈局 -->
   <div class="max-w-4xl mx-auto px-3 sm:px-4 pt-3 pb-8 space-y-3">
     <!-- 頂部液態玻璃導覽列：向下捲動置頂，穿透毛玻璃背景微變形模糊 -->
-    <header class="sticky top-2.5 z-50 liquid-glass px-3.5 py-2.5 flex items-center justify-between gap-2.5 shadow-sm transition-all duration-200">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-[8px] overflow-hidden flex items-center justify-center border border-white/70 shadow-sm bg-black shrink-0">
-          <img src="./icons/cake-192.png?v=cake2" alt="千層蛋糕" class="w-full h-full object-cover" />
+    <header class="sticky top-2.5 z-50 liquid-glass px-4 py-3 flex items-center justify-between gap-3 shadow-sm transition-all duration-200">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-[12px] overflow-hidden flex items-center justify-center shrink-0">
+          <img src="./icons/cake-192.png?v=cake7" alt="千層蛋糕" class="w-full h-full object-contain" />
         </div>
-        <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-800">為你股掌</h1>
+        <h1 class="text-2xl sm:text-[27px] font-extrabold tracking-tight text-slate-800">為你股掌</h1>
       </div>
 
       <div class="flex items-center gap-2">
@@ -304,30 +304,30 @@
       </div>
     </header>
 
-    <!-- 區塊：已分析股數與去重統計 -->
+    <!-- 區塊：本週分析統計與快速篩選卡片 -->
     <section class="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-2">
-      <div class="liquid-glass float-interactive p-3">
-        <div class="text-[11px] font-medium text-slate-500">已分析股數</div>
+      <div id="kpiCardTotal" class="liquid-glass float-interactive p-3 cursor-pointer select-none transition-all duration-200" title="點擊僅顯示本週分析股票">
+        <div class="text-[11px] font-medium text-slate-500">本週分析股數</div>
         <div class="mt-1 flex items-baseline justify-between">
           <span id="kpiTotalCount" class="text-xl font-bold num-col tabular-nums text-slate-800">0</span>
           <span class="text-[10px] font-medium text-slate-500">檔</span>
         </div>
       </div>
-      <div class="liquid-glass float-interactive p-3">
+      <div id="kpiCardBull" class="liquid-glass float-interactive p-3 cursor-pointer select-none transition-all duration-200" title="點擊篩選買進 / 偏多">
         <div class="text-[11px] font-medium text-slate-500">偏多 / 買進評級</div>
         <div class="mt-1 flex items-baseline justify-between">
           <span id="kpiBullCount" class="text-xl font-bold num-col tabular-nums text-emerald-700">0</span>
           <span class="text-[10px] font-medium text-emerald-700">偏多</span>
         </div>
       </div>
-      <div class="liquid-glass float-interactive p-3">
+      <div id="kpiCardHold" class="liquid-glass float-interactive p-3 cursor-pointer select-none transition-all duration-200" title="點擊篩選持有 / 觀望">
         <div class="text-[11px] font-medium text-slate-500">區間持有 / 觀望</div>
         <div class="mt-1 flex items-baseline justify-between">
           <span id="kpiHoldCount" class="text-xl font-bold num-col tabular-nums text-amber-700">0</span>
           <span class="text-[10px] font-medium text-amber-700">觀望</span>
         </div>
       </div>
-      <div class="liquid-glass float-interactive p-3">
+      <div id="kpiCardBear" class="liquid-glass float-interactive p-3 cursor-pointer select-none transition-all duration-200" title="點擊篩選賣出 / 減碼">
         <div class="text-[11px] font-medium text-slate-500">減碼 / 風險警示</div>
         <div class="mt-1 flex items-baseline justify-between">
           <span id="kpiBearCount" class="text-xl font-bold num-col tabular-nums text-rose-700">0</span>
@@ -341,7 +341,6 @@
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-2.5 border-b border-slate-200/60 pb-2.5">
         <div class="flex items-center gap-2">
           <h2 class="text-sm font-semibold text-slate-800 shrink-0">分析結果</h2>
-          <span class="text-[10px] text-slate-500 badge-slate px-1.5 py-0.5 font-medium">全維度報告</span>
         </div>
 
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -770,6 +769,7 @@
       filterMarket: "ALL",
       filterRating: "ALL",
       filterSort: "DATE",
+      filterThisWeekOnly: false,
       expandedIds: new Set(),
       gasUrl: localStorage.getItem("stock_ai_gas_url") || "",
       deferredPrompt: null
@@ -818,6 +818,52 @@
         return `https://lh3.googleusercontent.com/d/${m[1]}`;
       }
       return url;
+    }
+
+    // 台灣時間 UTC+8 輔助函式：取得本週一至週五日期區間與分析歸屬
+    function getTaipeiDateStr(isoOrDateStr) {
+      if (!isoOrDateStr) return "";
+      const d = new Date(isoOrDateStr);
+      if (isNaN(d.getTime())) {
+        return String(isoOrDateStr).slice(0, 10);
+      }
+      const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+      const taipei = new Date(utc + (3600000 * 8));
+      const y = taipei.getFullYear();
+      const m = String(taipei.getMonth() + 1).padStart(2, "0");
+      const day = String(taipei.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+
+    function getThisWeekMondayFriday() {
+      const now = new Date();
+      const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+      const taipeiNow = new Date(utc + (3600000 * 8));
+      const day = taipeiNow.getDay(); // 0 是週日，1 是週一
+      const diffToMonday = (day === 0 ? 6 : day - 1);
+      const monday = new Date(taipeiNow);
+      monday.setDate(taipeiNow.getDate() - diffToMonday);
+
+      const friday = new Date(monday);
+      friday.setDate(monday.getDate() + 4);
+
+      const formatYMD = (d) => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const date = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${date}`;
+      };
+
+      return {
+        monday: formatYMD(monday),
+        friday: formatYMD(friday)
+      };
+    }
+
+    function isAnalyzedThisWeek(record) {
+      const { monday, friday } = getThisWeekMondayFriday();
+      const analysisDate = getTaipeiDateStr(record.updated_at) || record.trade_date || "";
+      return analysisDate >= monday && analysisDate <= friday;
     }
 
     // 去重統計：每支股票只取最新一筆分析紀錄
@@ -879,20 +925,49 @@
       // 關鍵要求 7：同一支股票多次分析僅計 1 次，以最新一次為準
       const deduped = getDeduplicatedRecords(allRecords);
 
+      // 本週一至週五有分析的股票（以台灣時間 Asia/Taipei 為準）
+      const thisWeekRecords = deduped.filter(isAnalyzedThisWeek);
+
       let buyCount = 0, holdCount = 0, sellCount = 0;
-      deduped.forEach((r) => {
+      thisWeekRecords.forEach((r) => {
         const c = classifyRating(r.rating).key;
         if (c === "BUY") buyCount++;
         else if (c === "SELL") sellCount++;
         else holdCount++;
       });
 
-      document.getElementById("kpiTotalCount").textContent = deduped.length;
+      document.getElementById("kpiTotalCount").textContent = thisWeekRecords.length;
       document.getElementById("kpiBullCount").textContent = buyCount;
       document.getElementById("kpiHoldCount").textContent = holdCount;
       document.getElementById("kpiBearCount").textContent = sellCount;
 
+      // 更新頂部 KPI 卡片選中高亮狀態
+      const cardTotal = document.getElementById("kpiCardTotal");
+      const cardBull = document.getElementById("kpiCardBull");
+      const cardHold = document.getElementById("kpiCardHold");
+      const cardBear = document.getElementById("kpiCardBear");
+
+      [cardTotal, cardBull, cardHold, cardBear].forEach((c) => {
+        if (!c) return;
+        c.classList.remove(
+          "ring-2", "ring-slate-400", "ring-emerald-500", "ring-amber-500", "ring-rose-500",
+          "bg-white/90", "bg-emerald-50/50", "bg-amber-50/50", "bg-rose-50/50"
+        );
+      });
+
+      if (state.filterThisWeekOnly && cardTotal) {
+        cardTotal.classList.add("ring-2", "ring-slate-400", "bg-white/90");
+      }
+      if (state.filterRating === "BUY" && cardBull) {
+        cardBull.classList.add("ring-2", "ring-emerald-500", "bg-emerald-50/50");
+      } else if (state.filterRating === "HOLD" && cardHold) {
+        cardHold.classList.add("ring-2", "ring-amber-500", "bg-amber-50/50");
+      } else if (state.filterRating === "SELL" && cardBear) {
+        cardBear.classList.add("ring-2", "ring-rose-500", "bg-rose-50/50");
+      }
+
       const filtered = deduped.filter((r) => {
+        if (state.filterThisWeekOnly && !isAnalyzedThisWeek(r)) return false;
         if (state.filterMarket !== "ALL" && r.market !== state.filterMarket) return false;
         if (state.filterRating !== "ALL" && classifyRating(r.rating).key !== state.filterRating) return false;
         if (state.filterQuery) {
@@ -971,7 +1046,7 @@
 
                 <div class="flex items-center gap-1.5">
                   ${r.summary_pdf_url ? `
-                    <a href="${r.summary_pdf_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="liquid-pill float-interactive px-2 py-1 text-[11px] text-slate-700 hover:text-slate-900 flex items-center font-medium">
+                    <a href="${r.summary_pdf_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:text-slate-900 bg-white/80 hover:bg-white rounded-full border border-slate-300 hover:border-slate-400 shadow-sm transition-all duration-150 flex items-center">
                       <span>摘要 PDF</span>
                     </a>
                   ` : ""}
@@ -1073,6 +1148,15 @@
                       <strong class="text-slate-800 font-bold">綜合建議：</strong>${r.consensus_advice || "請依據區間分批配置。"}
                     </div>
                   </div>
+
+                  <!-- 收起卡片按鈕 (最簡約收折小箭頭) -->
+                  <div class="flex justify-center pt-1 pb-0.5">
+                    <button type="button" class="card-collapse-btn group flex items-center justify-center p-1.5 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-200/40 active:bg-slate-300/40 cursor-pointer transition-all duration-150" data-toggle-id="${r.id}" title="收起卡片" aria-label="收起卡片">
+                      <svg class="w-4 h-4 transition-transform group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="18 15 12 9 6 15"></polyline>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1092,6 +1176,27 @@
           if (chevron) chevron.classList.toggle("rotate-180", willOpen);
           if (willOpen) state.expandedIds.add(id);
           else state.expandedIds.delete(id);
+        });
+      });
+
+      container.querySelectorAll(".card-collapse-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute("data-toggle-id");
+          const drawer = document.getElementById(`drawer-${id}`);
+          const hdr = container.querySelector(`.card-header-toggle[data-toggle-id="${id}"]`);
+          const chevron = hdr ? hdr.querySelector(".chevron-icon") : null;
+          if (!drawer) return;
+          drawer.classList.remove("is-open");
+          drawer.classList.remove("mt-3");
+          if (chevron) chevron.classList.remove("rotate-180");
+          state.expandedIds.delete(id);
+          if (hdr) {
+            const rect = hdr.getBoundingClientRect();
+            if (rect.top < 60) {
+              hdr.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }
+          }
         });
       });
     }
@@ -1202,11 +1307,71 @@
       document.querySelectorAll("[data-filter-rating]").forEach((btn) => {
         btn.addEventListener("click", () => {
           state.filterRating = btn.getAttribute("data-filter-rating");
+          state.filterThisWeekOnly = false;
           document.getElementById("filterRatingLabel").textContent = btn.textContent;
           closeAllDropdowns();
           renderOverview();
         });
       });
+
+      // 快速統計卡片點擊篩選邏輯
+      const cardTotal = document.getElementById("kpiCardTotal");
+      if (cardTotal) {
+        cardTotal.addEventListener("click", () => {
+          state.filterThisWeekOnly = !state.filterThisWeekOnly;
+          if (state.filterThisWeekOnly) {
+            state.filterRating = "ALL";
+            const ratingLbl = document.getElementById("filterRatingLabel");
+            if (ratingLbl) ratingLbl.textContent = "全部評級";
+          }
+          renderOverview();
+        });
+      }
+
+      const cardBull = document.getElementById("kpiCardBull");
+      if (cardBull) {
+        cardBull.addEventListener("click", () => {
+          if (state.filterRating === "BUY" && !state.filterThisWeekOnly) {
+            state.filterRating = "ALL";
+            document.getElementById("filterRatingLabel").textContent = "全部評級";
+          } else {
+            state.filterRating = "BUY";
+            state.filterThisWeekOnly = false;
+            document.getElementById("filterRatingLabel").textContent = "買進 / 偏多";
+          }
+          renderOverview();
+        });
+      }
+
+      const cardHold = document.getElementById("kpiCardHold");
+      if (cardHold) {
+        cardHold.addEventListener("click", () => {
+          if (state.filterRating === "HOLD" && !state.filterThisWeekOnly) {
+            state.filterRating = "ALL";
+            document.getElementById("filterRatingLabel").textContent = "全部評級";
+          } else {
+            state.filterRating = "HOLD";
+            state.filterThisWeekOnly = false;
+            document.getElementById("filterRatingLabel").textContent = "持有 / 觀望";
+          }
+          renderOverview();
+        });
+      }
+
+      const cardBear = document.getElementById("kpiCardBear");
+      if (cardBear) {
+        cardBear.addEventListener("click", () => {
+          if (state.filterRating === "SELL" && !state.filterThisWeekOnly) {
+            state.filterRating = "ALL";
+            document.getElementById("filterRatingLabel").textContent = "全部評級";
+          } else {
+            state.filterRating = "SELL";
+            state.filterThisWeekOnly = false;
+            document.getElementById("filterRatingLabel").textContent = "賣出 / 減碼";
+          }
+          renderOverview();
+        });
+      }
 
       document.querySelectorAll("[data-filter-sort]").forEach((btn) => {
         btn.addEventListener("click", () => {
