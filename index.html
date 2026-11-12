@@ -691,6 +691,14 @@
       return raw;
     }
 
+    // 移除投資建議後方的英文括號說明（如（Overweight）、（Underweight）等）
+    function formatRatingZh(ratingStr) {
+      if (!ratingStr) return "持有";
+      let s = String(ratingStr).replace(/[\(（][A-Za-z\s\/-]+[\)）]/g, '').trim();
+      if (s === "減碼／偏低配" || s === "減碼/偏低配") return "減碼";
+      return s || ratingStr;
+    }
+
     function classifyRating(ratingText = "") {
       const s = String(ratingText);
       if (s.includes("買進") || s.includes("加碼") || s.includes("Buy") || s.includes("Overweight") || s.includes("偏多")) {
@@ -892,12 +900,19 @@
 
         return `
           <article class="liquid-pill float-interactive p-3 sm:p-3.5 transition-all" data-card-id="${r.id || r.code}">
-            <div class="card-header-toggle cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-2" data-toggle-id="${r.id || r.code}">
-              <div class="flex flex-wrap items-center gap-2">
-                <span class="px-2 py-0.5 text-[10px] num-col font-bold badge-slate">${r.market || "TW"} · ${r.code}</span>
-                <h3 class="text-sm sm:text-base font-bold text-slate-900">${r.name || r.code}</h3>
-                <span class="px-2.5 py-0.5 text-[11px] font-semibold ${ratingMeta.cls}">${r.rating || "持有"}</span>
-                <span class="px-2 py-0.5 text-[11px] font-medium badge-slate">${r.consensus_badge || "【多模型完成】"}</span>
+            <div class="card-header-toggle cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-2.5" data-toggle-id="${r.id || r.code}">
+              <div class="flex flex-col gap-1.5 min-w-0">
+                <!-- 第一行："TW · 代號"、"股票名稱" -->
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 text-[10px] num-col font-bold badge-slate shrink-0">${r.market || "TW"} · ${r.code}</span>
+                  <h3 class="text-sm sm:text-base font-bold text-slate-900 truncate">${r.name || r.code}</h3>
+                </div>
+
+                <!-- 第二行（換行）："投資建議"（移除英文）、"共識標籤" -->
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-2.5 py-0.5 text-[11px] font-semibold ${ratingMeta.cls} shrink-0">${formatRatingZh(r.rating)}</span>
+                  <span class="px-2 py-0.5 text-[11px] font-medium badge-slate">${r.consensus_badge || "【多模型完成】"}</span>
+                </div>
               </div>
 
               <div class="flex flex-wrap items-center justify-between sm:justify-end gap-3 text-xs">
@@ -933,10 +948,9 @@
               </div>
             </div>
 
-            <!-- 分析日期列：收合與展開狀態皆存在，無日曆圖示 -->
-            <div class="mt-2.5 liquid-pill px-3 py-1.5 flex items-center justify-between text-[11px] text-slate-600">
+            <!-- 分析日期列：收合與展開狀態皆存在，無日曆圖示，已移除多模型說明文字 -->
+            <div class="mt-2.5 liquid-pill px-3 py-1.5 flex items-center text-[11px] text-slate-600">
               <span>分析日期：<strong class="text-slate-800 font-semibold num-col">${formatZhDate(r.trade_date, r.updated_at)}</strong></span>
-              <span class="text-slate-400 text-[10px]">T-K-Q 多模型全維度決策</span>
             </div>
 
             <!-- 手風琴展開抽屜 -->
