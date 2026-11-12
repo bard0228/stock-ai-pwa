@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="為你股掌" />
   <meta name="description" content="為你股掌 · T-K-Q 多模型股票決策中樞" />
-  <link rel="manifest" href="./manifest.json?v=cake5" />
+  <link rel="manifest" href="./manifest.json?v=cake6" />
   <link rel="icon" type="image/png" sizes="192x192" href="./icons/cake-192.png?v=cake2" />
   <link rel="apple-touch-icon" href="./icons/cake-192.png?v=cake2" />
   <title>為你股掌</title>
@@ -989,9 +989,15 @@
               </div>
             </div>
 
-            <!-- 分析日期列：收合與展開狀態皆存在，無日曆圖示，已移除多模型說明文字 -->
-            <div class="mt-2.5 liquid-pill px-3 py-1.5 flex items-center text-[11px] text-slate-600">
-              <span>分析日期：<strong class="text-slate-800 font-semibold num-col">${formatZhDate(r.trade_date, r.updated_at)}</strong></span>
+            <!-- 分析日期列：收合與展開狀態皆存在，區分資料基準日與分析更新日 -->
+            <div class="mt-2.5 liquid-pill px-3 py-1.5 flex flex-wrap items-center justify-between gap-1.5 text-[11px] text-slate-600">
+              <div class="flex items-center gap-1">
+                <span>資料收盤：<strong class="text-slate-800 font-semibold num-col">${formatZhDate(r.trade_date)}</strong></span>
+                ${r.market === 'US' ? '<span class="text-[10px] text-slate-400 font-normal">（美股已收盤）</span>' : ''}
+              </div>
+              <div class="text-[10px] text-slate-500">
+                <span>分析更新：<strong class="text-slate-700 font-medium num-col">${formatZhDate(r.updated_at ? r.updated_at.slice(0, 10) : r.trade_date)}</strong></span>
+              </div>
             </div>
 
             <!-- 手風琴展開抽屜 -->
@@ -1213,8 +1219,14 @@
 
       const btnSync = document.getElementById("btnSyncNow");
       if (btnSync) {
-        btnSync.addEventListener("click", () => {
-          fetchOverviewState(true);
+        btnSync.addEventListener("click", async () => {
+          if ("serviceWorker" in navigator) {
+            try {
+              const reg = await navigator.serviceWorker.getRegistration();
+              if (reg) await reg.update();
+            } catch (_) {}
+          }
+          await fetchOverviewState(true);
         });
       }
 
@@ -1231,7 +1243,7 @@
             window.location.reload();
           }
         });
-        navigator.serviceWorker.register("./sw.js?v=cake5").then((reg) => {
+        navigator.serviceWorker.register("./sw.js?v=cake6").then((reg) => {
           reg.update();
         }).catch(() => {});
       }
