@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="為你股掌" />
   <meta name="description" content="為你股掌 · T-K-Q 多模型股票決策中樞" />
-  <link rel="manifest" href="./manifest.json?v=cake4" />
+  <link rel="manifest" href="./manifest.json?v=cake5" />
   <link rel="icon" type="image/png" sizes="192x192" href="./icons/cake-192.png?v=cake2" />
   <link rel="apple-touch-icon" href="./icons/cake-192.png?v=cake2" />
   <title>為你股掌</title>
@@ -491,6 +491,37 @@
     "kronos_png_url": "https://drive.google.com/file/d/1YFT1rVS98MLUi_MVMrwbjgmGeFjkiTgZ/view"
   },
   {
+    "id": "KpX1mgZIw_24gq2fZ-8-Ww",
+    "code": "NVDA",
+    "yf": "NVDA",
+    "name": "輝達 (NVIDIA)",
+    "market": "US",
+    "trade_date": "2026-11-11",
+    "updated_at": "2026-11-12T12:02:47+00:00",
+    "status": "done",
+    "rating": "減碼／偏低配（Underweight）",
+    "rating_note": "現價 173.73 美元跌破 20 日均線 203.80 美元，動能轉弱建議逢反彈減碼",
+    "target_price": "309.72 美元",
+    "stop_price": "170.64 美元",
+    "horizon": "1～3 個月",
+    "confirm_price": "日線收盤站穩 217.00 美元",
+    "close": 173.73,
+    "chg_1d_pct": 2.87,
+    "per": 21.96,
+    "eps_this": 9.32085,
+    "eps_next": 15.9271,
+    "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
+    "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
+    "t_side": "偏空",
+    "k_side": "偏多",
+    "q_side": "偏空",
+    "k_median_20d_pct": 16.53,
+    "q_percentile": 3.0,
+    "summary_pdf_url": "https://drive.google.com/file/d/1dgmO_5nG5196MYQHMML3aKPg__zJ2HX6/view",
+    "full_pdf_url": "https://drive.google.com/file/d/1Pfxn66Y4ppK_Asay9Y8H6Z22txmjgayk/view",
+    "kronos_png_url": "https://drive.google.com/file/d/1Jxk6szmkJX1Q_LCWgeR3Hz68DLIhT-03/view"
+  },
+  {
     "id": "p1SE_myKUjbN6Pvowd_M1Q",
     "code": "0050",
     "yf": "0050.TW",
@@ -780,6 +811,15 @@
       return "badge-hold";
     }
 
+    function getKronosImageUrl(url) {
+      if (!url) return "";
+      const m = String(url).match(/\/d\/([A-Za-z0-9_-]+)/);
+      if (m) {
+        return `https://lh3.googleusercontent.com/d/${m[1]}`;
+      }
+      return url;
+    }
+
     // 去重統計：每支股票只取最新一筆分析紀錄
     function getDeduplicatedRecords(allRecords) {
       const map = new Map();
@@ -1003,15 +1043,28 @@
                     </div>
                   </div>
 
-                  <div class="liquid-pill px-3 py-2 flex flex-wrap items-center justify-between gap-2">
-                    <div class="text-slate-700 text-[11px]">
-                      <strong class="text-slate-800 font-bold">綜合建議：</strong>${r.consensus_advice || "請依據區間分批配置。"}
+                  <!-- K 模型走勢預測圖（置於 Q 模型與綜合建議中間） -->
+                  ${r.kronos_png_url ? `
+                    <div class="liquid-pill p-2.5 space-y-1.5 overflow-hidden">
+                      <div class="flex items-center justify-between px-1 text-[11px] font-semibold text-slate-700">
+                        <span class="flex items-center gap-1.5">
+                          <svg class="w-3.5 h-3.5 text-slate-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                          </svg>
+                          <span>K 模型 · Kronos 20 日價格走勢時序預測圖</span>
+                        </span>
+                        <a href="${r.kronos_png_url}" target="_blank" rel="noopener" class="text-[10px] text-slate-400 hover:text-slate-700 font-normal">新分頁開圖 ↗</a>
+                      </div>
+                      <div class="w-full overflow-hidden rounded-[8px] border border-slate-200/60 bg-white/60 p-1 flex items-center justify-center">
+                        <img src="${getKronosImageUrl(r.kronos_png_url)}" alt="${r.name || r.code} Kronos 預測圖" class="w-full h-auto max-h-72 object-contain rounded-[6px]" loading="lazy" />
+                      </div>
                     </div>
-                    <div class="flex items-center gap-2">
-                      ${r.kronos_png_url ? `
-                        <a href="${r.kronos_png_url}" target="_blank" rel="noopener" class="liquid-pill float-interactive px-2 py-1 text-[11px] text-slate-700 font-medium">查看 Kronos 預測圖</a>
-                      ` : ""}
-                      <button type="button" data-rerun="${r.code} ${r.name}" class="btn-rerun liquid-pill float-interactive px-2 py-1 text-[11px] text-slate-700 font-semibold cursor-pointer">重新分析</button>
+                  ` : ""}
+
+                  <!-- 綜合建議 -->
+                  <div class="liquid-pill px-3 py-2.5">
+                    <div class="text-slate-700 text-xs leading-relaxed">
+                      <strong class="text-slate-800 font-bold">綜合建議：</strong>${r.consensus_advice || "請依據區間分批配置。"}
                     </div>
                   </div>
                 </div>
@@ -1033,15 +1086,6 @@
           if (chevron) chevron.classList.toggle("rotate-180", willOpen);
           if (willOpen) state.expandedIds.add(id);
           else state.expandedIds.delete(id);
-        });
-      });
-
-      container.querySelectorAll(".btn-rerun").forEach((btn) => {
-        btn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          const stock = btn.getAttribute("data-rerun");
-          document.getElementById("stockSearchInput").value = stock;
-          dispatchStockAnalysis(stock, true);
         });
       });
     }
@@ -1187,7 +1231,7 @@
             window.location.reload();
           }
         });
-        navigator.serviceWorker.register("./sw.js?v=cake4").then((reg) => {
+        navigator.serviceWorker.register("./sw.js?v=cake5").then((reg) => {
           reg.update();
         }).catch(() => {});
       }

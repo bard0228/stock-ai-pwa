@@ -1,15 +1,15 @@
-const CACHE_NAME = 'stock-ai-cake-v4';
+const CACHE_NAME = 'stock-ai-cake-v5';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './overview.json',
   './manifest.json',
-  './manifest.json?v=cake4',
+  './manifest.json?v=cake5',
   './stocks_index.json',
   './icons/cake-192.png',
-  './icons/cake-192.png?v=cake4',
+  './icons/cake-192.png?v=cake5',
   './icons/cake-512.png',
-  './icons/cake-512.png?v=cake4'
+  './icons/cake-512.png?v=cake5'
 ];
 
 self.addEventListener('install', (event) => {
