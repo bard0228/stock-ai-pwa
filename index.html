@@ -69,16 +69,21 @@
       flex-shrink: 0;
       max-width: 100%;
     }
+    .hidden { display: none !important; }
     .w-3 { width: 0.75rem; height: 0.75rem; }
     .w-3\.5 { width: 0.875rem; height: 0.875rem; }
     .w-4 { width: 1rem; height: 1rem; }
     .w-5 { width: 1.25rem; height: 1.25rem; }
+    .w-7 { width: 1.75rem; height: 1.75rem; }
     .w-8 { width: 2rem; height: 2rem; }
+    .w-12 { width: 3rem; height: 3rem; }
     .h-3 { height: 0.75rem; }
     .h-3\.5 { height: 0.875rem; }
     .h-4 { height: 1rem; }
     .h-5 { height: 1.25rem; }
+    .h-7 { height: 1.75rem; }
     .h-8 { height: 2rem; }
+    .h-12 { height: 3rem; }
 
     /* iOS 淺色液態環境漫射光暈 */
     .ambient-canvas {
@@ -336,14 +341,23 @@
       </div>
     </section>
 
-    <!-- 區塊：分析結果 -->
+    <!-- 區塊：分析結果 ＆ 股市排行榜雙頁籤 -->
     <section class="relative z-20 liquid-glass p-3.5 sm:p-4 space-y-2.5">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-2.5 border-b border-slate-200/60 pb-2.5">
-        <div class="flex items-center gap-2">
-          <h2 class="text-sm font-semibold text-slate-800 shrink-0">分析結果</h2>
+        <!-- 雙頁籤膠囊切換：分析結果 | 股市排行榜 -->
+        <div class="inline-flex items-center p-1 rounded-[12px] bg-slate-200/60 border border-white/80 shadow-inner self-start md:self-auto shrink-0" role="tablist" aria-label="主頁籤切換">
+          <button id="tabBtnResults" type="button" role="tab" aria-selected="true"
+            class="px-3.5 py-1.5 rounded-[9px] text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer bg-white/95 text-slate-800 shadow-sm">
+            分析結果
+          </button>
+          <button id="tabBtnLeaderboard" type="button" role="tab" aria-selected="false"
+            class="px-3.5 py-1.5 rounded-[9px] text-xs sm:text-sm font-medium transition-all duration-200 cursor-pointer text-slate-600 hover:text-slate-900">
+            股市排行榜
+          </button>
         </div>
 
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+        <!-- 工具列 1：分析結果搜尋與篩選 -->
+        <div id="resultsToolbar" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           <!-- 搜尋已分析股票 -->
           <div class="relative w-full sm:w-48">
             <div class="h-8 liquid-pill float-interactive flex items-center px-2.5 gap-1.5">
@@ -416,12 +430,34 @@
                 </div>
               </div>
             </div>
+          </div>
+          </div>
+        </div>
+
+        <!-- 工具列 2：股市排行榜專屬切換（台股 Top 10 / 美股 Top 10 ＋ 獨立資料收盤日） -->
+        <div id="leaderboardToolbar" class="hidden flex items-center justify-between sm:justify-end gap-2 flex-wrap">
+          <div class="inline-flex items-center p-0.5 rounded-[10px] bg-slate-200/55 border border-white/75 shadow-inner shrink-0">
+            <button id="lbMarketBtnTW" type="button" class="px-2.5 py-1 rounded-[8px] text-xs font-bold transition-all duration-150 cursor-pointer bg-white/95 text-slate-800 shadow-sm">
+              台股 Top 10
+            </button>
+            <button id="lbMarketBtnUS" type="button" class="px-2.5 py-1 rounded-[8px] text-xs font-medium transition-all duration-150 cursor-pointer text-slate-600 hover:text-slate-900">
+              美股 Top 10
+            </button>
+          </div>
+          <span id="lbTradeDateBadge" class="text-[11px] font-medium text-slate-600 badge-slate px-2 py-1 num-col">資料收盤：—</span>
         </div>
       </div>
-    </div>
 
       <div id="overviewCardsContainer" class="space-y-2"></div>
+      <div id="leaderboardContainer" class="hidden space-y-2"></div>
     </section>
+  </div>
+
+  <!-- 輕量浮動 Toast 提示 -->
+  <div id="toastNotification" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[120] hidden pointer-events-none transition-all duration-200">
+    <div class="liquid-glass-popover px-4 py-2 text-xs font-semibold text-slate-800 shadow-lg border border-white/90 whitespace-nowrap">
+      <span id="toastText">已複製</span>
+    </div>
   </div>
 
   <script>
@@ -765,6 +801,9 @@
     const state = {
       records: [...SEED_RECORDS],
       stockIndex: [],
+      leaderboard: null,
+      activeTab: "results",
+      leaderboardMarket: "TW",
       filterQuery: "",
       filterMarket: "ALL",
       filterRating: "ALL",
@@ -919,6 +958,278 @@
         closeAllDropdowns();
       }
     });
+
+    let toastTimer = null;
+    function showToast(msg) {
+      const el = document.getElementById("toastNotification");
+      const txt = document.getElementById("toastText");
+      if (!el || !txt) return;
+      txt.textContent = msg;
+      el.classList.remove("hidden");
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        el.classList.add("hidden");
+      }, 2400);
+    }
+
+    async function copyToClipboard(text) {
+      const val = String(text || "").trim();
+      if (!val) return;
+      let copied = false;
+      if (navigator.clipboard && window.isSecureContext) {
+        try {
+          await navigator.clipboard.writeText(val);
+          copied = true;
+        } catch (_) {}
+      }
+      if (!copied) {
+        try {
+          const ta = document.createElement("textarea");
+          ta.value = val;
+          ta.setAttribute("readonly", "");
+          ta.style.position = "fixed";
+          ta.style.top = "0";
+          ta.style.left = "-9999px";
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          copied = document.execCommand("copy");
+          document.body.removeChild(ta);
+        } catch (_) {}
+      }
+      showToast(copied ? `已複製 ${val}，可回對話框輸入分析` : `代號：${val}`);
+    }
+
+    function setActiveTab(tab) {
+      state.activeTab = tab === "leaderboard" ? "leaderboard" : "results";
+      const btnRes = document.getElementById("tabBtnResults");
+      const btnLb = document.getElementById("tabBtnLeaderboard");
+      const resBar = document.getElementById("resultsToolbar");
+      const lbBar = document.getElementById("leaderboardToolbar");
+      const resBox = document.getElementById("overviewCardsContainer");
+      const lbBox = document.getElementById("leaderboardContainer");
+
+      const isLb = state.activeTab === "leaderboard";
+      if (btnRes && btnLb) {
+        btnRes.setAttribute("aria-selected", String(!isLb));
+        btnLb.setAttribute("aria-selected", String(isLb));
+        if (!isLb) {
+          btnRes.className = "px-3.5 py-1.5 rounded-[9px] text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer bg-white/95 text-slate-800 shadow-sm";
+          btnLb.className = "px-3.5 py-1.5 rounded-[9px] text-xs sm:text-sm font-medium transition-all duration-200 cursor-pointer text-slate-600 hover:text-slate-900";
+        } else {
+          btnLb.className = "px-3.5 py-1.5 rounded-[9px] text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer bg-white/95 text-slate-800 shadow-sm";
+          btnRes.className = "px-3.5 py-1.5 rounded-[9px] text-xs sm:text-sm font-medium transition-all duration-200 cursor-pointer text-slate-600 hover:text-slate-900";
+        }
+      }
+      if (resBar) resBar.classList.toggle("hidden", isLb);
+      if (lbBar) lbBar.classList.toggle("hidden", !isLb);
+      if (resBox) resBox.classList.toggle("hidden", isLb);
+      if (lbBox) lbBox.classList.toggle("hidden", !isLb);
+      closeAllDropdowns();
+      if (isLb) {
+        renderLeaderboard();
+        if (!state.leaderboard) fetchLeaderboard();
+      }
+    }
+
+    function setLeaderboardMarket(market) {
+      state.leaderboardMarket = market === "US" ? "US" : "TW";
+      const btnTw = document.getElementById("lbMarketBtnTW");
+      const btnUs = document.getElementById("lbMarketBtnUS");
+      const isUs = state.leaderboardMarket === "US";
+      if (btnTw && btnUs) {
+        if (!isUs) {
+          btnTw.className = "px-2.5 py-1 rounded-[8px] text-xs font-bold transition-all duration-150 cursor-pointer bg-white/95 text-slate-800 shadow-sm";
+          btnUs.className = "px-2.5 py-1 rounded-[8px] text-xs font-medium transition-all duration-150 cursor-pointer text-slate-600 hover:text-slate-900";
+        } else {
+          btnUs.className = "px-2.5 py-1 rounded-[8px] text-xs font-bold transition-all duration-150 cursor-pointer bg-white/95 text-slate-800 shadow-sm";
+          btnTw.className = "px-2.5 py-1 rounded-[8px] text-xs font-medium transition-all duration-150 cursor-pointer text-slate-600 hover:text-slate-900";
+        }
+      }
+      renderLeaderboard();
+    }
+
+    function jumpToAnalysisCard(code, recordId) {
+      // 清除會遮蔽目標卡片的篩選條件並切回分析結果
+      state.filterQuery = "";
+      state.filterMarket = "ALL";
+      state.filterRating = "ALL";
+      state.filterThisWeekOnly = false;
+
+      const filterInput = document.getElementById("stockFilterInput");
+      const clearBtn = document.getElementById("btnClearFilter");
+      const mktLbl = document.getElementById("filterMarketLabel");
+      const rateLbl = document.getElementById("filterRatingLabel");
+      if (filterInput) filterInput.value = "";
+      if (clearBtn) clearBtn.classList.add("hidden");
+      if (mktLbl) mktLbl.textContent = "全部市場";
+      if (rateLbl) rateLbl.textContent = "全部評級";
+
+      const targetKey = recordId || code;
+      if (targetKey) state.expandedIds.add(targetKey);
+
+      setActiveTab("results");
+      renderOverview();
+
+      requestAnimationFrame(() => {
+        const container = document.getElementById("overviewCardsContainer");
+        if (!container) return;
+        let cardEl = targetKey ? container.querySelector(`[data-card-id="${targetKey}"]`) : null;
+        if (!cardEl && code) {
+          const allRecs = getDeduplicatedRecords(state.records || []);
+          const found = allRecs.find((r) => String(r.code || "").toUpperCase() === String(code).toUpperCase());
+          if (found) {
+            const realKey = found.id || found.code;
+            state.expandedIds.add(realKey);
+            renderOverview();
+            cardEl = container.querySelector(`[data-card-id="${realKey}"]`);
+          }
+        }
+        if (cardEl) {
+          const topY = cardEl.getBoundingClientRect().top + window.scrollY - 82;
+          window.scrollTo({ top: Math.max(0, topY), behavior: "smooth" });
+          cardEl.classList.add("ring-2", "ring-slate-400");
+          setTimeout(() => cardEl.classList.remove("ring-2", "ring-slate-400"), 1500);
+        }
+      });
+    }
+
+    function renderLeaderboard() {
+      const container = document.getElementById("leaderboardContainer");
+      const dateBadge = document.getElementById("lbTradeDateBadge");
+      if (!container) return;
+
+      const mk = state.leaderboardMarket;
+      const board = state.leaderboard && state.leaderboard.markets ? state.leaderboard.markets[mk] : null;
+      if (!board || !Array.isArray(board.top10) || board.top10.length === 0) {
+        if (dateBadge) dateBadge.textContent = "資料收盤：同步中";
+        container.innerHTML = `
+          <div class="liquid-pill p-6 text-center text-xs text-slate-500">
+            正在載入${mk === "TW" ? "台股" : "美股"} Q 模型排行榜資料...
+          </div>
+        `;
+        return;
+      }
+
+      if (dateBadge) {
+        dateBadge.textContent = `資料收盤：${formatZhDate(board.trade_date, board.updated_at)}`;
+      }
+
+      const deduped = getDeduplicatedRecords(state.records || []);
+      const analyzedByCode = new Map();
+      deduped.forEach((r) => {
+        const c = String(r.code || "").toUpperCase();
+        if (c) analyzedByCode.set(c, r);
+      });
+
+      const headerNote = `
+        <div class="flex flex-wrap items-center justify-between gap-2 px-1 text-[11px] text-slate-500">
+          <span>Q 模型 Alpha158 橫斷面排序（含 ETF・已過濾低流動性標的）</span>
+          <span class="num-col font-medium text-slate-600">合格選股池：${board.eligible_count || "—"} / ${board.universe_total || "—"} 檔</span>
+        </div>
+      `;
+
+      const rowsHtml = board.top10.map((item) => {
+        const codeUpper = String(item.code || "").toUpperCase();
+        const existingRec = analyzedByCode.get(codeUpper);
+        const chgVal = Number(item.chg_1d_pct);
+        const chgStr = Number.isFinite(chgVal) ? `${chgVal >= 0 ? "+" : ""}${chgVal.toFixed(2)}%` : "—";
+        const chgCls = chgVal > 0 ? "text-emerald-700 font-semibold" : (chgVal < 0 ? "text-rose-700 font-semibold" : "text-slate-600");
+        const roc20 = Number(item.roc20_pct);
+        const roc20Str = Number.isFinite(roc20) ? `${roc20 >= 0 ? "+" : ""}${roc20.toFixed(1)}%` : "—";
+        const roc20Cls = roc20 > 0 ? "text-emerald-700 font-semibold" : (roc20 < 0 ? "text-rose-700 font-semibold" : "text-slate-700");
+        const pctVal = Number(item.percentile);
+        const pctStr = Number.isFinite(pctVal) ? (Math.abs(pctVal - Math.round(pctVal)) < 0.05 ? pctVal.toFixed(0) : pctVal.toFixed(1)) : "—";
+
+        let rankCls = "bg-slate-200/75 text-slate-700 border-slate-300/60";
+        if (item.rank === 1) rankCls = "bg-amber-100/90 text-amber-800 border-amber-300/80";
+        else if (item.rank <= 3) rankCls = "bg-slate-700 text-white border-slate-700";
+
+        return `
+          <article class="liquid-pill float-interactive p-3 transition-all">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <span class="w-7 h-7 rounded-[8px] border text-xs num-col font-extrabold flex items-center justify-center shrink-0 ${rankCls}">
+                  #${item.rank}
+                </span>
+                <div class="min-w-0 flex flex-col gap-0.5">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="px-1.5 py-0.5 text-[10px] num-col font-bold badge-slate shrink-0">${mk} · ${item.code}</span>
+                    ${item.is_etf ? `<span class="px-1.5 py-0.5 text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-[6px] shrink-0">ETF</span>` : ""}
+                    <h3 class="text-sm font-bold text-slate-900 truncate">${item.name || item.code}</h3>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center justify-between sm:justify-end gap-3 text-xs">
+                <div class="flex items-center gap-3">
+                  <div>
+                    <span class="text-slate-500">收盤</span>
+                    <span class="ml-1 num-col font-bold text-slate-800">${item.close != null ? item.close : "—"}</span>
+                    <span class="ml-1 num-col ${chgCls}">(${chgStr})</span>
+                  </div>
+                  <div>
+                    <span class="text-slate-500">Q分位</span>
+                    <span class="ml-1 num-col font-bold text-slate-900">${pctStr}</span><span class="text-[10px] text-slate-500">/100</span>
+                  </div>
+                  <div class="hidden sm:block">
+                    <span class="text-slate-500">20日動能</span>
+                    <span class="ml-1 num-col ${roc20Cls}">${roc20Str}</span>
+                  </div>
+                </div>
+
+                <div class="flex items-center shrink-0">
+                  ${existingRec ? `
+                    <button type="button" class="lb-jump-btn px-2.5 py-1 text-[11px] font-semibold rounded-full badge-buy cursor-pointer hover:opacity-90 transition-opacity flex items-center gap-1" data-jump-code="${item.code}" data-jump-id="${existingRec.id || existingRec.code}">
+                      <span>已有報告 ↗</span>
+                    </button>
+                  ` : `
+                    <button type="button" class="lb-copy-btn px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:text-slate-900 bg-white/80 hover:bg-white rounded-full border border-slate-300 hover:border-slate-400 shadow-sm transition-all duration-150 cursor-pointer flex items-center gap-1" data-copy-code="${item.code}">
+                      <svg class="w-3 h-3 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                      <span>複製代號</span>
+                    </button>
+                  `}
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      container.innerHTML = headerNote + rowsHtml;
+
+      container.querySelectorAll(".lb-jump-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          jumpToAnalysisCard(btn.getAttribute("data-jump-code"), btn.getAttribute("data-jump-id"));
+        });
+      });
+
+      container.querySelectorAll(".lb-copy-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          copyToClipboard(btn.getAttribute("data-copy-code"));
+        });
+      });
+    }
+
+    async function fetchLeaderboard() {
+      try {
+        const res = await fetch(`./leaderboard.json?t=${Date.now()}`, { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.markets) {
+            state.leaderboard = data;
+            if (state.activeTab === "leaderboard") {
+              renderLeaderboard();
+            }
+          }
+        }
+      } catch (_) {}
+    }
 
     function renderOverview() {
       const allRecords = state.records || [];
@@ -1199,6 +1510,10 @@
           }
         });
       });
+
+      if (state.activeTab === "leaderboard") {
+        renderLeaderboard();
+      }
     }
 
         async function fetchOverviewState(forceSync = false) {
@@ -1314,15 +1629,35 @@
         });
       });
 
-      // 快速統計卡片點擊篩選邏輯
+      // 頁籤切換與排行榜市場切換事件
+      const tabBtnRes = document.getElementById("tabBtnResults");
+      const tabBtnLb = document.getElementById("tabBtnLeaderboard");
+      if (tabBtnRes) tabBtnRes.addEventListener("click", () => setActiveTab("results"));
+      if (tabBtnLb) tabBtnLb.addEventListener("click", () => setActiveTab("leaderboard"));
+
+      const lbBtnTw = document.getElementById("lbMarketBtnTW");
+      const lbBtnUs = document.getElementById("lbMarketBtnUS");
+      if (lbBtnTw) lbBtnTw.addEventListener("click", () => setLeaderboardMarket("TW"));
+      if (lbBtnUs) lbBtnUs.addEventListener("click", () => setLeaderboardMarket("US"));
+
+      // 快速統計卡片點擊篩選邏輯（停留在排行榜時點擊，自動切回分析結果並套用篩選）
       const cardTotal = document.getElementById("kpiCardTotal");
       if (cardTotal) {
         cardTotal.addEventListener("click", () => {
-          state.filterThisWeekOnly = !state.filterThisWeekOnly;
-          if (state.filterThisWeekOnly) {
+          const fromLb = state.activeTab !== "results";
+          if (fromLb) {
+            state.filterThisWeekOnly = true;
             state.filterRating = "ALL";
             const ratingLbl = document.getElementById("filterRatingLabel");
             if (ratingLbl) ratingLbl.textContent = "全部評級";
+            setActiveTab("results");
+          } else {
+            state.filterThisWeekOnly = !state.filterThisWeekOnly;
+            if (state.filterThisWeekOnly) {
+              state.filterRating = "ALL";
+              const ratingLbl = document.getElementById("filterRatingLabel");
+              if (ratingLbl) ratingLbl.textContent = "全部評級";
+            }
           }
           renderOverview();
         });
@@ -1331,13 +1666,15 @@
       const cardBull = document.getElementById("kpiCardBull");
       if (cardBull) {
         cardBull.addEventListener("click", () => {
-          if (state.filterRating === "BUY" && !state.filterThisWeekOnly) {
+          const fromLb = state.activeTab !== "results";
+          if (!fromLb && state.filterRating === "BUY" && !state.filterThisWeekOnly) {
             state.filterRating = "ALL";
             document.getElementById("filterRatingLabel").textContent = "全部評級";
           } else {
             state.filterRating = "BUY";
             state.filterThisWeekOnly = false;
             document.getElementById("filterRatingLabel").textContent = "買進 / 偏多";
+            if (fromLb) setActiveTab("results");
           }
           renderOverview();
         });
@@ -1346,13 +1683,15 @@
       const cardHold = document.getElementById("kpiCardHold");
       if (cardHold) {
         cardHold.addEventListener("click", () => {
-          if (state.filterRating === "HOLD" && !state.filterThisWeekOnly) {
+          const fromLb = state.activeTab !== "results";
+          if (!fromLb && state.filterRating === "HOLD" && !state.filterThisWeekOnly) {
             state.filterRating = "ALL";
             document.getElementById("filterRatingLabel").textContent = "全部評級";
           } else {
             state.filterRating = "HOLD";
             state.filterThisWeekOnly = false;
             document.getElementById("filterRatingLabel").textContent = "持有 / 觀望";
+            if (fromLb) setActiveTab("results");
           }
           renderOverview();
         });
@@ -1361,13 +1700,15 @@
       const cardBear = document.getElementById("kpiCardBear");
       if (cardBear) {
         cardBear.addEventListener("click", () => {
-          if (state.filterRating === "SELL" && !state.filterThisWeekOnly) {
+          const fromLb = state.activeTab !== "results";
+          if (!fromLb && state.filterRating === "SELL" && !state.filterThisWeekOnly) {
             state.filterRating = "ALL";
             document.getElementById("filterRatingLabel").textContent = "全部評級";
           } else {
             state.filterRating = "SELL";
             state.filterThisWeekOnly = false;
             document.getElementById("filterRatingLabel").textContent = "賣出 / 減碼";
+            if (fromLb) setActiveTab("results");
           }
           renderOverview();
         });
@@ -1391,7 +1732,7 @@
               if (reg) await reg.update();
             } catch (_) {}
           }
-          await fetchOverviewState(true);
+          await Promise.all([fetchOverviewState(true), fetchLeaderboard()]);
         });
       }
 
@@ -1408,7 +1749,7 @@
             window.location.reload();
           }
         });
-        navigator.serviceWorker.register("./sw.js?v=cake6").then((reg) => {
+        navigator.serviceWorker.register("./sw.js?v=cake8").then((reg) => {
           reg.update();
         }).catch(() => {});
       }
@@ -1416,8 +1757,12 @@
 
     initEvents();
     renderOverview();
-        fetchOverviewState(false);
-    setInterval(() => fetchOverviewState(false), 10000);
+    fetchOverviewState(false);
+    fetchLeaderboard();
+    setInterval(() => {
+      fetchOverviewState(false);
+      fetchLeaderboard();
+    }, 60000);
   </script>
 </body>
 </html>

@@ -1,8 +1,9 @@
-const CACHE_NAME = 'stock-ai-cake-v7';
+const CACHE_NAME = 'stock-ai-cake-v8';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './overview.json',
+  './leaderboard.json',
   './manifest.json',
   './manifest.json?v=cake7',
   './stocks_index.json',

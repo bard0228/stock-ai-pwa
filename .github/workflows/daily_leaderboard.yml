@@ -1,0 +1,74 @@
+name: Daily Q-Model Stock Leaderboard
+
+on:
+  schedule:
+    # 台股盤後：週一至週五 台灣時間 14:40 (UTC 06:40)
+    - cron: '40 6 * * 1-5'
+    # 美股盤後：週一至週五 美東收盤後 (UTC 22:30 = 台灣次日週二至週六 06:30，兼容夏冬令時差)
+    - cron: '30 22 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      market:
+        description: '更新市場 (ALL / TW / US)'
+        required: true
+        default: 'ALL'
+        type: choice
+        options:
+          - ALL
+          - TW
+          - US
+
+permissions:
+  contents: write
+
+concurrency:
+  group: leaderboard-update
+  cancel-in-progress: false
+
+jobs:
+  update-leaderboard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install yfinance pandas numpy
+
+      - name: Determine market
+        id: target
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "market=${{ github.event.inputs.market || 'ALL' }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "40 6 * * 1-5" ]; then
+            echo "market=TW" >> "$GITHUB_OUTPUT"
+          else
+            echo "market=US" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Generate Q-Model Top 10 Leaderboard
+        run: |
+          python scripts/generate_leaderboard.py --market "${{ steps.target.outputs.market }}"
+
+      - name: Commit and push updated leaderboard.json
+        run: |
+          if git diff --quiet leaderboard.json; then
+            echo "No changes to leaderboard.json"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add leaderboard.json
+          git commit -m "chore(leaderboard): auto-update ${{ steps.target.outputs.market }} Top 10"
+          git pull --rebase origin main || true
+          git push origin main
