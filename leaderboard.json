@@ -1,11 +1,11 @@
 {
-  "updated_at": "2026-11-13T04:58:04+00:00",
+  "updated_at": "2026-11-13T05:03:31+00:00",
   "markets": {
     "TW": {
       "trade_date": "2026-11-12",
       "universe_total": 154,
       "eligible_count": 137,
-      "updated_at": "2026-11-13T04:57:15+00:00",
+      "updated_at": "2026-11-13T05:03:22+00:00",
       "top10": [
         {
           "rank": 1,
@@ -143,7 +143,7 @@
       "trade_date": "2026-11-12",
       "universe_total": 168,
       "eligible_count": 168,
-      "updated_at": "2026-11-13T04:58:04+00:00",
+      "updated_at": "2026-11-13T05:03:31+00:00",
       "top10": [
         {
           "rank": 1,
