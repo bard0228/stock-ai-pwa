@@ -1,0 +1,163 @@
+/* ==========================================================================
+   Liquid Glass UI Standard Kit (Rules 1–12)
+   Google Fonts: Plus Jakarta Sans + Noto Sans TC
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg-base: #f0f3f8;
+  --ink-1: #1e293b;
+  --ink-2: #475569;
+  --ink-3: #64748b;
+  --accent-sage: #5b8270;
+  --accent-rose: #a86c72;
+  --accent-slate: #62768c;
+
+  --r-panel: 26px;
+  --r-card: 20px;
+  --r-ctrl: 14px;
+  --r-icon: 12px;
+
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-bounce-in: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-shrink-out: cubic-bezier(0.4, 0, 1, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.005em;
+}
+
+html, body, input, button, select, textarea {
+  font-family: "Plus Jakarta Sans", "Noto Sans TC", -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: -0.005em;
+}
+
+body {
+  margin: 0;
+  color: var(--ink-1);
+  background: var(--bg-base);
+  overscroll-behavior-y: contain;
+  padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+}
+
+.tabular-nums {
+  font-family: "Plus Jakarta Sans", sans-serif !important;
+  font-variant-numeric: tabular-nums !important;
+  font-feature-settings: "tnum" 1 !important;
+}
+
+/* 淺色低飽和漫射光暈背景（襯托背後景深折射） */
+.lg-ambient-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 14% 12%, rgba(202, 222, 245, 0.60), transparent 46%),
+    radial-gradient(circle at 86% 20%, rgba(208, 232, 222, 0.50), transparent 48%),
+    radial-gradient(circle at 46% 84%, rgba(226, 220, 242, 0.45), transparent 52%),
+    linear-gradient(170deg, #f6f8fc 0%, #edf2f7 52%, #e4ebf3 100%);
+}
+
+/* 標準單層液態玻璃面板 */
+.lg-glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.56) 0%, rgba(255, 255, 255, 0.34) 100%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.74);
+  border-radius: var(--r-panel);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.90),
+    0 10px 28px -6px rgba(60, 74, 92, 0.08);
+}
+
+/* 雙層冰晶毛玻璃結構：外層冰晶框 + 內層圓角玻璃容器/表格（必掛載於 body 頂層） */
+.lg-ice-frame {
+  padding: 7px;
+  border-radius: 26px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.58) 0%, rgba(235, 242, 250, 0.42) 100%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  backdrop-filter: blur(28px) saturate(190%);
+  border: 1.5px solid rgba(255, 255, 255, 0.88);
+  box-shadow:
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.96),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.45),
+    0 20px 44px -10px rgba(45, 58, 76, 0.18);
+  transform-origin: center center;
+}
+
+.lg-inner-glass {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.72) 0%, rgba(248, 251, 255, 0.54) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 19px;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.90),
+    0 4px 14px -4px rgba(60, 74, 92, 0.06);
+  overflow: hidden;
+}
+
+/* 彈窗 / 懸浮通知微回彈進場 & 縮回淡出 */
+.lg-pop-enter {
+  animation: lgBounceIn 0.34s var(--ease-bounce-in) forwards;
+}
+.lg-pop-exit {
+  animation: lgShrinkOut 0.20s var(--ease-shrink-out) forwards;
+}
+@keyframes lgBounceIn {
+  0% { opacity: 0; transform: scale(0.92) translateY(8px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes lgShrinkOut {
+  0% { opacity: 1; transform: scale(1) translateY(0); }
+  100% { opacity: 0; transform: scale(0.94) translateY(6px); }
+}
+
+/* 可點擊按鈕：最小 48px + 懸停浮起 + 按下 0.08s 物理微縮 */
+.lg-btn {
+  min-height: 48px;
+  min-width: 48px;
+  border-radius: var(--r-ctrl);
+  transition:
+    transform 0.24s var(--ease-spring),
+    box-shadow 0.24s var(--ease-spring),
+    background-color 0.20s ease;
+  cursor: pointer;
+  user-select: none;
+}
+.lg-btn:hover, .lg-btn:focus-visible {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.95),
+    0 12px 24px -6px rgba(60, 74, 92, 0.14);
+}
+.lg-btn:active {
+  transform: translateY(0) scale(0.96);
+  transition-duration: 0.08s;
+}
+
+/* 下拉 / 漢堡選單：0.42s 手風琴緩慢展開與收合 */
+.lg-accordion {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition:
+    grid-template-rows 0.42s var(--ease-spring),
+    opacity 0.30s var(--ease-spring),
+    transform 0.42s var(--ease-spring);
+}
+.lg-accordion.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.lg-accordion-inner {
+  overflow: hidden;
+  min-height: 0;
+}

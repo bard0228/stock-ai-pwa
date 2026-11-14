@@ -1,7 +1,9 @@
-const CACHE_NAME = 'stock-ai-cake-v8';
+const CACHE_NAME = 'stock-ai-cake-v9';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
+  './css/liquid-glass-kit.css',
+  './js/android-overscroll.js',
   './overview.json',
   './leaderboard.json',
   './manifest.json',
@@ -64,8 +66,14 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Manifest, JSON, 圖示一律網路優先避免舊圖示快取
-  if (url.pathname.endsWith('manifest.json') || url.pathname.endsWith('.json') || url.pathname.includes('/icons/')) {
+  // Manifest, JSON, CSS, JS, 圖示一律網路優先避免舊資源快取
+  if (
+    url.pathname.endsWith('manifest.json') ||
+    url.pathname.endsWith('.json') ||
+    url.pathname.endsWith('.css') ||
+    url.pathname.endsWith('.js') ||
+    url.pathname.includes('/icons/')
+  ) {
     event.respondWith(
       fetch(req).then((res) => {
         if (res && res.status === 200) {
