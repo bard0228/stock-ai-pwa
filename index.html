@@ -192,6 +192,64 @@
       background: linear-gradient(135deg, rgba(86, 106, 128, 0.94) 0%, rgba(67, 84, 104, 0.98) 100%);
     }
 
+    .card-pdf-summary {
+      border: 1px solid rgba(148, 163, 184, 0.48);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.78) 0%, rgba(248, 250, 252, 0.62) 100%);
+      color: var(--ink-1);
+    }
+
+    .card-pdf-summary:hover,
+    .card-pdf-summary:focus-visible {
+      border-color: rgba(100, 116, 139, 0.62);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.92) 0%, rgba(241, 245, 249, 0.78) 100%);
+    }
+
+    .card-pdf-full {
+      appearance: none;
+      border: 1px solid rgba(148, 163, 184, 0.46);
+      background: linear-gradient(135deg, rgba(226, 232, 240, 0.86) 0%, rgba(203, 213, 225, 0.76) 100%);
+      color: var(--ink-1);
+      font: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 14px;
+      box-shadow:
+        inset 0 1px 1px rgba(255, 255, 255, 0.78),
+        0 4px 12px -4px rgba(60, 74, 92, 0.12);
+    }
+
+    .card-pdf-full:hover,
+    .card-pdf-full:focus-visible {
+      background: linear-gradient(135deg, rgba(214, 222, 233, 0.94) 0%, rgba(190, 202, 217, 0.88) 100%);
+      border-color: rgba(100, 116, 139, 0.58);
+    }
+
+    .show-older-row {
+      display: flex;
+      justify-content: center;
+      padding-top: 2px;
+    }
+
+    .btn-show-older {
+      border-radius: 999px;
+      padding: 0 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-2);
+      border: 1px solid rgba(148, 163, 184, 0.42);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.74) 0%, rgba(241, 245, 249, 0.56) 100%);
+    }
+
+    .older-cards-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 10px;
+    }
+
     .lg-icon-btn {
       padding: 0;
       width: 48px;
@@ -347,7 +405,8 @@
     }
 
     .tab-switch-bar {
-      display: inline-flex;
+      display: inline-grid;
+      grid-template-columns: 1fr 1fr;
       align-items: center;
       padding: 4px;
       gap: 4px;
@@ -360,6 +419,7 @@
 
     .tab-btn {
       appearance: none;
+      width: 100%;
       border: 1px solid transparent;
       background: transparent;
       border-radius: 12px;
@@ -1566,6 +1626,7 @@
       filterRating: "ALL",
       filterSort: "DATE",
       filterThisWeekOnly: false,
+      showOlderRecords: false,
       expandedIds: new Set(),
       gasUrl: localStorage.getItem("stock_ai_gas_url") || "",
       deferredPrompt: null
@@ -1977,6 +2038,15 @@
       if (mktLbl) mktLbl.textContent = "全部市場";
       if (rateLbl) rateLbl.textContent = "全部評級";
 
+      const allRecs = getDeduplicatedRecords(state.records || []);
+      const targetRec = allRecs.find((r) =>
+        (recordId && String(r.id || "") === String(recordId)) ||
+        (code && String(r.code || "").toUpperCase() === String(code).toUpperCase())
+      );
+      if (targetRec && !isAnalyzedThisWeek(targetRec)) {
+        state.showOlderRecords = true;
+      }
+
       const targetKey = recordId || code;
       if (targetKey) state.expandedIds.add(targetKey);
 
@@ -2215,7 +2285,7 @@
         return;
       }
 
-      container.innerHTML = filtered.map((r) => {
+      const renderCardHtml = (r) => {
         const keyId = String(r.id || r.code);
         const isPending = r.status === "analyzing" || r.status === "queued";
         const ratingMeta = isPending
@@ -2267,12 +2337,12 @@
 
                 <div class="card-action-group">
                   ${summaryUrl ? `
-                    <a href="${escapeHtml(summaryUrl)}" target="_blank" rel="noopener noreferrer" class="lg-btn lg-btn-reset card-pdf-btn card-stop-prop">
+                    <a href="${escapeHtml(summaryUrl)}" target="_blank" rel="noopener noreferrer" class="lg-btn lg-btn-reset card-pdf-summary card-pdf-btn card-stop-prop">
                       <span>摘要 PDF</span>
                     </a>
                   ` : ""}
                   ${fullUrl ? `
-                    <a href="${escapeHtml(fullUrl)}" target="_blank" rel="noopener noreferrer" class="lg-btn lg-btn-muted card-pdf-btn card-stop-prop">
+                    <a href="${escapeHtml(fullUrl)}" target="_blank" rel="noopener noreferrer" class="lg-btn card-pdf-full card-pdf-btn card-stop-prop">
                       <span>完整報告 PDF</span>
                     </a>
                   ` : ""}
@@ -2389,7 +2459,68 @@
             </div>
           </article>
         `;
-      }).join("");
+      };
+
+      const useWeekSplit = !state.filterQuery && !state.filterThisWeekOnly;
+      const thisWeekList = useWeekSplit ? filtered.filter(isAnalyzedThisWeek) : filtered;
+      const olderList = useWeekSplit ? filtered.filter((r) => !isAnalyzedThisWeek(r)) : [];
+
+      let html = thisWeekList.map(renderCardHtml).join("");
+      if (olderList.length > 0) {
+        html += `
+          <div id="olderCardsShell" class="lg-accordion ${state.showOlderRecords ? "is-open" : ""}">
+            <div class="lg-accordion-inner">
+              <div class="older-cards-stack">
+                ${olderList.map(renderCardHtml).join("")}
+                <div class="collapse-row">
+                  <button id="btnCollapseOlder" type="button" class="lg-btn card-collapse-btn" aria-label="收起更早紀錄">
+                    <svg class="lg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="18 15 12 9 6 15"></polyline>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="show-older-row">
+            <button id="btnShowOlder" type="button" class="lg-btn btn-show-older ${state.showOlderRecords ? "hidden" : ""}">
+              <span>顯示更多</span>
+              <svg class="lg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+
+      const btnShowOlder = document.getElementById("btnShowOlder");
+      const btnCollapseOlder = document.getElementById("btnCollapseOlder");
+      const olderShell = document.getElementById("olderCardsShell");
+
+      if (btnShowOlder && olderShell) {
+        btnShowOlder.addEventListener("click", () => {
+          state.showOlderRecords = true;
+          olderShell.classList.add("is-open");
+          btnShowOlder.classList.add("hidden");
+        });
+      }
+
+      if (btnCollapseOlder && olderShell) {
+        btnCollapseOlder.addEventListener("click", () => {
+          state.showOlderRecords = false;
+          olderShell.classList.remove("is-open");
+          if (btnShowOlder) btnShowOlder.classList.remove("hidden");
+          const panel = document.getElementById("mainPanel");
+          if (panel) {
+            const rect = panel.getBoundingClientRect();
+            if (rect.top < 76) {
+              panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }
+          }
+        });
+      }
 
       container.querySelectorAll(".card-stop-prop").forEach((el) => {
         el.addEventListener("click", (e) => e.stopPropagation());

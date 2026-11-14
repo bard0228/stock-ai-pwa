@@ -93,6 +93,35 @@ export default async function verifyLiquidGlass({ page, url, assert, browser }) 
   assert(typoCheck.hasShrinkOut, 'Missing cubic-bezier(0.4, 0, 1, 1) exit animation.');
   assert(typoCheck.hasAppShell, 'Missing #app-shell wrapper for Android 12 edge stretch isolation.');
 
+  // 1b. Equal-width main tabs & PDF button light-gray styling
+  const styleCheck = await page.evaluate(() => {
+    const rTab = document.getElementById('tabBtnResults').getBoundingClientRect();
+    const lTab = document.getElementById('tabBtnLeaderboard').getBoundingClientRect();
+    const summaryBtn = [...document.querySelectorAll('#overviewCardsContainer a')].find((a) => a.textContent.includes('摘要 PDF'));
+    const fullBtn = [...document.querySelectorAll('#overviewCardsContainer a')].find((a) => a.textContent.includes('完整報告 PDF'));
+    const sumCs = summaryBtn ? getComputedStyle(summaryBtn) : null;
+    const fullCs = fullBtn ? getComputedStyle(fullBtn) : null;
+
+    const parseRgb = (str) => {
+      const m = String(str || '').match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+      return m ? [Number(m[1]), Number(m[2]), Number(m[3])] : [0, 0, 0];
+    };
+    const sumBorder = sumCs ? parseRgb(sumCs.borderTopColor) : [255, 255, 255];
+    const fullColor = fullCs ? parseRgb(fullCs.color) : [255, 255, 255];
+    const fullBg = fullCs ? fullCs.backgroundImage + ' ' + fullCs.backgroundColor : '';
+
+    return {
+      tabWidthDiff: Math.abs(rTab.width - lTab.width),
+      sumBorderColor: sumCs ? sumCs.borderTopColor : '',
+      sumBorderIsGray: sumBorder[0] < 230 && sumBorder[1] < 230 && sumBorder[2] < 230,
+      fullTextIsDark: fullColor[0] < 80 && fullColor[1] < 80 && fullColor[2] < 80,
+      fullBg,
+    };
+  });
+  assert(styleCheck.tabWidthDiff <= 1.5, `Tab buttons width mismatch: diff=${styleCheck.tabWidthDiff.toFixed(1)}px`);
+  assert(styleCheck.sumBorderIsGray, `Summary PDF button border must be light gray, got ${styleCheck.sumBorderColor}`);
+  assert(styleCheck.fullTextIsDark, `Full PDF button must use light-gray background with dark ink text, got bg=${styleCheck.fullBg}`);
+
   // 2. Zero-Noise UI & Monochrome Stroke SVG Checks
   const checkZeroNoise = async (contextLabel) => {
     const res = await page.evaluate(() => {
@@ -329,6 +358,83 @@ export default async function verifyLiquidGlass({ page, url, assert, browser }) 
 
   await page.click('#tabBtnResults');
   await new Promise((r) => setTimeout(r, 300));
+
+  // 7b. This-week default + "顯示更多" smooth accordion + collapse arrow
+  await page.evaluate(() => {
+    state.records.push({
+      id: 'test-older-2317',
+      code: '2317',
+      yf: '2317.TW',
+      name: '鴻海',
+      market: 'TW',
+      trade_date: '2026-10-15',
+      updated_at: '2026-10-15T10:00:00+00:00',
+      status: 'done',
+      rating: '持有（Hold）',
+      close: 210,
+      chg_1d_pct: 1.2,
+      k_median_20d_pct: 3.5,
+      q_percentile: 60
+    });
+    renderOverview();
+  });
+  await new Promise((r) => setTimeout(r, 200));
+
+  const olderCollapsed = await page.evaluate(() => {
+    const btn = document.getElementById('btnShowOlder');
+    const shell = document.getElementById('olderCardsShell');
+    const olderCard = document.querySelector('[data-card-id="test-older-2317"]');
+    const shellRect = shell ? shell.getBoundingClientRect() : null;
+    return {
+      btnVisible: Boolean(btn && !btn.classList.contains('hidden') && btn.innerText.includes('顯示更多')),
+      hasSvg: Boolean(btn && btn.querySelector('svg')),
+      shellExists: Boolean(shell),
+      shellCollapsed: Boolean(shell && !shell.classList.contains('is-open') && shellRect && shellRect.height <= 2),
+      olderCardInShell: Boolean(shell && olderCard && shell.contains(olderCard)),
+    };
+  });
+  assert(olderCollapsed.btnVisible && olderCollapsed.hasSvg, 'Missing #btnShowOlder ("顯示更多" + arrow SVG) when older records exist.');
+  assert(olderCollapsed.shellExists && olderCollapsed.shellCollapsed, '#olderCardsShell should be collapsed by default.');
+  assert(olderCollapsed.olderCardInShell, 'Older record card should be placed inside #olderCardsShell.');
+
+  await page.click('#btnShowOlder');
+  await new Promise((r) => setTimeout(r, 480));
+
+  const olderExpanded = await page.evaluate(() => {
+    const btn = document.getElementById('btnShowOlder');
+    const shell = document.getElementById('olderCardsShell');
+    const collapseBtn = document.getElementById('btnCollapseOlder');
+    const shellRect = shell ? shell.getBoundingClientRect() : null;
+    return {
+      btnHidden: !btn || btn.classList.contains('hidden'),
+      shellOpen: Boolean(shell && shell.classList.contains('is-open') && shellRect && shellRect.height > 40),
+      collapseVisible: Boolean(collapseBtn && !collapseBtn.classList.contains('hidden') && collapseBtn.querySelector('svg')),
+    };
+  });
+  assert(olderExpanded.btnHidden, '#btnShowOlder should hide after expanding older records.');
+  assert(olderExpanded.shellOpen, '#olderCardsShell failed to expand smoothly.');
+  assert(olderExpanded.collapseVisible, 'Missing #btnCollapseOlder up-arrow button at bottom of expanded older records.');
+
+  await page.click('#btnCollapseOlder');
+  await new Promise((r) => setTimeout(r, 480));
+
+  const olderReCollapsed = await page.evaluate(() => {
+    const btn = document.getElementById('btnShowOlder');
+    const shell = document.getElementById('olderCardsShell');
+    return {
+      btnVisible: Boolean(btn && !btn.classList.contains('hidden')),
+      shellClosed: Boolean(shell && !shell.classList.contains('is-open')),
+    };
+  });
+  assert(olderReCollapsed.btnVisible && olderReCollapsed.shellClosed, 'Clicking #btnCollapseOlder failed to collapse older records.');
+
+  // Clean up mock record
+  await page.evaluate(() => {
+    state.records = state.records.filter((r) => r.id !== 'test-older-2317');
+    state.showOlderRecords = false;
+    renderOverview();
+  });
+  await new Promise((r) => setTimeout(r, 150));
 
   // 8. Android 12 Edge Overscroll Physical Stretch Verification
   const overscrollProbe = await page.evaluate(async () => {
