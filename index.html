@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#f0f3f8" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -12,795 +12,1612 @@
   <link rel="icon" type="image/png" sizes="192x192" href="./icons/cake-192.png?v=cake7" />
   <link rel="apple-touch-icon" href="./icons/cake-192.png?v=cake7" />
   <title>為你股掌</title>
-  <!-- 引入 Google Fonts: 英數 Plus Jakarta Sans + 中文 Noto Sans TC -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
-  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/liquid-glass-kit.css?v=lg1" />
   <style>
     :root {
       --bg-base: #f0f3f8;
-      --text-primary: #1e293b;
-      --text-secondary: #475569;
-      --text-muted: #64748b;
-      --glass-border: rgba(255, 255, 255, 0.70);
-      --glass-border-subtle: rgba(255, 255, 255, 0.55);
+      --ink-1: #1e293b;
+      --ink-2: #475569;
+      --ink-3: #64748b;
+      --accent-sage: #5b8270;
+      --accent-ochre: #8c7042;
+      --accent-rose: #a86c72;
+      --accent-slate: #62768c;
+      --glass-line: rgba(255, 255, 255, 0.78);
+      --glass-line-soft: rgba(255, 255, 255, 0.62);
     }
 
-    /* 全域消除瀏覽器毛邊，視網膜螢幕高精緻度呈現 */
-    *, *::before, *::after {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      text-rendering: optimizeLegibility;
-      letter-spacing: -0.005em;
-    }
-
-    html, body, input, button, select, textarea {
-      font-family: "Plus Jakarta Sans", "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      letter-spacing: -0.005em;
+    html {
+      overflow-x: clip;
     }
 
     body {
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: clip;
+      color: var(--ink-1);
       background-color: var(--bg-base);
-      color: var(--text-primary);
-      overflow-x: hidden;
-      position: relative;
+      overscroll-behavior-y: contain;
+      padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
     }
 
-    /* 數字字體規範：Plus Jakarta Sans 搭配 tabular-nums，千分位與小數點切齊且無等寬字體死板感 */
-    .num-col,
-    .tabular-nums {
-      font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif !important;
-      font-variant-numeric: tabular-nums !important;
-      font-feature-settings: "tnum" 1 !important;
+    ::selection {
+      background: rgba(98, 118, 140, 0.22);
+      color: var(--ink-1);
     }
 
-    /* 防禦性 SVG 尺寸保護（確保任何載入時序下圖示都不會異常放大） */
+    .hidden {
+      display: none !important;
+    }
+
     svg {
       display: inline-block;
       vertical-align: middle;
       flex-shrink: 0;
       max-width: 100%;
     }
-    .hidden { display: none !important; }
-    .w-3 { width: 0.75rem; height: 0.75rem; }
-    .w-3\.5 { width: 0.875rem; height: 0.875rem; }
-    .w-4 { width: 1rem; height: 1rem; }
-    .w-5 { width: 1.25rem; height: 1.25rem; }
-    .w-7 { width: 1.75rem; height: 1.75rem; }
-    .w-8 { width: 2rem; height: 2rem; }
-    .w-12 { width: 3rem; height: 3rem; }
-    .h-3 { height: 0.75rem; }
-    .h-3\.5 { height: 0.875rem; }
-    .h-4 { height: 1rem; }
-    .h-5 { height: 1.25rem; }
-    .h-7 { height: 1.75rem; }
-    .h-8 { height: 2rem; }
-    .h-12 { height: 3rem; }
 
-    /* iOS 淺色液態環境漫射光暈 */
-    .ambient-canvas {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 12% 14%, rgba(193, 218, 248, 0.55), transparent 42%),
-        radial-gradient(circle at 88% 16%, rgba(200, 235, 220, 0.48), transparent 45%),
-        radial-gradient(circle at 50% 80%, rgba(226, 220, 246, 0.42), transparent 50%),
-        linear-gradient(180deg, #f7f9fd 0%, #edf2f7 50%, #e6ecf4 100%);
+    .lg-icon-xs { width: 14px; height: 14px; }
+    .lg-icon-sm { width: 16px; height: 16px; }
+    .lg-icon-md { width: 18px; height: 18px; }
+
+    .num-col,
+    .tabular-nums {
+      font-family: "Plus Jakarta Sans", "Noto Sans TC", -apple-system, BlinkMacSystemFont, sans-serif !important;
+      font-variant-numeric: tabular-nums !important;
+      font-feature-settings: "tnum" 1 !important;
     }
 
-    /* 真實 iOS 液態玻璃通透質感 (Authentic Liquid Glass) + 克制圓角 (14px) */
-    .liquid-glass {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.32) 100%);
-      backdrop-filter: blur(24px) saturate(180%);
-      -webkit-backdrop-filter: blur(24px) saturate(180%);
-      border: 1px solid var(--glass-border);
-      box-shadow:
-        inset 0 1px 1px 0 rgba(255, 255, 255, 0.85),
-        inset 0 -1px 1px 0 rgba(255, 255, 255, 0.25),
-        0 8px 24px -4px rgba(71, 85, 105, 0.06),
-        0 2px 6px -1px rgba(71, 85, 105, 0.03);
-      border-radius: 14px;
-    }
-
-    /* 下拉選單懸浮液態毛玻璃 (12px 圓角 + 高層級堆疊) */
-    .liquid-glass-popover {
-      background: linear-gradient(160deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 254, 0.80) 100%);
-      backdrop-filter: blur(28px) saturate(190%);
-      -webkit-backdrop-filter: blur(28px) saturate(190%);
-      border: 1px solid rgba(255, 255, 255, 0.85);
-      box-shadow:
-        inset 0 1px 1px 0 rgba(255, 255, 255, 0.9),
-        0 16px 36px -8px rgba(51, 65, 85, 0.16),
-        0 4px 12px -2px rgba(51, 65, 85, 0.06);
-      border-radius: 12px;
-    }
-
-    /* 內層膠囊卡片、輸入框 (10px 圓角 + 通透玻璃) */
-    .liquid-pill {
-      background: rgba(255, 255, 255, 0.45);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid var(--glass-border-subtle);
-      box-shadow:
-        inset 0 1px 1px 0 rgba(255, 255, 255, 0.75),
-        0 2px 6px -1px rgba(71, 85, 105, 0.04);
-      border-radius: 10px;
-    }
-
-    /* 靠近時微浮 (Squircle Hover Float) */
-    .float-interactive {
-      transition:
-        transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-        box-shadow 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-        background-color 0.20s ease,
-        border-color 0.20s ease;
+    /* 主內容殼層（供 Android 12 邊緣拉伸變形，隔離 fixed 頂層 Portal） */
+    #app-shell {
+      max-width: 896px;
+      margin: 0 auto;
+      padding: 12px 12px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
       will-change: transform;
     }
 
-    .float-interactive:hover,
-    .float-interactive:focus-visible {
-      transform: translateY(-2px);
-      border-color: rgba(255, 255, 255, 0.95);
-      background-color: rgba(255, 255, 255, 0.65);
-      box-shadow:
-        inset 0 1px 1px 0 rgba(255, 255, 255, 0.9),
-        0 10px 20px -4px rgba(71, 85, 105, 0.10),
-        0 2px 6px -1px rgba(71, 85, 105, 0.04);
+    @media (min-width: 640px) {
+      #app-shell {
+        padding: 16px 16px 40px;
+        gap: 14px;
+      }
     }
 
-    .float-interactive:active {
-      transform: translateY(-0.5px) scale(0.995);
+    /* 頂部 Sticky 液態玻璃導覽列 */
+    .app-header {
+      position: sticky;
+      top: calc(10px + env(safe-area-inset-top, 0px));
+      z-index: 40;
+      border-radius: 26px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
     }
 
-    /* 手風琴流暢動畫 */
-    .accordion-shell {
-      display: grid;
-      grid-template-rows: 0fr;
-      opacity: 0;
-      transition:
-        grid-template-rows 0.32s cubic-bezier(0.22, 1, 0.36, 1),
-        opacity 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-        margin-top 0.26s cubic-bezier(0.22, 1, 0.36, 1);
-      pointer-events: none;
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
     }
 
-    .accordion-shell.is-open {
-      grid-template-rows: 1fr;
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .accordion-content {
+    .brand-icon-frame {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
       overflow: hidden;
-      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9);
     }
 
-    /* 下拉選單錨點與堆疊層級修復 */
-    .dropdown-anchor {
-      position: relative;
+    .brand-icon-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
     }
 
-    .dropdown-anchor.is-open-trigger {
-      z-index: 1000 !important;
+    .brand-title {
+      margin: 0;
+      font-size: 23px;
+      line-height: 1.2;
+      font-weight: 800;
+      color: var(--ink-1);
+      white-space: nowrap;
     }
 
-    .dropdown-menu-accordion {
-      position: absolute;
-      top: calc(100% + 6px);
-      left: 0;
-      right: 0;
-      z-index: 9999;
+    @media (min-width: 640px) {
+      .brand-title {
+        font-size: 26px;
+      }
+    }
+
+    /* 通用玻璃膠囊與按鈕 */
+    .lg-pill-surface {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.68) 0%, rgba(255, 255, 255, 0.44) 100%);
+      border: 1px solid var(--glass-line-soft);
+      box-shadow:
+        inset 0 1px 1px rgba(255, 255, 255, 0.88),
+        0 4px 14px -4px rgba(60, 74, 92, 0.06);
+    }
+
+    .lg-btn-reset {
+      appearance: none;
+      border: 1px solid var(--glass-line);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.66) 0%, rgba(255, 255, 255, 0.42) 100%);
+      color: var(--ink-1);
+      font: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 14px;
+      box-shadow:
+        inset 0 1px 1px rgba(255, 255, 255, 0.86),
+        0 4px 12px -4px rgba(60, 74, 92, 0.08);
+    }
+
+    .lg-btn-muted {
+      appearance: none;
+      border: 1px solid rgba(255, 255, 255, 0.48);
+      background: linear-gradient(135deg, rgba(98, 118, 140, 0.88) 0%, rgba(77, 95, 116, 0.92) 100%);
+      color: #ffffff;
+      font: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 14px;
+      box-shadow:
+        inset 0 1px 1px rgba(255, 255, 255, 0.36),
+        0 6px 16px -4px rgba(60, 74, 92, 0.24);
+    }
+
+    .lg-btn-muted:hover,
+    .lg-btn-muted:focus-visible {
+      background: linear-gradient(135deg, rgba(86, 106, 128, 0.94) 0%, rgba(67, 84, 104, 0.98) 100%);
+    }
+
+    .card-pdf-summary {
+      border: 1px solid rgba(148, 163, 184, 0.48);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.78) 0%, rgba(248, 250, 252, 0.62) 100%);
+      color: var(--ink-1);
+    }
+
+    .card-pdf-summary:hover,
+    .card-pdf-summary:focus-visible {
+      border-color: rgba(100, 116, 139, 0.62);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.92) 0%, rgba(241, 245, 249, 0.78) 100%);
+    }
+
+    .card-pdf-full {
+      appearance: none;
+      border: 1px solid rgba(148, 163, 184, 0.46);
+      background: linear-gradient(135deg, rgba(226, 232, 240, 0.86) 0%, rgba(203, 213, 225, 0.76) 100%);
+      color: var(--ink-1);
+      font: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 14px;
+      box-shadow:
+        inset 0 1px 1px rgba(255, 255, 255, 0.78),
+        0 4px 12px -4px rgba(60, 74, 92, 0.12);
+    }
+
+    .card-pdf-full:hover,
+    .card-pdf-full:focus-visible {
+      background: linear-gradient(135deg, rgba(214, 222, 233, 0.94) 0%, rgba(190, 202, 217, 0.88) 100%);
+      border-color: rgba(100, 116, 139, 0.58);
+    }
+
+    .show-older-row {
+      display: flex;
+      justify-content: center;
+      padding-top: 2px;
+    }
+
+    .btn-show-older {
+      border-radius: 999px;
+      padding: 0 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-2);
+      border: 1px solid rgba(148, 163, 184, 0.42);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.74) 0%, rgba(241, 245, 249, 0.56) 100%);
+    }
+
+    .older-cards-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 10px;
+    }
+
+    .lg-icon-btn {
+      padding: 0;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+    }
+
+    .sync-btn {
+      padding: 0 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-2);
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .sync-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent-sage);
+      flex-shrink: 0;
+    }
+
+    .sync-dot.is-syncing {
+      background: var(--accent-ochre);
+      animation: lgPulse 1.1s ease-in-out infinite;
+    }
+
+    @keyframes lgPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.82); }
+    }
+
+    /* KPI 摘要列 */
+    .kpi-grid {
       display: grid;
-      grid-template-rows: 0fr;
-      opacity: 0;
-      transform: translateY(-3px);
-      transition:
-        grid-template-rows 0.30s cubic-bezier(0.22, 1, 0.36, 1),
-        opacity 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-        transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
-      pointer-events: none;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
     }
 
-    .dropdown-menu-accordion.is-open {
-      grid-template-rows: 1fr;
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
+    @media (min-width: 640px) {
+      .kpi-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+    }
+
+    .kpi-card {
+      border-radius: 24px;
+      padding: 13px 15px;
+      text-align: left;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.76);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.58) 0%, rgba(255, 255, 255, 0.34) 100%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      backdrop-filter: blur(24px) saturate(180%);
+      box-shadow:
+        inset 0 1px 1px rgba(255, 255, 255, 0.90),
+        0 10px 28px -6px rgba(60, 74, 92, 0.08);
+    }
+
+    .kpi-card.is-active-total {
+      border-color: rgba(98, 118, 140, 0.65);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.95), 0 0 0 2px rgba(98, 118, 140, 0.25), 0 10px 24px -6px rgba(60, 74, 92, 0.12);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.78) 0%, rgba(242, 246, 251, 0.58) 100%);
+    }
+
+    .kpi-card.is-active-bull {
+      border-color: rgba(91, 130, 112, 0.65);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.95), 0 0 0 2px rgba(91, 130, 112, 0.24), 0 10px 24px -6px rgba(91, 130, 112, 0.12);
+      background: linear-gradient(145deg, rgba(243, 249, 246, 0.80) 0%, rgba(235, 244, 239, 0.60) 100%);
+    }
+
+    .kpi-card.is-active-hold {
+      border-color: rgba(140, 112, 66, 0.65);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.95), 0 0 0 2px rgba(140, 112, 66, 0.24), 0 10px 24px -6px rgba(140, 112, 66, 0.12);
+      background: linear-gradient(145deg, rgba(251, 248, 242, 0.80) 0%, rgba(247, 241, 230, 0.60) 100%);
+    }
+
+    .kpi-card.is-active-sell {
+      border-color: rgba(168, 108, 114, 0.65);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.95), 0 0 0 2px rgba(168, 108, 114, 0.24), 0 10px 24px -6px rgba(168, 108, 114, 0.12);
+      background: linear-gradient(145deg, rgba(252, 245, 246, 0.80) 0%, rgba(248, 236, 238, 0.60) 100%);
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink-3);
+      line-height: 1.3;
+    }
+
+    .kpi-value-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .kpi-count {
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--ink-1);
+    }
+
+    .kpi-unit {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-3);
+    }
+
+    .tone-sage { color: var(--accent-sage); }
+    .tone-ochre { color: var(--accent-ochre); }
+    .tone-rose { color: var(--accent-rose); }
+    .tone-slate { color: var(--ink-2); }
+
+    /* 主功能玻璃面板 */
+    #mainPanel {
+      padding: 14px;
+      border-radius: 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    @media (min-width: 640px) {
+      #mainPanel {
+        padding: 18px;
+        gap: 14px;
+      }
+    }
+
+    .toolbar-shell {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+    }
+
+    @media (min-width: 768px) {
+      .toolbar-shell {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .tab-switch-bar {
+      display: inline-grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 4px;
+      gap: 4px;
+      border-radius: 16px;
+      background: rgba(203, 213, 225, 0.34);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      box-shadow: inset 0 1px 2px rgba(71, 85, 105, 0.08);
+      align-self: flex-start;
+    }
+
+    .tab-btn {
+      appearance: none;
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      border-radius: 12px;
+      padding: 0 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink-2);
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tab-btn.is-active {
+      background: rgba(255, 255, 255, 0.88);
+      border-color: rgba(255, 255, 255, 0.95);
+      color: var(--ink-1);
+      font-weight: 700;
+      box-shadow: 0 3px 10px -2px rgba(60, 74, 92, 0.12);
+    }
+
+    .results-toolbar {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+
+    @media (min-width: 768px) {
+      .results-toolbar {
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
+        width: auto;
+      }
+    }
+
+    .search-box-glass {
+      min-height: 48px;
+      border-radius: 14px;
+      padding: 0 8px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      transition: transform 0.24s var(--ease-spring), box-shadow 0.24s var(--ease-spring), border-color 0.20s ease;
+    }
+
+    @media (min-width: 768px) {
+      .search-box-glass {
+        width: 210px;
+      }
+    }
+
+    .search-box-glass:focus-within {
+      border-color: rgba(255, 255, 255, 0.96);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.95), 0 8px 20px -6px rgba(60, 74, 92, 0.12);
+    }
+
+    .search-input {
+      width: 100%;
+      min-width: 0;
+      border: 0;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-1);
+      outline: none;
+    }
+
+    .search-input::placeholder {
+      color: var(--ink-3);
+    }
+
+    .btn-clear-search {
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      min-height: 48px;
+      border: 0;
+      background: transparent;
+      color: var(--ink-3);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 0.90fr 0.94fr 1.16fr;
+      gap: 6px;
+      width: 100%;
+    }
+
+    @media (min-width: 768px) {
+      .filter-grid {
+        grid-template-columns: repeat(3, auto);
+        width: auto;
+      }
+    }
+
+    .filter-trigger {
+      width: 100%;
+      min-height: 48px;
+      min-width: 48px;
+      border-radius: 14px;
+      padding: 0 9px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      border: 1px solid var(--glass-line);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.66) 0%, rgba(255, 255, 255, 0.42) 100%);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.88), 0 4px 12px -4px rgba(60, 74, 92, 0.06);
+    }
+
+    .filter-trigger-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: left;
     }
 
     .chevron-icon {
-      transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+      transition: transform 0.34s var(--ease-spring);
+      color: var(--ink-3);
+      flex-shrink: 0;
     }
 
-    .is-open-trigger .chevron-icon {
+    .is-open-trigger .chevron-icon,
+    .chevron-icon.is-rotated {
       transform: rotate(180deg);
     }
 
-    /* 低飽和度沉穩灰藍毛玻璃按鈕 */
-    .btn-muted-glass {
-      background: linear-gradient(135deg, rgba(82, 102, 126, 0.85) 0%, rgba(64, 82, 103, 0.90) 100%);
-      border: 1px solid rgba(255, 255, 255, 0.35);
-      color: #ffffff;
+    /* 排行榜工具列 */
+    .leaderboard-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    @media (min-width: 768px) {
+      .leaderboard-toolbar {
+        justify-content: flex-end;
+        gap: 8px;
+      }
+    }
+
+    .lb-market-switch {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px;
+      gap: 3px;
+      border-radius: 14px;
+      background: rgba(203, 213, 225, 0.34);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+    }
+
+    .lb-market-btn {
+      appearance: none;
+      border: 1px solid transparent;
+      background: transparent;
+      border-radius: 11px;
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-2);
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #lbTradeDateBadge {
+      font-size: 11px;
+      padding: 4px 8px;
+    }
+
+    .lb-market-btn.is-active {
+      background: rgba(255, 255, 255, 0.88);
+      border-color: rgba(255, 255, 255, 0.95);
+      color: var(--ink-1);
+      font-weight: 700;
+      box-shadow: 0 2px 8px -2px rgba(60, 74, 92, 0.12);
+    }
+
+    /* 卡片列表容器 */
+    .cards-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .stock-card {
+      border-radius: 20px;
+      padding: 13px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.68) 0%, rgba(255, 255, 255, 0.44) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.84);
       box-shadow:
-        inset 0 1px 1px 0 rgba(255, 255, 255, 0.30),
-        0 4px 12px -2px rgba(64, 82, 103, 0.28);
+        inset 0 1px 1px rgba(255, 255, 255, 0.92),
+        0 6px 20px -6px rgba(60, 74, 92, 0.08);
+      transition: transform 0.24s var(--ease-spring), box-shadow 0.24s var(--ease-spring), border-color 0.20s ease;
+    }
+
+    .stock-card.is-highlighted {
+      box-shadow:
+        inset 0 1px 1px rgba(255, 255, 255, 0.95),
+        0 0 0 2px rgba(98, 118, 140, 0.48),
+        0 12px 26px -6px rgba(60, 74, 92, 0.14);
+    }
+
+    @media (min-width: 640px) {
+      .stock-card {
+        padding: 15px;
+      }
+    }
+
+    .card-header-toggle {
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 48px;
+    }
+
+    .card-top-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .card-title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .card-code-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .stock-name {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink-1);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .card-badges-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-price-block {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .price-main {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--ink-1);
+    }
+
+    .price-chg {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .card-meta-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .kronos-pill-stat {
+      font-size: 12px;
+      color: var(--ink-2);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-action-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+    }
+
+    @media (min-width: 640px) {
+      .card-action-group {
+        width: auto;
+      }
+    }
+
+    .card-pdf-btn {
+      flex: 1;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 999px;
+      white-space: nowrap;
+      padding: 0 12px;
+    }
+
+    @media (min-width: 640px) {
+      .card-pdf-btn {
+        flex: initial;
+      }
+    }
+
+    .card-chevron-indicator {
+      width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink-3);
+      flex-shrink: 0;
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      background: rgba(255, 255, 255, 0.42);
+    }
+
+    .card-date-strip {
+      margin-top: 10px;
+      border-radius: 14px;
+      padding: 8px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--ink-2);
+      background: rgba(255, 255, 255, 0.46);
+      border: 1px solid rgba(255, 255, 255, 0.68);
+    }
+
+    /* 手風琴展開區（0.42s） */
+    .accordion-shell {
+      margin-top: 0;
+      transition:
+        grid-template-rows 0.42s var(--ease-spring),
+        opacity 0.30s var(--ease-spring),
+        transform 0.42s var(--ease-spring),
+        margin-top 0.42s var(--ease-spring);
+    }
+
+    .accordion-shell.is-open {
+      margin-top: 10px;
+    }
+
+    .drawer-inner {
+      padding-top: 10px;
+      border-top: 1px solid rgba(148, 163, 184, 0.18);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 12px;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    @media (min-width: 768px) {
+      .metrics-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    .models-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    @media (min-width: 768px) {
+      .models-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    .sub-glass-tile {
+      border-radius: 16px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.56);
+      border: 1px solid rgba(255, 255, 255, 0.78);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.88);
+    }
+
+    .sub-tile-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--ink-3);
+      margin-bottom: 3px;
+    }
+
+    .sub-tile-value {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-1);
+      line-height: 1.45;
+    }
+
+    .model-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 5px;
+    }
+
+    .model-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-1);
+    }
+
+    .model-note {
+      margin: 0;
+      font-size: 11px;
+      line-height: 1.55;
+      color: var(--ink-2);
+    }
+
+    .kronos-chart-box {
+      border-radius: 18px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid rgba(255, 255, 255, 0.80);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .kronos-chart-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 0 4px;
+    }
+
+    .kronos-chart-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-2);
+    }
+
+    .kronos-external-link {
+      border-radius: 999px;
+      padding: 0 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-2);
+      white-space: nowrap;
+    }
+
+    .kronos-preview-trigger {
+      appearance: none;
+      width: 100%;
+      min-height: 48px;
+      border-radius: 14px;
+      padding: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .kronos-preview-trigger img {
+      width: 100%;
+      height: auto;
+      max-height: 280px;
+      object-fit: contain;
       border-radius: 10px;
+      display: block;
     }
 
-    .btn-muted-glass:hover {
-      background: linear-gradient(135deg, rgba(94, 116, 142, 0.90) 0%, rgba(74, 94, 117, 0.95) 100%);
-      box-shadow:
-        inset 0 1px 1px 0 rgba(255, 255, 255, 0.40),
-        0 6px 16px -2px rgba(64, 82, 103, 0.35);
+    .advice-box {
+      border-radius: 16px;
+      padding: 11px 13px;
+      background: rgba(255, 255, 255, 0.56);
+      border: 1px solid rgba(255, 255, 255, 0.78);
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--ink-2);
     }
 
-    /* 低飽和度語意標籤 */
+    .collapse-row {
+      display: flex;
+      justify-content: center;
+      padding-top: 2px;
+    }
+
+    .card-collapse-btn {
+      width: 56px;
+      height: 48px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.78);
+      background: rgba(255, 255, 255, 0.50);
+      color: var(--ink-3);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 語意莫蘭迪標籤 */
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 9px;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.3;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+
     .badge-buy {
-      background: rgba(16, 185, 129, 0.12);
-      color: #047857;
-      border: 1px solid rgba(16, 185, 129, 0.25);
-      border-radius: 7px;
+      background: rgba(91, 130, 112, 0.14);
+      color: #3d6352;
+      border: 1px solid rgba(91, 130, 112, 0.28);
     }
 
     .badge-hold {
-      background: rgba(245, 158, 11, 0.12);
-      color: #b45309;
-      border: 1px solid rgba(245, 158, 11, 0.25);
-      border-radius: 7px;
+      background: rgba(166, 134, 80, 0.14);
+      color: #7c5f2b;
+      border: 1px solid rgba(166, 134, 80, 0.28);
     }
 
     .badge-sell {
-      background: rgba(239, 68, 68, 0.12);
-      color: #b91c1c;
-      border: 1px solid rgba(239, 68, 68, 0.25);
-      border-radius: 7px;
+      background: rgba(168, 108, 114, 0.14);
+      color: #87474e;
+      border: 1px solid rgba(168, 108, 114, 0.28);
     }
 
     .badge-slate {
-      background: rgba(100, 116, 139, 0.12);
-      color: #334155;
-      border: 1px solid rgba(100, 116, 139, 0.22);
-      border-radius: 7px;
+      background: rgba(98, 118, 140, 0.12);
+      color: var(--ink-2);
+      border: 1px solid rgba(98, 118, 140, 0.22);
     }
 
-    .thin-scroll::-webkit-scrollbar {
-      width: 4px;
-      height: 4px;
+    /* 排行榜項目 */
+    .lb-header-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 2px 4px;
+      font-size: 12px;
+      color: var(--ink-3);
     }
-    .thin-scroll::-webkit-scrollbar-track {
-      background: transparent;
+
+    .lb-row {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
-    .thin-scroll::-webkit-scrollbar-thumb {
-      background: rgba(148, 163, 184, 0.35);
+
+    @media (min-width: 640px) {
+      .lb-row {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .lb-identity {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .rank-frame {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 1px solid rgba(98, 118, 140, 0.24);
+      background: rgba(255, 255, 255, 0.65);
+      color: var(--ink-2);
+    }
+
+    .rank-frame.rank-1 {
+      background: rgba(182, 148, 86, 0.20);
+      color: #785b26;
+      border-color: rgba(182, 148, 86, 0.36);
+    }
+
+    .rank-frame.rank-top3 {
+      background: rgba(98, 118, 140, 0.22);
+      color: var(--ink-1);
+      border-color: rgba(98, 118, 140, 0.36);
+    }
+
+    .lb-stats-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+    }
+
+    .lb-metrics {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .lb-action-btn {
+      font-size: 12px;
+      font-weight: 600;
       border-radius: 999px;
+      padding: 0 14px;
+      white-space: nowrap;
+    }
+
+    /* 頂層 Portal 下拉選單（直掛 document.body + 雙層冰晶結構 + 0.42s 手風琴） */
+    .lg-portal-dropdown {
+      position: fixed;
+      z-index: 9999;
+      border-radius: 24px;
+      max-width: calc(100vw - 20px);
+    }
+
+    .lg-portal-dropdown .lg-inner-glass {
+      border-radius: 17px;
+      padding: 4px;
+    }
+
+    .lg-menu-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 2px;
+    }
+
+    .lg-menu-item {
+      appearance: none;
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      border-radius: 13px;
+      padding: 0 12px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      text-align: left;
+    }
+
+    .lg-menu-item:hover,
+    .lg-menu-item:focus-visible {
+      background: rgba(255, 255, 255, 0.72);
+      border-color: rgba(255, 255, 255, 0.90);
+    }
+
+    .lg-menu-item.is-selected {
+      background: rgba(255, 255, 255, 0.85);
+      border-color: rgba(255, 255, 255, 0.95);
+    }
+
+    .lg-menu-item[data-filter-rating="BUY"] { color: var(--accent-sage); }
+    .lg-menu-item[data-filter-rating="HOLD"] { color: var(--accent-ochre); }
+    .lg-menu-item[data-filter-rating="SELL"] { color: var(--accent-rose); }
+
+    /* 頂層 Portal 懸浮通知（直掛 document.body + 雙層冰晶結構） */
+    .lg-portal-toast {
+      position: fixed;
+      bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      left: 12px;
+      right: 12px;
+      margin-inline: auto;
+      width: fit-content;
+      max-width: calc(100vw - 24px);
+      z-index: 10050;
+      border-radius: 24px;
+      pointer-events: none;
+    }
+
+    .lg-toast-inner {
+      border-radius: 17px;
+      padding: 10px 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-1);
+      white-space: nowrap;
+    }
+
+    /* 原生頂層 <dialog> 雙層冰晶預覽彈窗（直掛 document.body） */
+    dialog.lg-modal {
+      margin: auto;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      max-width: calc(100vw - 24px);
+      width: 100%;
+      max-height: calc(100dvh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+      overflow: visible;
+    }
+
+    @media (min-width: 640px) {
+      dialog.lg-modal {
+        max-width: 680px;
+      }
+    }
+
+    dialog.lg-modal::backdrop {
+      background: rgba(235, 241, 248, 0.56);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+
+    .lg-modal-frame {
+      width: 100%;
+    }
+
+    .lg-modal-inner {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .lg-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-left: 4px;
+    }
+
+    .lg-modal-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink-1);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .lg-modal-body {
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.90);
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      max-height: 62dvh;
+      overflow: auto;
+    }
+
+    .lg-modal-img {
+      width: 100%;
+      height: auto;
+      max-height: 58dvh;
+      object-fit: contain;
+      border-radius: 10px;
+      display: block;
+    }
+
+    .lg-modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .empty-glass-state {
+      border-radius: 18px;
+      padding: 28px 16px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-3);
+      background: rgba(255, 255, 255, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+    }
+
+    .hide-mobile {
+      display: none;
+    }
+    @media (min-width: 640px) {
+      .hide-mobile {
+        display: inline-block;
+      }
     }
   </style>
 </head>
-<body class="antialiased selection:bg-slate-300 selection:text-slate-900">
-  <div class="ambient-canvas"></div>
+<body>
+  <div class="lg-ambient-bg" aria-hidden="true"></div>
 
-  <!-- 縮小上下左右邊距，緊湊精緻佈局 -->
-  <div class="max-w-4xl mx-auto px-3 sm:px-4 pt-3 pb-8 space-y-3">
-    <!-- 頂部液態玻璃導覽列：向下捲動置頂，穿透毛玻璃背景微變形模糊 -->
-    <header class="sticky top-2.5 z-50 liquid-glass px-4 py-3 flex items-center justify-between gap-3 shadow-sm transition-all duration-200">
-      <div class="flex items-center gap-3">
-        <div class="w-12 h-12 rounded-[12px] overflow-hidden flex items-center justify-center shrink-0">
-          <img src="./icons/cake-192.png?v=cake7" alt="千層蛋糕" class="w-full h-full object-contain" />
+  <div id="app-shell">
+    <header class="app-header lg-glass">
+      <div class="brand-group">
+        <div class="brand-icon-frame">
+          <img src="./icons/cake-192.png?v=cake7" alt="為你股掌" />
         </div>
-        <h1 class="text-2xl sm:text-[27px] font-extrabold tracking-tight text-slate-800">為你股掌</h1>
+        <h1 class="brand-title">為你股掌</h1>
       </div>
 
-      <div class="flex items-center gap-2">
-        <button id="btnSyncNow" type="button" class="liquid-pill float-interactive px-2.5 py-1 text-xs text-slate-700 flex items-center gap-1.5 cursor-pointer font-medium" title="點擊同步最新雲端報告">
-          <span id="syncDot" class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-          <span id="syncStatusText">已同步</span>
-        </button>
-      </div>
+      <button id="btnSyncNow" type="button" class="lg-btn lg-btn-reset sync-btn" aria-label="同步雲端資料">
+        <span id="syncDot" class="sync-dot"></span>
+        <span id="syncStatusText">已同步</span>
+      </button>
     </header>
 
-    <!-- 區塊：本週分析統計與快速篩選卡片 -->
-    <section class="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-2">
-      <div id="kpiCardTotal" class="liquid-glass float-interactive p-3 cursor-pointer select-none transition-all duration-200" title="點擊僅顯示本週分析股票">
-        <div class="text-[11px] font-medium text-slate-500">本週分析股數</div>
-        <div class="mt-1 flex items-baseline justify-between">
-          <span id="kpiTotalCount" class="text-xl font-bold num-col tabular-nums text-slate-800">0</span>
-          <span class="text-[10px] font-medium text-slate-500">檔</span>
+    <section class="kpi-grid" aria-label="分析統計">
+      <button id="kpiCardTotal" type="button" class="lg-btn kpi-card" aria-pressed="false">
+        <span class="kpi-label">本週分析股數</span>
+        <div class="kpi-value-row">
+          <span id="kpiTotalCount" class="kpi-count num-col tabular-nums">0</span>
+          <span class="kpi-unit">檔</span>
         </div>
-      </div>
-      <div id="kpiCardBull" class="liquid-glass float-interactive p-3 cursor-pointer select-none transition-all duration-200" title="點擊篩選買進 / 偏多">
-        <div class="text-[11px] font-medium text-slate-500">偏多 / 買進評級</div>
-        <div class="mt-1 flex items-baseline justify-between">
-          <span id="kpiBullCount" class="text-xl font-bold num-col tabular-nums text-emerald-700">0</span>
-          <span class="text-[10px] font-medium text-emerald-700">偏多</span>
+      </button>
+
+      <button id="kpiCardBull" type="button" class="lg-btn kpi-card" aria-pressed="false">
+        <span class="kpi-label">偏多 / 買進評級</span>
+        <div class="kpi-value-row">
+          <span id="kpiBullCount" class="kpi-count num-col tabular-nums tone-sage">0</span>
+          <span class="kpi-unit tone-sage">偏多</span>
         </div>
-      </div>
-      <div id="kpiCardHold" class="liquid-glass float-interactive p-3 cursor-pointer select-none transition-all duration-200" title="點擊篩選持有 / 觀望">
-        <div class="text-[11px] font-medium text-slate-500">區間持有 / 觀望</div>
-        <div class="mt-1 flex items-baseline justify-between">
-          <span id="kpiHoldCount" class="text-xl font-bold num-col tabular-nums text-amber-700">0</span>
-          <span class="text-[10px] font-medium text-amber-700">觀望</span>
+      </button>
+
+      <button id="kpiCardHold" type="button" class="lg-btn kpi-card" aria-pressed="false">
+        <span class="kpi-label">區間持有 / 觀望</span>
+        <div class="kpi-value-row">
+          <span id="kpiHoldCount" class="kpi-count num-col tabular-nums tone-ochre">0</span>
+          <span class="kpi-unit tone-ochre">觀望</span>
         </div>
-      </div>
-      <div id="kpiCardBear" class="liquid-glass float-interactive p-3 cursor-pointer select-none transition-all duration-200" title="點擊篩選賣出 / 減碼">
-        <div class="text-[11px] font-medium text-slate-500">減碼 / 風險警示</div>
-        <div class="mt-1 flex items-baseline justify-between">
-          <span id="kpiBearCount" class="text-xl font-bold num-col tabular-nums text-rose-700">0</span>
-          <span class="text-[10px] font-medium text-rose-700">減碼</span>
+      </button>
+
+      <button id="kpiCardBear" type="button" class="lg-btn kpi-card" aria-pressed="false">
+        <span class="kpi-label">減碼 / 風險警示</span>
+        <div class="kpi-value-row">
+          <span id="kpiBearCount" class="kpi-count num-col tabular-nums tone-rose">0</span>
+          <span class="kpi-unit tone-rose">減碼</span>
         </div>
-      </div>
+      </button>
     </section>
 
-    <!-- 區塊：分析結果 ＆ 股市排行榜雙頁籤 -->
-    <section class="relative z-20 liquid-glass p-3.5 sm:p-4 space-y-2.5">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-2.5 border-b border-slate-200/60 pb-2.5">
-        <!-- 雙頁籤膠囊切換：分析結果 | 股市排行榜 -->
-        <div class="inline-flex items-center p-1 rounded-[12px] bg-slate-200/60 border border-white/80 shadow-inner self-start md:self-auto shrink-0" role="tablist" aria-label="主頁籤切換">
-          <button id="tabBtnResults" type="button" role="tab" aria-selected="true"
-            class="px-3.5 py-1.5 rounded-[9px] text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer bg-white/95 text-slate-800 shadow-sm">
+    <section id="mainPanel" class="lg-glass">
+      <div class="toolbar-shell">
+        <div class="tab-switch-bar" role="tablist" aria-label="功能切換">
+          <button id="tabBtnResults" type="button" role="tab" aria-selected="true" class="lg-btn tab-btn is-active">
             分析結果
           </button>
-          <button id="tabBtnLeaderboard" type="button" role="tab" aria-selected="false"
-            class="px-3.5 py-1.5 rounded-[9px] text-xs sm:text-sm font-medium transition-all duration-200 cursor-pointer text-slate-600 hover:text-slate-900">
+          <button id="tabBtnLeaderboard" type="button" role="tab" aria-selected="false" class="lg-btn tab-btn">
             股市排行榜
           </button>
         </div>
 
-        <!-- 工具列 1：分析結果搜尋與篩選 -->
-        <div id="resultsToolbar" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-          <!-- 搜尋已分析股票 -->
-          <div class="relative w-full sm:w-48">
-            <div class="h-8 liquid-pill float-interactive flex items-center px-2.5 gap-1.5">
-              <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-              <input
-                id="stockFilterInput"
-                type="text"
-                autocomplete="off"
-                placeholder="搜尋已分析標的..."
-                class="w-full bg-transparent text-xs text-slate-900 placeholder-slate-400 focus:outline-none font-medium"
-              />
-              <button id="btnClearFilter" type="button" class="hidden whitespace-nowrap shrink-0 text-[10px] text-slate-400 hover:text-slate-700 px-1">✕</button>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-3 gap-1.5 sm:w-auto w-full shrink-0">
-          <div class="dropdown-anchor" id="filterMarketAnchor">
-            <button type="button" class="filter-trigger w-full liquid-pill float-interactive px-2.5 py-1.5 text-xs text-slate-800 flex items-center justify-between gap-1 cursor-pointer font-medium">
-              <span id="filterMarketLabel" class="truncate">全部市場</span>
-              <svg class="w-3.5 h-3.5 text-slate-500 chevron-icon shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="6 9 12 15 18 9"></polyline>
+        <div id="resultsToolbar" class="results-toolbar">
+          <div class="search-box-glass lg-pill-surface">
+            <svg class="lg-icon-sm tone-slate" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input
+              id="stockFilterInput"
+              type="text"
+              autocomplete="off"
+              placeholder="搜尋代號或名稱"
+              aria-label="搜尋代號或名稱"
+              class="search-input"
+            />
+            <button id="btnClearFilter" type="button" class="lg-btn btn-clear-search hidden" aria-label="清除搜尋">
+              <svg class="lg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
             </button>
-            <div class="dropdown-menu-accordion">
-              <div class="accordion-content">
-                <div class="liquid-glass-popover p-1 space-y-0.5">
-                  <button type="button" data-filter-market="ALL" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-slate-800 hover:bg-slate-100 font-medium cursor-pointer">全部市場</button>
-                  <button type="button" data-filter-market="TW" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-slate-800 hover:bg-slate-100 font-medium cursor-pointer">台股 (TW)</button>
-                  <button type="button" data-filter-market="US" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-slate-800 hover:bg-slate-100 font-medium cursor-pointer">美股 (US)</button>
-                </div>
-              </div>
-            </div>
           </div>
 
-          <div class="dropdown-anchor" id="filterRatingAnchor">
-            <button type="button" class="filter-trigger w-full liquid-pill float-interactive px-2.5 py-1.5 text-xs text-slate-800 flex items-center justify-between gap-1.5 cursor-pointer font-medium">
-              <span id="filterRatingLabel" class="truncate">全部評級</span>
-              <svg class="w-3.5 h-3.5 text-slate-500 chevron-icon shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-            </button>
-            <div class="dropdown-menu-accordion">
-              <div class="accordion-content">
-                <div class="liquid-glass-popover p-1 space-y-0.5">
-                  <button type="button" data-filter-rating="ALL" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-slate-800 hover:bg-slate-100 font-medium cursor-pointer">全部評級</button>
-                  <button type="button" data-filter-rating="BUY" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-emerald-700 hover:bg-emerald-50 font-medium cursor-pointer">買進 / 偏多</button>
-                  <button type="button" data-filter-rating="HOLD" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-amber-700 hover:bg-amber-50 font-medium cursor-pointer">持有 / 觀望</button>
-                  <button type="button" data-filter-rating="SELL" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-rose-700 hover:bg-rose-50 font-medium cursor-pointer">減碼 / 賣出</button>
-                </div>
-              </div>
+          <div class="filter-grid">
+            <div class="dropdown-anchor" id="filterMarketAnchor">
+              <button type="button" class="lg-btn filter-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span id="filterMarketLabel" class="filter-trigger-label">全部市場</span>
+                <svg class="lg-icon-xs chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
             </div>
-          </div>
 
-          <div class="dropdown-anchor" id="filterSortAnchor">
-            <button type="button" class="filter-trigger w-full liquid-pill float-interactive px-2.5 py-1.5 text-xs text-slate-800 flex items-center justify-between gap-1.5 cursor-pointer font-medium">
-              <span id="filterSortLabel" class="truncate">最新日期</span>
-              <svg class="w-3.5 h-3.5 text-slate-500 chevron-icon shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-            </button>
-            <div class="dropdown-menu-accordion">
-              <div class="accordion-content">
-                <div class="liquid-glass-popover p-1 space-y-0.5">
-                  <button type="button" data-filter-sort="DATE" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-slate-800 hover:bg-slate-100 font-medium cursor-pointer">最新分析日期</button>
-                  <button type="button" data-filter-sort="KRONOS" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-slate-800 hover:bg-slate-100 font-medium cursor-pointer">Kronos 預測漲幅</button>
-                  <button type="button" data-filter-sort="QLIB" class="w-full text-left px-2.5 py-1.5 rounded-[8px] text-xs text-slate-800 hover:bg-slate-100 font-medium cursor-pointer">Qlib 量化排名</button>
-                </div>
-              </div>
+            <div class="dropdown-anchor" id="filterRatingAnchor">
+              <button type="button" class="lg-btn filter-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span id="filterRatingLabel" class="filter-trigger-label">全部評級</span>
+                <svg class="lg-icon-xs chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
             </div>
-          </div>
+
+            <div class="dropdown-anchor" id="filterSortAnchor">
+              <button type="button" class="lg-btn filter-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span id="filterSortLabel" class="filter-trigger-label">最新日期</span>
+                <svg class="lg-icon-xs chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- 工具列 2：股市排行榜專屬切換（台股 Top 10 / 美股 Top 10 ＋ 獨立資料收盤日） -->
-        <div id="leaderboardToolbar" class="hidden flex items-center justify-between sm:justify-end gap-2 flex-wrap">
-          <div class="inline-flex items-center p-0.5 rounded-[10px] bg-slate-200/55 border border-white/75 shadow-inner shrink-0">
-            <button id="lbMarketBtnTW" type="button" class="px-2.5 py-1 rounded-[8px] text-xs font-bold transition-all duration-150 cursor-pointer bg-white/95 text-slate-800 shadow-sm">
+        <div id="leaderboardToolbar" class="leaderboard-toolbar hidden">
+          <div class="lb-market-switch">
+            <button id="lbMarketBtnTW" type="button" class="lg-btn lb-market-btn is-active">
               台股 Top 10
             </button>
-            <button id="lbMarketBtnUS" type="button" class="px-2.5 py-1 rounded-[8px] text-xs font-medium transition-all duration-150 cursor-pointer text-slate-600 hover:text-slate-900">
+            <button id="lbMarketBtnUS" type="button" class="lg-btn lb-market-btn">
               美股 Top 10
             </button>
           </div>
-          <span id="lbTradeDateBadge" class="text-[11px] font-medium text-slate-600 badge-slate px-2 py-1 num-col">資料收盤：—</span>
+          <span id="lbTradeDateBadge" class="badge-pill badge-slate num-col tabular-nums">資料收盤：—</span>
         </div>
       </div>
 
-      <div id="overviewCardsContainer" class="space-y-2"></div>
-      <div id="leaderboardContainer" class="hidden space-y-2"></div>
+      <div id="overviewCardsContainer" class="cards-stack"></div>
+      <div id="leaderboardContainer" class="cards-stack hidden"></div>
     </section>
   </div>
 
-  <!-- 輕量浮動 Toast 提示 -->
-  <div id="toastNotification" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[120] hidden pointer-events-none transition-all duration-200">
-    <div class="liquid-glass-popover px-4 py-2 text-xs font-semibold text-slate-800 shadow-lg border border-white/90 whitespace-nowrap">
+  <!-- 頂層 Portal 下拉選單（直接掛載於 document.body，採雙層冰晶與 0.42s 手風琴） -->
+  <div class="lg-portal-dropdown lg-ice-frame hidden" data-portal-menu="market" role="listbox" aria-hidden="true">
+    <div class="lg-inner-glass">
+      <div class="lg-accordion">
+        <div class="lg-accordion-inner">
+          <div class="lg-menu-list">
+            <button type="button" data-filter-market="ALL" class="lg-btn lg-menu-item is-selected">全部市場</button>
+            <button type="button" data-filter-market="TW" class="lg-btn lg-menu-item">台股 (TW)</button>
+            <button type="button" data-filter-market="US" class="lg-btn lg-menu-item">美股 (US)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lg-portal-dropdown lg-ice-frame hidden" data-portal-menu="rating" role="listbox" aria-hidden="true">
+    <div class="lg-inner-glass">
+      <div class="lg-accordion">
+        <div class="lg-accordion-inner">
+          <div class="lg-menu-list">
+            <button type="button" data-filter-rating="ALL" class="lg-btn lg-menu-item is-selected">全部評級</button>
+            <button type="button" data-filter-rating="BUY" class="lg-btn lg-menu-item">買進 / 偏多</button>
+            <button type="button" data-filter-rating="HOLD" class="lg-btn lg-menu-item">持有 / 觀望</button>
+            <button type="button" data-filter-rating="SELL" class="lg-btn lg-menu-item">減碼 / 賣出</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lg-portal-dropdown lg-ice-frame hidden" data-portal-menu="sort" role="listbox" aria-hidden="true">
+    <div class="lg-inner-glass">
+      <div class="lg-accordion">
+        <div class="lg-accordion-inner">
+          <div class="lg-menu-list">
+            <button type="button" data-filter-sort="DATE" class="lg-btn lg-menu-item is-selected">最新分析日期</button>
+            <button type="button" data-filter-sort="KRONOS" class="lg-btn lg-menu-item">Kronos 預測漲幅</button>
+            <button type="button" data-filter-sort="QLIB" class="lg-btn lg-menu-item">Qlib 量化排名</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 頂層 Portal 懸浮通知（直接掛載於 document.body，雙層冰晶結構） -->
+  <div id="toastNotification" class="lg-portal-toast lg-ice-frame hidden" role="status" aria-live="polite">
+    <div class="lg-inner-glass lg-toast-inner">
+      <svg class="lg-icon-sm tone-sage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
       <span id="toastText">已複製</span>
     </div>
   </div>
 
-  <script>
-    // 預設最新種子資料
-    const SEED_RECORDS = [
-  {
-    "id": "765aa770",
-    "code": "2449",
-    "yf": "2449.TW",
-    "name": "京元電子",
-    "market": "TW",
-    "trade_date": "2026-11-12",
-    "updated_at": "2026-11-12T10:41:25+00:00",
-    "status": "done",
-    "rating": "減碼／偏低配（Underweight）",
-    "rating_note": "現價 214.00 元跌破 20 日均線 251.20 元，動能轉弱建議逢反彈減碼",
-    "target_price": "318.54 元",
-    "stop_price": "204.53 元",
-    "horizon": "1～3 個月",
-    "confirm_price": "日線收盤站穩 266.23 元",
-    "close": 214.0,
-    "chg_1d_pct": -7.36,
-    "per": 28.42,
-    "eps_this": 8.17468,
-    "eps_next": 13.548,
-    "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
-    "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
-    "t_side": "偏空",
-    "k_side": "偏多",
-    "q_side": "偏空",
-    "k_median_20d_pct": 27.51,
-    "q_percentile": 7.0,
-    "summary_pdf_url": "https://drive.google.com/file/d/1oL_FRkerdDRwxaYd66kU-6pvWY4ryUH2/view",
-    "full_pdf_url": "https://drive.google.com/file/d/1zZevX7VD5rAUv5x9KDf56SbbO5Q_lPgN/view",
-    "kronos_png_url": "https://drive.google.com/file/d/1Kjdcn2igPFxQM-Z05_vkxd_j7LxD89Tb/view"
-  },
-  {
-    "id": "0d279a54",
-    "code": "00631L",
-    "yf": "00631L.TW",
-    "name": "元大台灣50正2",
-    "market": "TW",
-    "trade_date": "2026-11-12",
-    "updated_at": "2026-11-12T09:33:08+00:00",
-    "status": "done",
-    "rating": "賣出（Sell）",
-    "rating_note": "現價 30.99 元位於 20 日均線 33.93 與 60 日均線 36.16 元之下，建議優先避險出場",
-    "target_price": "41.94 元",
-    "stop_price": "26.87 元",
-    "horizon": "1～3 個月",
-    "confirm_price": "日線收盤站穩 36.16 元",
-    "close": 30.99,
-    "chg_1d_pct": 2.45,
-    "per": null,
-    "eps_this": null,
-    "eps_next": null,
-    "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
-    "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
-    "t_side": "偏空",
-    "k_side": "偏多",
-    "q_side": "偏空",
-    "k_median_20d_pct": 21.16,
-    "q_percentile": 10.0,
-    "summary_pdf_url": "https://drive.google.com/file/d/1pFTjRLYL4b_Zz-f9sZvuGo32-6Pt-hLa/view",
-    "full_pdf_url": "https://drive.google.com/file/d/1j6r0qc-lzrAqxRBR0DkLoMwQMM7Sc2Ik/view",
-    "kronos_png_url": "https://drive.google.com/file/d/1YFT1rVS98MLUi_MVMrwbjgmGeFjkiTgZ/view"
-  },
-  {
-    "id": "KpX1mgZIw_24gq2fZ-8-Ww",
-    "code": "NVDA",
-    "yf": "NVDA",
-    "name": "輝達 (NVIDIA)",
-    "market": "US",
-    "trade_date": "2026-11-11",
-    "updated_at": "2026-11-12T12:02:47+00:00",
-    "status": "done",
-    "rating": "減碼／偏低配（Underweight）",
-    "rating_note": "現價 173.73 美元跌破 20 日均線 203.80 美元，動能轉弱建議逢反彈減碼",
-    "target_price": "309.72 美元",
-    "stop_price": "170.64 美元",
-    "horizon": "1～3 個月",
-    "confirm_price": "日線收盤站穩 217.00 美元",
-    "close": 173.73,
-    "chg_1d_pct": 2.87,
-    "per": 21.96,
-    "eps_this": 9.32085,
-    "eps_next": 15.9271,
-    "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
-    "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
-    "t_side": "偏空",
-    "k_side": "偏多",
-    "q_side": "偏空",
-    "k_median_20d_pct": 16.53,
-    "q_percentile": 3.0,
-    "summary_pdf_url": "https://drive.google.com/file/d/1dgmO_5nG5196MYQHMML3aKPg__zJ2HX6/view",
-    "full_pdf_url": "https://drive.google.com/file/d/1Pfxn66Y4ppK_Asay9Y8H6Z22txmjgayk/view",
-    "kronos_png_url": "https://drive.google.com/file/d/1Jxk6szmkJX1Q_LCWgeR3Hz68DLIhT-03/view"
-  },
-  {
-    "id": "p1SE_myKUjbN6Pvowd_M1Q",
-    "code": "0050",
-    "yf": "0050.TW",
-    "name": "元大台灣50",
-    "market": "TW",
-    "trade_date": "2026-11-11",
-    "updated_at": "2026-11-11T14:14:00+00:00",
-    "status": "done",
-    "rating": "賣出（Sell）",
-    "rating_note": "現價 103.20 元位於 20 日均線 104.51 與 60 日均線 107.57 元之下，建議優先避險出場",
-    "target_price": "116.60 元",
-    "stop_price": "94.29 元",
-    "horizon": "1～3 個月",
-    "confirm_price": "日線收盤站穩 107.57 元",
-    "close": 103.2,
-    "chg_1d_pct": 3.51,
-    "per": null,
-    "eps_this": null,
-    "eps_next": null,
-    "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
-    "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
-    "t_side": "偏空",
-    "k_side": "偏多",
-    "q_side": "偏空",
-    "k_median_20d_pct": 7.2,
-    "q_percentile": 12.0,
-    "summary_pdf_url": "https://drive.google.com/file/d/13ZpTSnRqAfEiVozamzXm0FmQ-RfkIwo2/view",
-    "full_pdf_url": "https://drive.google.com/file/d/1fwB14iqAbgJGsc4H5hbAFbsM7Pikug_8/view",
-    "kronos_png_url": "https://drive.google.com/file/d/1wohlcdQd7VOqgvxhRaRUJhWDyd-Rf_G3/view"
-  },
-  {
-    "id": "jO9lEDsu6dIGaEFS1s1H1g",
-    "code": "3037",
-    "yf": "3037.TW",
-    "name": "欣興",
-    "market": "TW",
-    "trade_date": "2026-11-11",
-    "updated_at": "2026-11-11T13:13:59+00:00",
-    "status": "done",
-    "rating": "減碼／偏低配（Underweight）",
-    "rating_note": "現價 864.00 元跌破 20 日均線 987.35 元，動能轉弱建議逢反彈減碼",
-    "target_price": "1427.37 元",
-    "stop_price": "717.55 元",
-    "horizon": "1～3 個月",
-    "confirm_price": "日線收盤站穩 1057.25 元",
-    "close": 864.0,
-    "chg_1d_pct": 4.35,
-    "per": 44.72,
-    "eps_this": 24.54535,
-    "eps_next": 42.13291,
-    "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
-    "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
-    "t_side": "偏空",
-    "k_side": "偏多",
-    "q_side": "偏空",
-    "k_median_20d_pct": 10.06,
-    "q_percentile": 9.0,
-    "summary_pdf_url": "https://drive.google.com/file/d/19Ld7cercWZDStxgHjOQ386JjGgmuYAcY/view",
-    "full_pdf_url": "https://drive.google.com/file/d/1lmtkQKxo5fuTZ0j0X-Tpbt4u3qqouzL6/view",
-    "kronos_png_url": "https://drive.google.com/file/d/1KfOcfWzidQV-tZ8FvhkKjzxV84G1MIiy/view"
-  },
-  {
-    "id": "Z-NrmsAFSuMBi3l1XfMo9w",
-    "code": "2330",
-    "yf": "2330.TW",
-    "name": "台積電",
-    "market": "TW",
-    "trade_date": "2026-11-11",
-    "updated_at": "2026-11-11T13:09:43+00:00",
-    "status": "done",
-    "rating": "加碼（Overweight）",
-    "rating_note": "現價 2395.00 元維持多頭結構，可於 20 日均線 2357.50 元附近偏多配置",
-    "target_price": "3409.80 元",
-    "stop_price": "2180.49 元",
-    "horizon": "1～3 個月",
-    "confirm_price": "日線收盤站穩 2416.67 元",
-    "close": 2395.0,
-    "chg_1d_pct": 4.81,
-    "per": 27.76,
-    "eps_this": 110.62572,
-    "eps_next": 149.53442,
-    "consensus_badge": "【基本面與量化/型態背離・分批慢買】",
-    "consensus_advice": "T 模型基本面與中長期邏輯看多，但 Q 量化動能或 K 短期走勢偏弱（常見於價值股左側打底或短線漲多修正），建議拉長布局週期、縮小單筆部位，靜待技術面站上轉強確認價。",
-    "t_side": "偏多",
-    "k_side": "偏多",
-    "q_side": "偏空",
-    "k_median_20d_pct": 5.11,
-    "q_percentile": 26.0,
-    "summary_pdf_url": "https://drive.google.com/file/d/1a5hFZvTX8AhjtZU8wekXL7iWUG9XRbZd/view",
-    "full_pdf_url": "https://drive.google.com/file/d/1WGxbL2wnhQ3KxAImmW19nUbjqRigxmzf/view",
-    "kronos_png_url": "https://drive.google.com/file/d/1tlTdHxLXENapG8lf4HxTeAbo2z6Rr-PR/view"
-  },
-  {
-    "id": "WqK1ha3gsQZTsqCT_tYQvw",
-    "code": "NVDA",
-    "yf": "NVDA",
-    "name": "輝達 (NVIDIA)",
-    "market": "US",
-    "trade_date": "2026-11-10",
-    "updated_at": "2026-11-11T13:14:50+00:00",
-    "status": "done",
-    "rating": "減碼／偏低配（Underweight）",
-    "rating_note": "現價 168.89 美元跌破 20 日均線 206.18 美元，動能轉弱建議逢反彈減碼",
-    "target_price": "325.78 美元",
-    "stop_price": "175.36 美元",
-    "horizon": "1～3 個月",
-    "confirm_price": "日線收盤站穩 217.77 美元",
-    "close": 168.89,
-    "chg_1d_pct": -5.47,
-    "per": 21.35,
-    "eps_this": 9.31674,
-    "eps_next": 15.92806,
-    "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
-    "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
-    "t_side": "偏空",
-    "k_side": "偏多",
-    "q_side": "偏空",
-    "k_median_20d_pct": 20.01,
-    "q_percentile": 3.0,
-    "summary_pdf_url": "https://drive.google.com/file/d/1brbDj2bV0tovVf6EJdGYhBNtQdkay2Ug/view",
-    "full_pdf_url": "https://drive.google.com/file/d/11GwI1iuUD6JYt7CI_3bXx-6IptazsX3j/view",
-    "kronos_png_url": "https://drive.google.com/file/d/1GDULtj2N-AIXGR76i70lCLviefpVYZhc/view"
-  },
-  {
-    "id": "LAfgZzTAVFWwZapGBKbqSQ",
-    "code": "3037",
-    "yf": "3037.TW",
-    "name": "欣興",
-    "market": "TW",
-    "trade_date": "2026-11-10",
-    "updated_at": "2026-11-10T11:45:41+00:00",
-    "status": "done",
-    "rating": "減碼／偏低配（Underweight）",
-    "rating_note": "現價 828.00 元跌破 20 日均線 1003.15 元，動能轉弱建議逢反彈減碼",
-    "target_price": "1427.37 元",
-    "stop_price": "726.83 元",
-    "horizon": "1～3 個月",
-    "confirm_price": "日線收盤站穩 1059.52 元",
-    "close": 828.0,
-    "chg_1d_pct": 9.38,
-    "per": 42.86,
-    "eps_this": 24.54535,
-    "eps_next": 42.13291,
-    "consensus_badge": "【三向共振・保守避險】",
-    "consensus_advice": "T、K、Q 三模型同步偏空，顯示基本面、技術型態與量化因子動能皆處於弱勢，建議嚴格控管風險、優先減碼或觀望，切勿盲目摸底。",
-    "t_side": "偏空",
-    "k_side": "偏空",
-    "q_side": "偏空",
-    "k_median_20d_pct": -19.94,
-    "q_percentile": 9.0,
-    "summary_pdf_url": "https://drive.google.com/file/d/1BnlPy1ZnHXd58ASS-YkhGTauap-vMQb4/view",
-    "full_pdf_url": "https://drive.google.com/file/d/1c2tPSaXVyVBfCo0-8W-Kt4QPgFoRTl_0/view",
-    "kronos_png_url": "https://drive.google.com/file/d/1b7U365qV8ZVr_XeMa2d29pnlaEgwxZPU/view"
-  },
-  {
-    "id": "xP6ldTr3kkOTUw3dxAqJ3w",
-    "code": "2330",
-    "yf": "2330.TW",
-    "name": "台積電",
-    "market": "TW",
-    "trade_date": "2026-11-10",
-    "updated_at": "2026-11-10T11:41:14+00:00",
-    "status": "done",
-    "rating": "持有（Hold）",
-    "rating_note": "現價 2285.00 元處於區間整理，建議於 2176.14 至 2548.36 元間觀望持有",
-    "target_price": "3409.80 元",
-    "stop_price": "2176.14 元",
-    "horizon": "1～3 個月",
-    "confirm_price": "日線收盤站穩 2417.33 元",
-    "close": 2285.0,
-    "chg_1d_pct": 2.24,
-    "per": 26.49,
-    "eps_this": 110.62572,
-    "eps_next": 149.53442,
-    "consensus_badge": "【多空分歧・區間震盪觀望】",
-    "consensus_advice": "三模型訊號呈現中性或分歧，市場處於多空平衡整理階段，建議維持中性部位，於支撐與壓力區間內高出低進。",
-    "t_side": "中性",
-    "k_side": "偏多",
-    "q_side": "偏空",
-    "k_median_20d_pct": 4.97,
-    "q_percentile": 8.0,
-    "summary_pdf_url": "https://drive.google.com/file/d/1MHscBWEdOTf_pJCMs6bEjrgmeb-EQmht/view",
-    "full_pdf_url": "https://drive.google.com/file/d/1HvGokJex1-n6VjpKsCShCAoG_trVHyvg/view",
-    "kronos_png_url": "https://drive.google.com/file/d/1MCGiIb7bk2mV6ORYEYM98mTpIseEvx2z/view"
-  },
-  {
-    "id": "wvqmxliNQk15_2QW_OK4Mw",
-    "code": "NVDA",
-    "yf": "NVDA",
-    "name": "輝達 (NVIDIA)",
-    "market": "US",
-    "trade_date": "2026-11-09",
-    "updated_at": "2026-11-10T11:43:44+00:00",
-    "status": "done",
-    "rating": "減碼／偏低配（Underweight）",
-    "rating_note": "現價 178.67 美元跌破 20 日均線 209.16 美元，動能轉弱建議逢反彈減碼",
-    "target_price": "325.78 美元",
-    "stop_price": "182.24 美元",
-    "horizon": "1～3 個月",
-    "confirm_price": "日線收盤站穩 218.71 美元",
-    "close": 178.67,
-    "chg_1d_pct": -4.27,
-    "per": 22.59,
-    "eps_this": 9.31674,
-    "eps_next": 15.92806,
-    "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
-    "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
-    "t_side": "偏空",
-    "k_side": "偏多",
-    "q_side": "偏空",
-    "k_median_20d_pct": 12.83,
-    "q_percentile": 3.0,
-    "summary_pdf_url": "https://drive.google.com/file/d/110M5e0g1S2IcC5YmxrOYWGWY1RE5rCHc/view",
-    "full_pdf_url": "https://drive.google.com/file/d/15Db9BjwoBk3CbJh9lWLftUh8vPSp9HEt/view",
-    "kronos_png_url": "https://drive.google.com/file/d/1N2zaMeBffrbb_q0p9-__gKLG5qZCYi7i/view"
-  }
-];
+  <!-- 頂層原生 <dialog> 走勢圖預覽彈窗（直接掛載於 document.body，雙層冰晶結構） -->
+  <dialog id="kronosModal" class="lg-modal" aria-labelledby="kronosModalTitle">
+    <div class="lg-ice-frame lg-modal-frame">
+      <div class="lg-inner-glass lg-modal-inner">
+        <div class="lg-modal-header">
+          <span id="kronosModalTitle" class="lg-modal-title">K 模型走勢預測</span>
+          <button id="btnCloseKronosModal" type="button" class="lg-btn lg-btn-reset lg-icon-btn" aria-label="關閉預覽">
+            <svg class="lg-icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="lg-modal-body">
+          <img id="kronosModalImg" src="" alt="Kronos 預測圖" class="lg-modal-img" />
+          <div id="kronosModalFallback" class="hidden" style="display:flex;align-items:center;gap:8px;padding:20px;color:var(--ink-3);font-size:12px;">
+            <svg class="lg-icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg>
+            <span>預覽圖未載入</span>
+          </div>
+        </div>
+        <div class="lg-modal-footer">
+          <a id="kronosModalExternalLink" href="#" target="_blank" rel="noopener noreferrer" class="lg-btn lg-btn-muted">
+            <span>開啟原圖</span>
+            <svg class="lg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="7" y1="17" x2="17" y2="7"></line>
+              <polyline points="7 7 17 7 17 17"></polyline>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </dialog>
 
-    const FALLBACK_STOCKS = [
-      { code: "2330", name: "台積電", yf: "2330.TW", market: "TW" },
-      { code: "3037", name: "欣興", yf: "3037.TW", market: "TW" },
-      { code: "2317", name: "鴻海", yf: "2317.TW", market: "TW" },
-      { code: "2454", name: "聯發科", yf: "2454.TW", market: "TW" },
-      { code: "2382", name: "廣達", yf: "2382.TW", market: "TW" },
-      { code: "2308", name: "台達電", yf: "2308.TW", market: "TW" },
-      { code: "3017", name: "奇鋐", yf: "3017.TW", market: "TW" },
-      { code: "3231", name: "緯創", yf: "3231.TW", market: "TW" },
-      { code: "6669", name: "緯穎", yf: "6669.TW", market: "TW" },
-      { code: "2603", name: "長榮", yf: "2603.TW", market: "TW" },
-      { code: "2881", name: "富邦金", yf: "2881.TW", market: "TW" },
-      { code: "2882", name: "國泰金", yf: "2882.TW", market: "TW" },
-      { code: "NVDA", name: "輝達 (NVIDIA)", yf: "NVDA", market: "US" },
-      { code: "MRVL", name: "邁威爾 (Marvell)", yf: "MRVL", market: "US" },
-      { code: "AAPL", name: "蘋果 (Apple)", yf: "AAPL", market: "US" },
-      { code: "MSFT", name: "微軟 (Microsoft)", yf: "MSFT", market: "US" },
-      { code: "AVGO", name: "博通 (Broadcom)", yf: "AVGO", market: "US" },
-      { code: "AMD", name: "超微 (AMD)", yf: "AMD", market: "US" },
-      { code: "TSM", name: "台積電 ADR", yf: "TSM", market: "US" },
-      { code: "TSLA", name: "特斯拉 (Tesla)", yf: "TSLA", market: "US" }
+  <script type="module">
+    import { attachAndroidEdgeStretch } from './js/android-overscroll.js?v=lg1';
+    attachAndroidEdgeStretch(
+      document.scrollingElement || document.documentElement,
+      document.getElementById('app-shell')
+    );
+  </script>
+
+  <script>
+    const SEED_RECORDS = [
+      {
+        "id": "765aa770",
+        "code": "2449",
+        "yf": "2449.TW",
+        "name": "京元電子",
+        "market": "TW",
+        "trade_date": "2026-11-12",
+        "updated_at": "2026-11-12T10:41:25+00:00",
+        "status": "done",
+        "rating": "減碼／偏低配（Underweight）",
+        "rating_note": "現價 214.00 元跌破 20 日均線 251.20 元，動能轉弱建議逢反彈減碼",
+        "target_price": "318.54 元",
+        "stop_price": "204.53 元",
+        "horizon": "1～3 個月",
+        "confirm_price": "日線收盤站穩 266.23 元",
+        "close": 214.0,
+        "chg_1d_pct": -7.36,
+        "per": 28.42,
+        "eps_this": 8.17468,
+        "eps_next": 13.548,
+        "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
+        "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
+        "t_side": "偏空",
+        "k_side": "偏多",
+        "q_side": "偏空",
+        "k_median_20d_pct": 27.51,
+        "q_percentile": 7.0,
+        "summary_pdf_url": "https://drive.google.com/file/d/1oL_FRkerdDRwxaYd66kU-6pvWY4ryUH2/view",
+        "full_pdf_url": "https://drive.google.com/file/d/1zZevX7VD5rAUv5x9KDf56SbbO5Q_lPgN/view",
+        "kronos_png_url": "https://drive.google.com/file/d/1Kjdcn2igPFxQM-Z05_vkxd_j7LxD89Tb/view"
+      },
+      {
+        "id": "0d279a54",
+        "code": "00631L",
+        "yf": "00631L.TW",
+        "name": "元大台灣50正2",
+        "market": "TW",
+        "trade_date": "2026-11-12",
+        "updated_at": "2026-11-12T09:33:08+00:00",
+        "status": "done",
+        "rating": "賣出（Sell）",
+        "rating_note": "現價 30.99 元位於 20 日均線 33.93 與 60 日均線 36.16 元之下，建議優先避險出場",
+        "target_price": "41.94 元",
+        "stop_price": "26.87 元",
+        "horizon": "1～3 個月",
+        "confirm_price": "日線收盤站穩 36.16 元",
+        "close": 30.99,
+        "chg_1d_pct": 2.45,
+        "per": null,
+        "eps_this": null,
+        "eps_next": null,
+        "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
+        "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
+        "t_side": "偏空",
+        "k_side": "偏多",
+        "q_side": "偏空",
+        "k_median_20d_pct": 21.16,
+        "q_percentile": 10.0,
+        "summary_pdf_url": "https://drive.google.com/file/d/1pFTjRLYL4b_Zz-f9sZvuGo32-6Pt-hLa/view",
+        "full_pdf_url": "https://drive.google.com/file/d/1j6r0qc-lzrAqxRBR0DkLoMwQMM7Sc2Ik/view",
+        "kronos_png_url": "https://drive.google.com/file/d/1YFT1rVS98MLUi_MVMrwbjgmGeFjkiTgZ/view"
+      },
+      {
+        "id": "KpX1mgZIw_24gq2fZ-8-Ww",
+        "code": "NVDA",
+        "yf": "NVDA",
+        "name": "輝達 (NVIDIA)",
+        "market": "US",
+        "trade_date": "2026-11-11",
+        "updated_at": "2026-11-12T12:02:47+00:00",
+        "status": "done",
+        "rating": "減碼／偏低配（Underweight）",
+        "rating_note": "現價 173.73 美元跌破 20 日均線 203.80 美元，動能轉弱建議逢反彈減碼",
+        "target_price": "309.72 美元",
+        "stop_price": "170.64 美元",
+        "horizon": "1～3 個月",
+        "confirm_price": "日線收盤站穩 217.00 美元",
+        "close": 173.73,
+        "chg_1d_pct": 2.87,
+        "per": 21.96,
+        "eps_this": 9.32085,
+        "eps_next": 15.9271,
+        "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
+        "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
+        "t_side": "偏空",
+        "k_side": "偏多",
+        "q_side": "偏空",
+        "k_median_20d_pct": 16.53,
+        "q_percentile": 3.0,
+        "summary_pdf_url": "https://drive.google.com/file/d/1dgmO_5nG5196MYQHMML3aKPg__zJ2HX6/view",
+        "full_pdf_url": "https://drive.google.com/file/d/1Pfxn66Y4ppK_Asay9Y8H6Z22txmjgayk/view",
+        "kronos_png_url": "https://drive.google.com/file/d/1Jxk6szmkJX1Q_LCWgeR3Hz68DLIhT-03/view"
+      },
+      {
+        "id": "Z-NrmsAFSuMBi3l1XfMo9w",
+        "code": "2330",
+        "yf": "2330.TW",
+        "name": "台積電",
+        "market": "TW",
+        "trade_date": "2026-11-11",
+        "updated_at": "2026-11-11T13:09:43+00:00",
+        "status": "done",
+        "rating": "加碼（Overweight）",
+        "rating_note": "現價 2395.00 元維持多頭結構，可於 20 日均線 2357.50 元附近偏多配置",
+        "target_price": "3409.80 元",
+        "stop_price": "2180.49 元",
+        "horizon": "1～3 個月",
+        "confirm_price": "日線收盤站穩 2416.67 元",
+        "close": 2395.0,
+        "chg_1d_pct": 4.81,
+        "per": 27.76,
+        "eps_this": 110.62572,
+        "eps_next": 149.53442,
+        "consensus_badge": "【基本面與量化/型態背離・分批慢買】",
+        "consensus_advice": "T 模型基本面與中長期邏輯看多，但 Q 量化動能或 K 短期走勢偏弱（常見於價值股左側打底或短線漲多修正），建議拉長布局週期、縮小單筆部位，靜待技術面站上轉強確認價。",
+        "t_side": "偏多",
+        "k_side": "偏多",
+        "q_side": "偏空",
+        "k_median_20d_pct": 5.11,
+        "q_percentile": 26.0,
+        "summary_pdf_url": "https://drive.google.com/file/d/1a5hFZvTX8AhjtZU8wekXL7iWUG9XRbZd/view",
+        "full_pdf_url": "https://drive.google.com/file/d/1WGxbL2wnhQ3KxAImmW19nUbjqRigxmzf/view",
+        "kronos_png_url": "https://drive.google.com/file/d/1tlTdHxLXENapG8lf4HxTeAbo2z6Rr-PR/view"
+      }
     ];
 
     const state = {
       records: [...SEED_RECORDS],
-      stockIndex: [],
       leaderboard: null,
       activeTab: "results",
       leaderboardMarket: "TW",
@@ -809,12 +1626,38 @@
       filterRating: "ALL",
       filterSort: "DATE",
       filterThisWeekOnly: false,
+      showOlderRecords: false,
       expandedIds: new Set(),
       gasUrl: localStorage.getItem("stock_ai_gas_url") || "",
       deferredPrompt: null
     };
 
-    // 將日期格式化為清楚的中文年月日（如：2026年11月11日）
+    const DROPDOWN_MAP = {
+      filterMarketAnchor: "market",
+      filterRatingAnchor: "rating",
+      filterSortAnchor: "sort"
+    };
+
+    const closeTimers = new WeakMap();
+    let activePortalName = null;
+    let activeAnchorEl = null;
+
+    function escapeHtml(val) {
+      return String(val ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function sanitizeUrl(url) {
+      const raw = String(url || "").trim();
+      if (!raw) return "";
+      if (raw.startsWith("https://") || raw.startsWith("http://")) return raw;
+      return "";
+    }
+
     function formatZhDate(tradeDateStr, updatedAtStr) {
       const raw = tradeDateStr || (updatedAtStr ? String(updatedAtStr).slice(0, 10) : "");
       if (!raw) return "近期";
@@ -825,10 +1668,9 @@
       return raw;
     }
 
-    // 移除投資建議後方的英文括號說明（如（Overweight）、（Underweight）等）
     function formatRatingZh(ratingStr) {
       if (!ratingStr) return "持有";
-      let s = String(ratingStr).replace(/[\(（][A-Za-z\s\/-]+[\)）]/g, '').trim();
+      const s = String(ratingStr).replace(/[\(（][A-Za-z\s\/-]+[\)）]/g, "").trim();
       if (s === "減碼／偏低配" || s === "減碼/偏低配") return "減碼";
       return s || ratingStr;
     }
@@ -851,15 +1693,15 @@
     }
 
     function getKronosImageUrl(url) {
-      if (!url) return "";
-      const m = String(url).match(/\/d\/([A-Za-z0-9_-]+)/);
+      const safe = sanitizeUrl(url);
+      if (!safe) return "";
+      const m = safe.match(/\/d\/([A-Za-z0-9_-]+)/);
       if (m) {
         return `https://lh3.googleusercontent.com/d/${m[1]}`;
       }
-      return url;
+      return safe;
     }
 
-    // 台灣時間 UTC+8 輔助函式：取得本週一至週五日期區間與分析歸屬
     function getTaipeiDateStr(isoOrDateStr) {
       if (!isoOrDateStr) return "";
       const d = new Date(isoOrDateStr);
@@ -878,11 +1720,10 @@
       const now = new Date();
       const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
       const taipeiNow = new Date(utc + (3600000 * 8));
-      const day = taipeiNow.getDay(); // 0 是週日，1 是週一
-      const diffToMonday = (day === 0 ? 6 : day - 1);
+      const day = taipeiNow.getDay();
+      const diffToMonday = day === 0 ? 6 : day - 1;
       const monday = new Date(taipeiNow);
       monday.setDate(taipeiNow.getDate() - diffToMonday);
-
       const friday = new Date(monday);
       friday.setDate(monday.getDate() + 4);
 
@@ -892,11 +1733,7 @@
         const date = String(d.getDate()).padStart(2, "0");
         return `${y}-${m}-${date}`;
       };
-
-      return {
-        monday: formatYMD(monday),
-        friday: formatYMD(friday)
-      };
+      return { monday: formatYMD(monday), friday: formatYMD(friday) };
     }
 
     function isAnalyzedThisWeek(record) {
@@ -905,7 +1742,6 @@
       return analysisDate >= monday && analysisDate <= friday;
     }
 
-    // 去重統計：每支股票只取最新一筆分析紀錄
     function getDeduplicatedRecords(allRecords) {
       const map = new Map();
       for (const r of allRecords) {
@@ -925,51 +1761,134 @@
       return Array.from(map.values());
     }
 
-    function closeAllDropdowns(exceptMenu = null) {
-      document.querySelectorAll(".dropdown-menu-accordion").forEach((menu) => {
-        if (menu !== exceptMenu) {
-          menu.classList.remove("is-open");
-          const parent = menu.closest(".dropdown-anchor");
-          if (parent) parent.classList.remove("is-open-trigger");
+    function positionPortalMenu(menu, anchorEl) {
+      const rect = anchorEl.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const minW = menu.dataset.portalMenu === "sort" ? 174 : 152;
+      const width = Math.min(vw - 20, Math.max(rect.width, minW));
+      const left = Math.min(Math.max(10, rect.left), vw - width - 10);
+
+      menu.style.width = `${width}px`;
+      menu.style.left = `${left}px`;
+
+      const estHeight = 220;
+      if (rect.bottom + 8 + estHeight > vh - 16 && rect.top > estHeight) {
+        menu.style.top = "auto";
+        menu.style.bottom = `${vh - rect.top + 8}px`;
+      } else {
+        menu.style.bottom = "auto";
+        menu.style.top = `${rect.bottom + 8}px`;
+      }
+    }
+
+    function closePortalMenu(menu) {
+      if (!menu || menu.classList.contains("hidden")) return;
+      const acc = menu.querySelector(".lg-accordion");
+      if (acc) acc.classList.remove("is-open");
+      menu.classList.remove("lg-pop-enter");
+      menu.classList.add("lg-pop-exit");
+      menu.setAttribute("aria-hidden", "true");
+
+      const prevTimer = closeTimers.get(menu);
+      if (prevTimer) clearTimeout(prevTimer);
+      const t = setTimeout(() => {
+        menu.classList.add("hidden");
+        menu.classList.remove("lg-pop-exit");
+      }, 220);
+      closeTimers.set(menu, t);
+    }
+
+    function closeAllDropdowns(exceptName = null) {
+      document.querySelectorAll(".lg-portal-dropdown").forEach((menu) => {
+        if (menu.dataset.portalMenu !== exceptName) {
+          closePortalMenu(menu);
         }
       });
-      const panel = document.getElementById("sectionSearchPanel");
-      if (panel && !document.querySelector(".dropdown-menu-accordion.is-open")) {
-        panel.style.zIndex = "40";
+      document.querySelectorAll(".dropdown-anchor").forEach((anchor) => {
+        const name = DROPDOWN_MAP[anchor.id];
+        if (name !== exceptName) {
+          anchor.classList.remove("is-open-trigger");
+          const btn = anchor.querySelector(".filter-trigger");
+          if (btn) btn.setAttribute("aria-expanded", "false");
+        }
+      });
+      if (!exceptName) {
+        activePortalName = null;
+        activeAnchorEl = null;
       }
     }
 
     function toggleDropdown(anchorEl) {
-      const menu = anchorEl.querySelector(".dropdown-menu-accordion");
+      const name = DROPDOWN_MAP[anchorEl.id];
+      const menu = document.querySelector(`.lg-portal-dropdown[data-portal-menu="${name}"]`);
       if (!menu) return;
-      const willOpen = !menu.classList.contains("is-open");
-      closeAllDropdowns(menu);
-      menu.classList.toggle("is-open", willOpen);
-      anchorEl.classList.toggle("is-open-trigger", willOpen);
 
-      const panel = document.getElementById("sectionSearchPanel");
-      if (panel) {
-        panel.style.zIndex = willOpen ? "100" : "40";
+      const isCurrentlyOpen = !menu.classList.contains("hidden") && !menu.classList.contains("lg-pop-exit");
+      closeAllDropdowns(isCurrentlyOpen ? null : name);
+      if (isCurrentlyOpen) return;
+
+      const prevTimer = closeTimers.get(menu);
+      if (prevTimer) clearTimeout(prevTimer);
+
+      activePortalName = name;
+      activeAnchorEl = anchorEl;
+
+      menu.classList.remove("hidden", "lg-pop-exit");
+      menu.classList.add("lg-pop-enter");
+      menu.setAttribute("aria-hidden", "false");
+      positionPortalMenu(menu, anchorEl);
+
+      anchorEl.classList.add("is-open-trigger");
+      const triggerBtn = anchorEl.querySelector(".filter-trigger");
+      if (triggerBtn) triggerBtn.setAttribute("aria-expanded", "true");
+
+      const acc = menu.querySelector(".lg-accordion");
+      if (acc) {
+        acc.classList.remove("is-open");
+        void acc.offsetHeight;
+        acc.classList.add("is-open");
       }
     }
 
     document.addEventListener("click", (e) => {
-      if (!e.target.closest(".dropdown-anchor")) {
+      if (!e.target.closest(".dropdown-anchor") && !e.target.closest(".lg-portal-dropdown")) {
         closeAllDropdowns();
       }
     });
 
+    window.addEventListener("resize", () => {
+      if (activePortalName && activeAnchorEl) {
+        const menu = document.querySelector(`.lg-portal-dropdown[data-portal-menu="${activePortalName}"]`);
+        if (menu && !menu.classList.contains("hidden")) {
+          positionPortalMenu(menu, activeAnchorEl);
+        }
+      }
+    });
+
     let toastTimer = null;
+    let toastExitTimer = null;
     function showToast(msg) {
       const el = document.getElementById("toastNotification");
       const txt = document.getElementById("toastText");
       if (!el || !txt) return;
-      txt.textContent = msg;
-      el.classList.remove("hidden");
+
       if (toastTimer) clearTimeout(toastTimer);
+      if (toastExitTimer) clearTimeout(toastExitTimer);
+
+      txt.textContent = msg;
+      el.classList.remove("hidden", "lg-pop-exit", "lg-pop-enter");
+      void el.offsetWidth;
+      el.classList.add("lg-pop-enter");
+
       toastTimer = setTimeout(() => {
-        el.classList.add("hidden");
-      }, 2400);
+        el.classList.remove("lg-pop-enter");
+        el.classList.add("lg-pop-exit");
+        toastExitTimer = setTimeout(() => {
+          el.classList.add("hidden");
+          el.classList.remove("lg-pop-exit");
+        }, 210);
+      }, 2200);
     }
 
     async function copyToClipboard(text) {
@@ -997,7 +1916,72 @@
           document.body.removeChild(ta);
         } catch (_) {}
       }
-      showToast(copied ? `已複製 ${val}，可回對話框輸入分析` : `代號：${val}`);
+      showToast(copied ? `已複製 ${val}` : `代號 ${val}`);
+    }
+
+    function openKronosModal(title, imgUrl, originalUrl) {
+      const modal = document.getElementById("kronosModal");
+      const frame = modal ? modal.querySelector(".lg-ice-frame") : null;
+      const titleEl = document.getElementById("kronosModalTitle");
+      const imgEl = document.getElementById("kronosModalImg");
+      const fallbackEl = document.getElementById("kronosModalFallback");
+      const extLink = document.getElementById("kronosModalExternalLink");
+      if (!modal || !imgEl) return;
+
+      if (titleEl) titleEl.textContent = title || "K 模型走勢預測";
+      imgEl.classList.remove("hidden");
+      if (fallbackEl) fallbackEl.classList.add("hidden");
+      imgEl.onload = () => {
+        imgEl.classList.remove("hidden");
+        if (fallbackEl) fallbackEl.classList.add("hidden");
+      };
+      imgEl.onerror = () => {
+        imgEl.classList.add("hidden");
+        if (fallbackEl) fallbackEl.classList.remove("hidden");
+      };
+      imgEl.src = imgUrl;
+      imgEl.alt = title || "Kronos 預測圖";
+      if (extLink) {
+        const safeExt = sanitizeUrl(originalUrl);
+        extLink.href = safeExt || "#";
+        extLink.classList.toggle("hidden", !safeExt);
+      }
+
+      if (frame) {
+        frame.classList.remove("lg-pop-exit", "lg-pop-enter");
+      }
+      if (typeof modal.showModal === "function") {
+        if (!modal.open) modal.showModal();
+      } else {
+        modal.setAttribute("open", "");
+      }
+      if (frame) {
+        void frame.offsetWidth;
+        frame.classList.add("lg-pop-enter");
+      }
+    }
+
+    function closeKronosModal() {
+      const modal = document.getElementById("kronosModal");
+      const frame = modal ? modal.querySelector(".lg-ice-frame") : null;
+      if (!modal) return;
+
+      const finalize = () => {
+        if (typeof modal.close === "function") {
+          if (modal.open) modal.close();
+        } else {
+          modal.removeAttribute("open");
+        }
+        if (frame) frame.classList.remove("lg-pop-exit", "lg-pop-enter");
+      };
+
+      if (frame) {
+        frame.classList.remove("lg-pop-enter");
+        frame.classList.add("lg-pop-exit");
+        setTimeout(finalize, 200);
+      } else {
+        finalize();
+      }
     }
 
     function setActiveTab(tab) {
@@ -1013,13 +1997,8 @@
       if (btnRes && btnLb) {
         btnRes.setAttribute("aria-selected", String(!isLb));
         btnLb.setAttribute("aria-selected", String(isLb));
-        if (!isLb) {
-          btnRes.className = "px-3.5 py-1.5 rounded-[9px] text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer bg-white/95 text-slate-800 shadow-sm";
-          btnLb.className = "px-3.5 py-1.5 rounded-[9px] text-xs sm:text-sm font-medium transition-all duration-200 cursor-pointer text-slate-600 hover:text-slate-900";
-        } else {
-          btnLb.className = "px-3.5 py-1.5 rounded-[9px] text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer bg-white/95 text-slate-800 shadow-sm";
-          btnRes.className = "px-3.5 py-1.5 rounded-[9px] text-xs sm:text-sm font-medium transition-all duration-200 cursor-pointer text-slate-600 hover:text-slate-900";
-        }
+        btnRes.classList.toggle("is-active", !isLb);
+        btnLb.classList.toggle("is-active", isLb);
       }
       if (resBar) resBar.classList.toggle("hidden", isLb);
       if (lbBar) lbBar.classList.toggle("hidden", !isLb);
@@ -1038,19 +2017,13 @@
       const btnUs = document.getElementById("lbMarketBtnUS");
       const isUs = state.leaderboardMarket === "US";
       if (btnTw && btnUs) {
-        if (!isUs) {
-          btnTw.className = "px-2.5 py-1 rounded-[8px] text-xs font-bold transition-all duration-150 cursor-pointer bg-white/95 text-slate-800 shadow-sm";
-          btnUs.className = "px-2.5 py-1 rounded-[8px] text-xs font-medium transition-all duration-150 cursor-pointer text-slate-600 hover:text-slate-900";
-        } else {
-          btnUs.className = "px-2.5 py-1 rounded-[8px] text-xs font-bold transition-all duration-150 cursor-pointer bg-white/95 text-slate-800 shadow-sm";
-          btnTw.className = "px-2.5 py-1 rounded-[8px] text-xs font-medium transition-all duration-150 cursor-pointer text-slate-600 hover:text-slate-900";
-        }
+        btnTw.classList.toggle("is-active", !isUs);
+        btnUs.classList.toggle("is-active", isUs);
       }
       renderLeaderboard();
     }
 
     function jumpToAnalysisCard(code, recordId) {
-      // 清除會遮蔽目標卡片的篩選條件並切回分析結果
       state.filterQuery = "";
       state.filterMarket = "ALL";
       state.filterRating = "ALL";
@@ -1064,6 +2037,15 @@
       if (clearBtn) clearBtn.classList.add("hidden");
       if (mktLbl) mktLbl.textContent = "全部市場";
       if (rateLbl) rateLbl.textContent = "全部評級";
+
+      const allRecs = getDeduplicatedRecords(state.records || []);
+      const targetRec = allRecs.find((r) =>
+        (recordId && String(r.id || "") === String(recordId)) ||
+        (code && String(r.code || "").toUpperCase() === String(code).toUpperCase())
+      );
+      if (targetRec && !isAnalyzedThisWeek(targetRec)) {
+        state.showOlderRecords = true;
+      }
 
       const targetKey = recordId || code;
       if (targetKey) state.expandedIds.add(targetKey);
@@ -1086,10 +2068,10 @@
           }
         }
         if (cardEl) {
-          const topY = cardEl.getBoundingClientRect().top + window.scrollY - 82;
+          const topY = cardEl.getBoundingClientRect().top + window.scrollY - 84;
           window.scrollTo({ top: Math.max(0, topY), behavior: "smooth" });
-          cardEl.classList.add("ring-2", "ring-slate-400");
-          setTimeout(() => cardEl.classList.remove("ring-2", "ring-slate-400"), 1500);
+          cardEl.classList.add("is-highlighted");
+          setTimeout(() => cardEl.classList.remove("is-highlighted"), 1500);
         }
       });
     }
@@ -1103,11 +2085,7 @@
       const board = state.leaderboard && state.leaderboard.markets ? state.leaderboard.markets[mk] : null;
       if (!board || !Array.isArray(board.top10) || board.top10.length === 0) {
         if (dateBadge) dateBadge.textContent = "資料收盤：同步中";
-        container.innerHTML = `
-          <div class="liquid-pill p-6 text-center text-xs text-slate-500">
-            正在載入${mk === "TW" ? "台股" : "美股"} Q 模型排行榜資料...
-          </div>
-        `;
+        container.innerHTML = `<div class="empty-glass-state">載入中...</div>`;
         return;
       }
 
@@ -1122,84 +2100,84 @@
         if (c) analyzedByCode.set(c, r);
       });
 
-      const headerNote = `
-        <div class="flex flex-wrap items-center justify-between gap-2 px-1 text-[11px] text-slate-500">
-          <span>Q 模型 Alpha158 橫斷面排序（含 ETF・已過濾低流動性標的）</span>
-          <span class="num-col font-medium text-slate-600">合格選股池：${board.eligible_count || "—"} / ${board.universe_total || "—"} 檔</span>
+      const headerBar = `
+        <div class="lb-header-bar">
+          <span>Q 模型 Alpha158</span>
+          <span class="num-col tabular-nums">合格：${escapeHtml(board.eligible_count ?? "—")} / ${escapeHtml(board.universe_total ?? "—")} 檔</span>
         </div>
       `;
 
       const rowsHtml = board.top10.map((item) => {
-        const codeUpper = String(item.code || "").toUpperCase();
+        const codeStr = String(item.code || "");
+        const codeUpper = codeStr.toUpperCase();
         const existingRec = analyzedByCode.get(codeUpper);
         const chgVal = Number(item.chg_1d_pct);
         const chgStr = Number.isFinite(chgVal) ? `${chgVal >= 0 ? "+" : ""}${chgVal.toFixed(2)}%` : "—";
-        const chgCls = chgVal > 0 ? "text-emerald-700 font-semibold" : (chgVal < 0 ? "text-rose-700 font-semibold" : "text-slate-600");
+        const chgTone = chgVal > 0 ? "tone-sage" : (chgVal < 0 ? "tone-rose" : "tone-slate");
         const roc20 = Number(item.roc20_pct);
         const roc20Str = Number.isFinite(roc20) ? `${roc20 >= 0 ? "+" : ""}${roc20.toFixed(1)}%` : "—";
-        const roc20Cls = roc20 > 0 ? "text-emerald-700 font-semibold" : (roc20 < 0 ? "text-rose-700 font-semibold" : "text-slate-700");
+        const rocTone = roc20 > 0 ? "tone-sage" : (roc20 < 0 ? "tone-rose" : "tone-slate");
         const pctVal = Number(item.percentile);
-        const pctStr = Number.isFinite(pctVal) ? (Math.abs(pctVal - Math.round(pctVal)) < 0.05 ? pctVal.toFixed(0) : pctVal.toFixed(1)) : "—";
+        const pctStr = Number.isFinite(pctVal)
+          ? (Math.abs(pctVal - Math.round(pctVal)) < 0.05 ? pctVal.toFixed(0) : pctVal.toFixed(1))
+          : "—";
 
-        let rankCls = "bg-slate-200/75 text-slate-700 border-slate-300/60";
-        if (item.rank === 1) rankCls = "bg-amber-100/90 text-amber-800 border-amber-300/80";
-        else if (item.rank <= 3) rankCls = "bg-slate-700 text-white border-slate-700";
+        let rankClass = "rank-frame num-col tabular-nums";
+        if (item.rank === 1) rankClass += " rank-1";
+        else if (item.rank <= 3) rankClass += " rank-top3";
+
+        const actionBtn = existingRec
+          ? `<button type="button" class="lg-btn badge-buy lb-action-btn lb-jump-btn" data-jump-code="${escapeHtml(codeStr)}" data-jump-id="${escapeHtml(existingRec.id || codeStr)}">
+              <span>已有報告</span>
+              <svg class="lg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="7" y1="17" x2="17" y2="7"></line>
+                <polyline points="7 7 17 7 17 17"></polyline>
+              </svg>
+            </button>`
+          : `<button type="button" class="lg-btn lg-btn-reset lb-action-btn lb-copy-btn" data-copy-code="${escapeHtml(codeStr)}">
+              <svg class="lg-icon-xs tone-slate" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>複製代號</span>
+            </button>`;
 
         return `
-          <article class="liquid-pill float-interactive p-3 transition-all">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-              <div class="flex items-center gap-2.5 min-w-0">
-                <span class="w-7 h-7 rounded-[8px] border text-xs num-col font-extrabold flex items-center justify-center shrink-0 ${rankCls}">
-                  #${item.rank}
-                </span>
-                <div class="min-w-0 flex flex-col gap-0.5">
-                  <div class="flex items-center gap-1.5 flex-wrap">
-                    <span class="px-1.5 py-0.5 text-[10px] num-col font-bold badge-slate shrink-0">${mk} · ${item.code}</span>
-                    ${item.is_etf ? `<span class="px-1.5 py-0.5 text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-[6px] shrink-0">ETF</span>` : ""}
-                    <h3 class="text-sm font-bold text-slate-900 truncate">${item.name || item.code}</h3>
-                  </div>
+          <article class="stock-card">
+            <div class="lb-row">
+              <div class="lb-identity">
+                <span class="${rankClass}">#${escapeHtml(item.rank)}</span>
+                <div class="card-code-name" style="flex-wrap: wrap;">
+                  <span class="badge-pill badge-slate num-col tabular-nums">${escapeHtml(mk)} · ${escapeHtml(codeStr)}</span>
+                  ${item.is_etf ? `<span class="badge-pill badge-slate">ETF</span>` : ""}
+                  <h3 class="stock-name">${escapeHtml(item.name || codeStr)}</h3>
                 </div>
               </div>
 
-              <div class="flex flex-wrap items-center justify-between sm:justify-end gap-3 text-xs">
-                <div class="flex items-center gap-3">
+              <div class="lb-stats-actions">
+                <div class="lb-metrics">
                   <div>
-                    <span class="text-slate-500">收盤</span>
-                    <span class="ml-1 num-col font-bold text-slate-800">${item.close != null ? item.close : "—"}</span>
-                    <span class="ml-1 num-col ${chgCls}">(${chgStr})</span>
+                    <span class="tone-slate">收盤</span>
+                    <strong class="num-col tabular-nums">${item.close != null ? escapeHtml(item.close) : "—"}</strong>
+                    <span class="num-col tabular-nums ${chgTone}">(${chgStr})</span>
                   </div>
                   <div>
-                    <span class="text-slate-500">Q分位</span>
-                    <span class="ml-1 num-col font-bold text-slate-900">${pctStr}</span><span class="text-[10px] text-slate-500">/100</span>
+                    <span class="tone-slate">Q分位</span>
+                    <strong class="num-col tabular-nums">${pctStr}</strong><span class="tone-slate">/100</span>
                   </div>
-                  <div class="hidden sm:block">
-                    <span class="text-slate-500">20日動能</span>
-                    <span class="ml-1 num-col ${roc20Cls}">${roc20Str}</span>
+                  <div class="hide-mobile">
+                    <span class="tone-slate">20日動能</span>
+                    <strong class="num-col tabular-nums ${rocTone}">${roc20Str}</strong>
                   </div>
                 </div>
-
-                <div class="flex items-center shrink-0">
-                  ${existingRec ? `
-                    <button type="button" class="lb-jump-btn px-2.5 py-1 text-[11px] font-semibold rounded-full badge-buy cursor-pointer hover:opacity-90 transition-opacity flex items-center gap-1" data-jump-code="${item.code}" data-jump-id="${existingRec.id || existingRec.code}">
-                      <span>已有報告 ↗</span>
-                    </button>
-                  ` : `
-                    <button type="button" class="lb-copy-btn px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:text-slate-900 bg-white/80 hover:bg-white rounded-full border border-slate-300 hover:border-slate-400 shadow-sm transition-all duration-150 cursor-pointer flex items-center gap-1" data-copy-code="${item.code}">
-                      <svg class="w-3 h-3 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                      </svg>
-                      <span>複製代號</span>
-                    </button>
-                  `}
-                </div>
+                ${actionBtn}
               </div>
             </div>
           </article>
         `;
       }).join("");
 
-      container.innerHTML = headerNote + rowsHtml;
+      container.innerHTML = headerBar + rowsHtml;
 
       container.querySelectorAll(".lb-jump-btn").forEach((btn) => {
         btn.addEventListener("click", (e) => {
@@ -1233,13 +2211,12 @@
 
     function renderOverview() {
       const allRecords = state.records || [];
-      // 關鍵要求 7：同一支股票多次分析僅計 1 次，以最新一次為準
       const deduped = getDeduplicatedRecords(allRecords);
-
-      // 本週一至週五有分析的股票（以台灣時間 Asia/Taipei 為準）
       const thisWeekRecords = deduped.filter(isAnalyzedThisWeek);
 
-      let buyCount = 0, holdCount = 0, sellCount = 0;
+      let buyCount = 0;
+      let holdCount = 0;
+      let sellCount = 0;
       thisWeekRecords.forEach((r) => {
         const c = classifyRating(r.rating).key;
         if (c === "BUY") buyCount++;
@@ -1252,29 +2229,29 @@
       document.getElementById("kpiHoldCount").textContent = holdCount;
       document.getElementById("kpiBearCount").textContent = sellCount;
 
-      // 更新頂部 KPI 卡片選中高亮狀態
       const cardTotal = document.getElementById("kpiCardTotal");
       const cardBull = document.getElementById("kpiCardBull");
       const cardHold = document.getElementById("kpiCardHold");
       const cardBear = document.getElementById("kpiCardBear");
 
-      [cardTotal, cardBull, cardHold, cardBear].forEach((c) => {
-        if (!c) return;
-        c.classList.remove(
-          "ring-2", "ring-slate-400", "ring-emerald-500", "ring-amber-500", "ring-rose-500",
-          "bg-white/90", "bg-emerald-50/50", "bg-amber-50/50", "bg-rose-50/50"
-        );
-      });
-
-      if (state.filterThisWeekOnly && cardTotal) {
-        cardTotal.classList.add("ring-2", "ring-slate-400", "bg-white/90");
+      if (cardTotal) {
+        cardTotal.classList.toggle("is-active-total", state.filterThisWeekOnly);
+        cardTotal.setAttribute("aria-pressed", String(state.filterThisWeekOnly));
       }
-      if (state.filterRating === "BUY" && cardBull) {
-        cardBull.classList.add("ring-2", "ring-emerald-500", "bg-emerald-50/50");
-      } else if (state.filterRating === "HOLD" && cardHold) {
-        cardHold.classList.add("ring-2", "ring-amber-500", "bg-amber-50/50");
-      } else if (state.filterRating === "SELL" && cardBear) {
-        cardBear.classList.add("ring-2", "ring-rose-500", "bg-rose-50/50");
+      if (cardBull) {
+        const active = state.filterRating === "BUY";
+        cardBull.classList.toggle("is-active-bull", active);
+        cardBull.setAttribute("aria-pressed", String(active));
+      }
+      if (cardHold) {
+        const active = state.filterRating === "HOLD";
+        cardHold.classList.toggle("is-active-hold", active);
+        cardHold.setAttribute("aria-pressed", String(active));
+      }
+      if (cardBear) {
+        const active = state.filterRating === "SELL";
+        cardBear.classList.toggle("is-active-sell", active);
+        cardBear.setAttribute("aria-pressed", String(active));
       }
 
       const filtered = deduped.filter((r) => {
@@ -1304,20 +2281,20 @@
 
       const container = document.getElementById("overviewCardsContainer");
       if (filtered.length === 0) {
-        container.innerHTML = `
-          <div class="liquid-pill p-6 text-center text-xs text-slate-500">
-            目前無符合條件的個股紀錄。
-          </div>
-        `;
+        container.innerHTML = `<div class="empty-glass-state">無符合條件</div>`;
         return;
       }
 
-      container.innerHTML = filtered.map((r) => {
-        const ratingMeta = classifyRating(r.rating);
-        const isExpanded = state.expandedIds.has(r.id || r.code);
+      const renderCardHtml = (r) => {
+        const keyId = String(r.id || r.code);
+        const isPending = r.status === "analyzing" || r.status === "queued";
+        const ratingMeta = isPending
+          ? { key: "HOLD", cls: "badge-slate" }
+          : classifyRating(r.rating);
+        const isExpanded = state.expandedIds.has(keyId);
         const chgVal = Number(r.chg_1d_pct);
         const chgStr = Number.isFinite(chgVal) ? `${chgVal >= 0 ? "+" : ""}${chgVal.toFixed(2)}%` : "—";
-        const chgCls = chgVal > 0 ? "text-emerald-700 font-semibold" : (chgVal < 0 ? "text-rose-700 font-semibold" : "text-slate-600");
+        const chgTone = chgVal > 0 ? "tone-sage" : (chgVal < 0 ? "tone-rose" : "tone-slate");
         const kPct = Number.isFinite(Number(r.k_median_20d_pct))
           ? `${Number(r.k_median_20d_pct) >= 0 ? "+" : ""}${Number(r.k_median_20d_pct).toFixed(2)}%`
           : "—";
@@ -1325,145 +2302,154 @@
           ? `Top ${(100 - Number(r.q_percentile)).toFixed(0)}% (${Number(r.q_percentile).toFixed(0)}分位)`
           : "—";
 
+        const summaryUrl = sanitizeUrl(r.summary_pdf_url);
+        const fullUrl = sanitizeUrl(r.full_pdf_url);
+        const kronosRawUrl = sanitizeUrl(r.kronos_png_url);
+        const kronosImgUrl = getKronosImageUrl(kronosRawUrl);
+        const ratingLabel = isPending ? (r.status === "analyzing" ? "分析中" : "排隊中") : formatRatingZh(r.rating);
+
         return `
-          <article class="liquid-pill float-interactive p-3 sm:p-3.5 transition-all" data-card-id="${r.id || r.code}">
-            <div class="card-header-toggle cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-2.5" data-toggle-id="${r.id || r.code}">
-              <div class="flex flex-col gap-1.5 min-w-0">
-                <!-- 第一行："TW · 代號"、"股票名稱" -->
-                <div class="flex items-center gap-2">
-                  <span class="px-2 py-0.5 text-[10px] num-col font-bold badge-slate shrink-0">${r.market || "TW"} · ${r.code}</span>
-                  <h3 class="text-sm sm:text-base font-bold text-slate-900 truncate">${r.name || r.code}</h3>
+          <article class="stock-card" data-card-id="${escapeHtml(keyId)}">
+            <div class="card-header-toggle" data-toggle-id="${escapeHtml(keyId)}">
+              <div class="card-top-row">
+                <div class="card-title-block">
+                  <div class="card-code-name">
+                    <span class="badge-pill badge-slate num-col tabular-nums">${escapeHtml(r.market || "TW")} · ${escapeHtml(r.code)}</span>
+                    <h3 class="stock-name">${escapeHtml(r.name || r.code)}</h3>
+                  </div>
+                  <div class="card-badges-row">
+                    <span class="badge-pill ${ratingMeta.cls}">${escapeHtml(ratingLabel)}</span>
+                    <span class="badge-pill badge-slate">${escapeHtml(r.consensus_badge || "【多模型完成】")}</span>
+                  </div>
                 </div>
 
-                <!-- 第二行（換行）："投資建議"（移除英文）、"共識標籤" -->
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="px-2.5 py-0.5 text-[11px] font-semibold ${ratingMeta.cls} shrink-0">${formatRatingZh(r.rating)}</span>
-                  <span class="px-2 py-0.5 text-[11px] font-medium badge-slate">${r.consensus_badge || "【多模型完成】"}</span>
+                <div class="card-price-block">
+                  <span class="price-main num-col tabular-nums">${r.close != null ? escapeHtml(r.close) : "—"}</span>
+                  <span class="price-chg num-col tabular-nums ${chgTone}">${chgStr}</span>
                 </div>
               </div>
 
-              <div class="flex flex-wrap items-center justify-between sm:justify-end gap-3 text-xs">
-                <div class="flex items-center gap-3">
-                  <div>
-                    <span class="text-slate-500">收盤</span>
-                    <span class="ml-1 num-col font-bold text-slate-800">${r.close != null ? r.close : "—"}</span>
-                    <span class="ml-1 num-col ${chgCls}">(${chgStr})</span>
-                  </div>
-                  <div class="hidden sm:block">
-                    <span class="text-slate-500">Kronos 20日</span>
-                    <span class="ml-1 num-col font-semibold text-slate-700">${kPct}</span>
-                  </div>
+              <div class="card-meta-actions">
+                <div class="kronos-pill-stat">
+                  <span>Kronos 20日</span>
+                  <strong class="num-col tabular-nums">${kPct}</strong>
                 </div>
 
-                <div class="flex items-center gap-1.5">
-                  ${r.summary_pdf_url ? `
-                    <a href="${r.summary_pdf_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:text-slate-900 bg-white/80 hover:bg-white rounded-full border border-slate-300 hover:border-slate-400 shadow-sm transition-all duration-150 flex items-center">
+                <div class="card-action-group">
+                  ${summaryUrl ? `
+                    <a href="${escapeHtml(summaryUrl)}" target="_blank" rel="noopener noreferrer" class="lg-btn lg-btn-reset card-pdf-summary card-pdf-btn card-stop-prop">
                       <span>摘要 PDF</span>
                     </a>
                   ` : ""}
-                  ${r.full_pdf_url ? `
-                    <a href="${r.full_pdf_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="btn-muted-glass float-interactive px-2 py-1 text-[11px] font-medium flex items-center">
+                  ${fullUrl ? `
+                    <a href="${escapeHtml(fullUrl)}" target="_blank" rel="noopener noreferrer" class="lg-btn card-pdf-full card-pdf-btn card-stop-prop">
                       <span>完整報告 PDF</span>
                     </a>
                   ` : ""}
-                  <button type="button" class="p-1 rounded-[6px] text-slate-400 hover:text-slate-700">
-                    <svg class="w-3.5 h-3.5 chevron-icon ${isExpanded ? 'rotate-180' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <span class="card-chevron-indicator" aria-hidden="true">
+                    <svg class="lg-icon-sm chevron-icon ${isExpanded ? "is-rotated" : ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <polyline points="6 9 12 15 18 9"></polyline>
                     </svg>
-                  </button>
+                  </span>
                 </div>
               </div>
             </div>
 
-            <!-- 分析日期列：收合與展開狀態皆存在，區分資料基準日與分析更新日 -->
-            <div class="mt-2.5 liquid-pill px-3 py-1.5 flex flex-wrap items-center justify-between gap-1.5 text-[11px] text-slate-600">
-              <div class="flex items-center gap-1">
-                <span>資料收盤：<strong class="text-slate-800 font-semibold num-col">${formatZhDate(r.trade_date)}</strong></span>
-                ${r.market === 'US' ? '<span class="text-[10px] text-slate-400 font-normal">（美股已收盤）</span>' : ''}
-              </div>
-              <div class="text-[10px] text-slate-500">
-                <span>分析更新：<strong class="text-slate-700 font-medium num-col">${formatZhDate(r.updated_at ? r.updated_at.slice(0, 10) : r.trade_date)}</strong></span>
-              </div>
+            <div class="card-date-strip">
+              <span>資料收盤：<strong class="num-col tabular-nums">${escapeHtml(formatZhDate(r.trade_date))}</strong></span>
+              <span>分析更新：<strong class="num-col tabular-nums">${escapeHtml(formatZhDate(r.updated_at ? r.updated_at.slice(0, 10) : r.trade_date))}</strong></span>
             </div>
 
-            <!-- 手風琴展開抽屜 -->
-            <div class="accordion-shell ${isExpanded ? 'is-open mt-2.5' : ''}" id="drawer-${r.id || r.code}">
-              <div class="accordion-content">
-                <div class="pt-2.5 border-t border-slate-200/50 space-y-2.5 text-xs">
-                  <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
-                    <div class="liquid-pill p-2.5">
-                      <div class="text-[10px] font-medium text-slate-500">目標價 / 停損參考</div>
-                      <div class="mt-0.5 num-col font-semibold text-slate-800">目標 ${r.target_price || "—"} ｜ 停損 ${r.stop_price || "—"}</div>
+            <div class="lg-accordion accordion-shell ${isExpanded ? "is-open" : ""}" id="drawer-${escapeHtml(keyId)}">
+              <div class="lg-accordion-inner">
+                <div class="drawer-inner">
+                  <div class="metrics-grid">
+                    <div class="sub-glass-tile">
+                      <div class="sub-tile-label">目標價 / 停損參考</div>
+                      <div class="sub-tile-value num-col tabular-nums">目標 ${escapeHtml(r.target_price || "—")} ｜ 停損 ${escapeHtml(r.stop_price || "—")}</div>
                     </div>
-                    <div class="liquid-pill p-2.5">
-                      <div class="text-[10px] font-medium text-slate-500">轉強確認條件</div>
-                      <div class="mt-0.5 font-medium text-slate-800">${r.confirm_price || "等待帶量突破均線"}</div>
+                    <div class="sub-glass-tile">
+                      <div class="sub-tile-label">轉強確認條件</div>
+                      <div class="sub-tile-value">${escapeHtml(r.confirm_price || "—")}</div>
                     </div>
-                    <div class="liquid-pill p-2.5">
-                      <div class="text-[10px] font-medium text-slate-500">本益比 (PER) / EPS</div>
-                      <div class="mt-0.5 num-col font-semibold text-slate-800">PER ${r.per != null ? Number(r.per).toFixed(1) + 'x' : '—'} ｜ EPS ${r.eps_this != null ? Number(r.eps_this).toFixed(2) : '—'}</div>
+                    <div class="sub-glass-tile">
+                      <div class="sub-tile-label">本益比 / EPS</div>
+                      <div class="sub-tile-value num-col tabular-nums">PER ${r.per != null ? Number(r.per).toFixed(1) + "x" : "—"} ｜ EPS ${r.eps_this != null ? Number(r.eps_this).toFixed(2) : "—"}</div>
                     </div>
-                    <div class="liquid-pill p-2.5">
-                      <div class="text-[10px] font-medium text-slate-500">建議投資期間</div>
-                      <div class="mt-0.5 font-medium text-slate-800">${r.horizon || "1～3 個月"}</div>
-                    </div>
-                  </div>
-
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                    <div class="liquid-pill p-2.5 space-y-1">
-                      <div class="flex items-center justify-between">
-                        <span class="font-bold text-slate-800">T 模型（3輪辯論）</span>
-                        <span class="px-1.5 py-0.5 text-[10px] font-semibold ${sideBadgeClass(r.t_side)}">${r.t_side || "中性"}</span>
-                      </div>
-                      <p class="text-slate-600 leading-relaxed text-[11px]">${r.rating_note || "多輪辯論綜合結論。"}</p>
-                    </div>
-
-                    <div class="liquid-pill p-2.5 space-y-1">
-                      <div class="flex items-center justify-between">
-                        <span class="font-bold text-slate-800">K 模型（Kronos 時序預測）</span>
-                        <span class="px-1.5 py-0.5 text-[10px] font-semibold ${sideBadgeClass(r.k_side)}">${r.k_side || "中性"}</span>
-                      </div>
-                      <p class="text-slate-600 leading-relaxed text-[11px]">20 日中位數預期變動：<strong class="num-col text-slate-800">${kPct}</strong></p>
-                    </div>
-
-                    <div class="liquid-pill p-2.5 space-y-1">
-                      <div class="flex items-center justify-between">
-                        <span class="font-bold text-slate-800">Q 模型（Qlib 因子）</span>
-                        <span class="px-1.5 py-0.5 text-[10px] font-semibold ${sideBadgeClass(r.q_side)}">${r.q_side || "中性"}</span>
-                      </div>
-                      <p class="text-slate-600 leading-relaxed text-[11px]">量化因子分位：<strong class="num-col text-slate-800">${qPct}</strong></p>
+                    <div class="sub-glass-tile">
+                      <div class="sub-tile-label">投資期間</div>
+                      <div class="sub-tile-value">${escapeHtml(r.horizon || "1～3 個月")}</div>
                     </div>
                   </div>
 
-                  <!-- K 模型走勢預測圖（置於 Q 模型與綜合建議中間） -->
-                  ${r.kronos_png_url ? `
-                    <div class="liquid-pill p-2.5 space-y-1.5 overflow-hidden">
-                      <div class="flex items-center justify-between px-1 text-[11px] font-semibold text-slate-700">
-                        <span class="flex items-center gap-1.5">
-                          <svg class="w-3.5 h-3.5 text-slate-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <div class="models-grid">
+                    <div class="sub-glass-tile">
+                      <div class="model-header">
+                        <span class="model-title">T 模型（3輪辯論）</span>
+                        <span class="badge-pill ${sideBadgeClass(r.t_side)}">${escapeHtml(r.t_side || "中性")}</span>
+                      </div>
+                      <p class="model-note">${escapeHtml(r.rating_note || "—")}</p>
+                    </div>
+
+                    <div class="sub-glass-tile">
+                      <div class="model-header">
+                        <span class="model-title">K 模型（Kronos）</span>
+                        <span class="badge-pill ${sideBadgeClass(r.k_side)}">${escapeHtml(r.k_side || "中性")}</span>
+                      </div>
+                      <p class="model-note">20 日中位數預期：<strong class="num-col tabular-nums">${kPct}</strong></p>
+                    </div>
+
+                    <div class="sub-glass-tile">
+                      <div class="model-header">
+                        <span class="model-title">Q 模型（Qlib）</span>
+                        <span class="badge-pill ${sideBadgeClass(r.q_side)}">${escapeHtml(r.q_side || "中性")}</span>
+                      </div>
+                      <p class="model-note">量化分位：<strong class="num-col tabular-nums">${qPct}</strong></p>
+                    </div>
+                  </div>
+
+                  ${kronosImgUrl ? `
+                    <div class="kronos-chart-box">
+                      <div class="kronos-chart-head">
+                        <span class="kronos-chart-label">
+                          <svg class="lg-icon-sm tone-slate" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
                           </svg>
-                          <span>K 模型 · Kronos 20 日價格走勢時序預測圖</span>
+                          <span>K 模型 · Kronos 20 日走勢圖</span>
                         </span>
-                        <a href="${r.kronos_png_url}" target="_blank" rel="noopener" class="text-[10px] text-slate-400 hover:text-slate-700 font-normal">新分頁開圖 ↗</a>
+                        <a href="${escapeHtml(kronosRawUrl)}" target="_blank" rel="noopener noreferrer" class="lg-btn lg-btn-reset kronos-external-link">
+                          <span>開啟原圖</span>
+                          <svg class="lg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <line x1="7" y1="17" x2="17" y2="7"></line>
+                            <polyline points="7 7 17 7 17 17"></polyline>
+                          </svg>
+                        </a>
                       </div>
-                      <div class="w-full overflow-hidden rounded-[8px] border border-slate-200/60 bg-white/60 p-1 flex items-center justify-center">
-                        <img src="${getKronosImageUrl(r.kronos_png_url)}" alt="${r.name || r.code} Kronos 預測圖" class="w-full h-auto max-h-72 object-contain rounded-[6px]" loading="lazy" />
-                      </div>
+                      <button
+                        type="button"
+                        class="lg-btn kronos-preview-trigger"
+                        data-modal-title="${escapeHtml(r.code)} ${escapeHtml(r.name || "")} · Kronos"
+                        data-modal-img="${escapeHtml(kronosImgUrl)}"
+                        data-modal-raw="${escapeHtml(kronosRawUrl)}"
+                      >
+                        <img src="${escapeHtml(kronosImgUrl)}" alt="${escapeHtml(r.name || r.code)} Kronos 預測圖" loading="lazy" />
+                        <span class="hidden" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-3);">
+                          <svg class="lg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                          </svg>
+                          <span>K 模型走勢圖</span>
+                        </span>
+                      </button>
                     </div>
                   ` : ""}
 
-                  <!-- 綜合建議 -->
-                  <div class="liquid-pill px-3 py-2.5">
-                    <div class="text-slate-700 text-xs leading-relaxed">
-                      <strong class="text-slate-800 font-bold">綜合建議：</strong>${r.consensus_advice || "請依據區間分批配置。"}
-                    </div>
+                  <div class="advice-box">
+                    <strong>綜合建議：</strong>${escapeHtml(r.consensus_advice || "請依據區間分批配置。")}
                   </div>
 
-                  <!-- 收起卡片按鈕 (最簡約收折小箭頭) -->
-                  <div class="flex justify-center pt-1 pb-0.5">
-                    <button type="button" class="card-collapse-btn group flex items-center justify-center p-1.5 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-200/40 active:bg-slate-300/40 cursor-pointer transition-all duration-150" data-toggle-id="${r.id}" title="收起卡片" aria-label="收起卡片">
-                      <svg class="w-4 h-4 transition-transform group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <div class="collapse-row">
+                    <button type="button" class="lg-btn card-collapse-btn" data-toggle-id="${escapeHtml(keyId)}" aria-label="收起卡片">
+                      <svg class="lg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="18 15 12 9 6 15"></polyline>
                       </svg>
                     </button>
@@ -1473,7 +2459,72 @@
             </div>
           </article>
         `;
-      }).join("");
+      };
+
+      const useWeekSplit = !state.filterQuery && !state.filterThisWeekOnly;
+      const thisWeekList = useWeekSplit ? filtered.filter(isAnalyzedThisWeek) : filtered;
+      const olderList = useWeekSplit ? filtered.filter((r) => !isAnalyzedThisWeek(r)) : [];
+
+      let html = thisWeekList.map(renderCardHtml).join("");
+      if (olderList.length > 0) {
+        html += `
+          <div id="olderCardsShell" class="lg-accordion ${state.showOlderRecords ? "is-open" : ""}">
+            <div class="lg-accordion-inner">
+              <div class="older-cards-stack">
+                ${olderList.map(renderCardHtml).join("")}
+                <div class="collapse-row">
+                  <button id="btnCollapseOlder" type="button" class="lg-btn card-collapse-btn" aria-label="收起更早紀錄">
+                    <svg class="lg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="18 15 12 9 6 15"></polyline>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="show-older-row">
+            <button id="btnShowOlder" type="button" class="lg-btn btn-show-older ${state.showOlderRecords ? "hidden" : ""}">
+              <span>顯示更多</span>
+              <svg class="lg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+
+      const btnShowOlder = document.getElementById("btnShowOlder");
+      const btnCollapseOlder = document.getElementById("btnCollapseOlder");
+      const olderShell = document.getElementById("olderCardsShell");
+
+      if (btnShowOlder && olderShell) {
+        btnShowOlder.addEventListener("click", () => {
+          state.showOlderRecords = true;
+          olderShell.classList.add("is-open");
+          btnShowOlder.classList.add("hidden");
+        });
+      }
+
+      if (btnCollapseOlder && olderShell) {
+        btnCollapseOlder.addEventListener("click", () => {
+          state.showOlderRecords = false;
+          olderShell.classList.remove("is-open");
+          if (btnShowOlder) btnShowOlder.classList.remove("hidden");
+          const panel = document.getElementById("mainPanel");
+          if (panel) {
+            const rect = panel.getBoundingClientRect();
+            if (rect.top < 76) {
+              panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }
+          }
+        });
+      }
+
+      container.querySelectorAll(".card-stop-prop").forEach((el) => {
+        el.addEventListener("click", (e) => e.stopPropagation());
+      });
 
       container.querySelectorAll(".card-header-toggle").forEach((hdr) => {
         hdr.addEventListener("click", () => {
@@ -1483,10 +2534,28 @@
           if (!drawer) return;
           const willOpen = !drawer.classList.contains("is-open");
           drawer.classList.toggle("is-open", willOpen);
-          drawer.classList.toggle("mt-3", willOpen);
-          if (chevron) chevron.classList.toggle("rotate-180", willOpen);
+          if (chevron) chevron.classList.toggle("is-rotated", willOpen);
           if (willOpen) state.expandedIds.add(id);
           else state.expandedIds.delete(id);
+        });
+      });
+
+      container.querySelectorAll(".kronos-preview-trigger").forEach((btn) => {
+        const thumb = btn.querySelector("img");
+        const fallback = btn.querySelector("span");
+        if (thumb && fallback) {
+          thumb.addEventListener("error", () => {
+            thumb.classList.add("hidden");
+            fallback.classList.remove("hidden");
+          });
+        }
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openKronosModal(
+            btn.getAttribute("data-modal-title"),
+            btn.getAttribute("data-modal-img"),
+            btn.getAttribute("data-modal-raw")
+          );
         });
       });
 
@@ -1499,12 +2568,11 @@
           const chevron = hdr ? hdr.querySelector(".chevron-icon") : null;
           if (!drawer) return;
           drawer.classList.remove("is-open");
-          drawer.classList.remove("mt-3");
-          if (chevron) chevron.classList.remove("rotate-180");
+          if (chevron) chevron.classList.remove("is-rotated");
           state.expandedIds.delete(id);
           if (hdr) {
             const rect = hdr.getBoundingClientRect();
-            if (rect.top < 60) {
+            if (rect.top < 76) {
               hdr.scrollIntoView({ behavior: "smooth", block: "nearest" });
             }
           }
@@ -1516,15 +2584,15 @@
       }
     }
 
-        async function fetchOverviewState(forceSync = false) {
+    async function fetchOverviewState(forceSync = false) {
       const syncDot = document.getElementById("syncDot");
       const syncText = document.getElementById("syncStatusText");
       if (syncDot && syncText) {
-        syncDot.className = "w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse";
+        syncDot.classList.add("is-syncing");
         syncText.textContent = "同步中";
       }
 
-      // 1. 優先從 GitHub Pages 靜態 overview.json 即時抓取（路人免設定、速度極快、100% 可用）
+      // 1. GitHub Pages 靜態 overview.json
       try {
         const res = await fetch(`./overview.json?t=${Date.now()}`, { cache: "no-store" });
         if (res.ok) {
@@ -1534,16 +2602,16 @@
             renderOverview();
           }
           if (syncDot && syncText) {
-            syncDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
+            syncDot.classList.remove("is-syncing");
             syncText.textContent = "已同步";
           }
           return;
         }
       } catch (_) {}
 
-      // 2. 本地 API 支援
+      // 2. 本地 server.py API 支援（含 queue.json 與 overview.json 契約）
       try {
-        const res = await fetch(`./api/overview${forceSync ? '?sync=1' : ''}`, { cache: "no-store" });
+        const res = await fetch(`./api/overview${forceSync ? "?sync=1" : ""}`, { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           if (data && data.overview && Array.isArray(data.overview.records) && data.overview.records.length > 0) {
@@ -1551,14 +2619,14 @@
             renderOverview();
           }
           if (syncDot && syncText) {
-            syncDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
+            syncDot.classList.remove("is-syncing");
             syncText.textContent = "已連線";
           }
           return;
         }
       } catch (_) {}
 
-      // 3. GAS 備用
+      // 3. Google Apps Script 橋接備援
       if (state.gasUrl) {
         try {
           const res = await fetch(`${state.gasUrl}?action=overview`, { cache: "no-store" });
@@ -1569,7 +2637,7 @@
               renderOverview();
             }
             if (syncDot && syncText) {
-              syncDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
+              syncDot.classList.remove("is-syncing");
               syncText.textContent = "已連線 GAS";
             }
             return;
@@ -1578,12 +2646,18 @@
       }
 
       if (syncDot && syncText) {
-        syncDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
+        syncDot.classList.remove("is-syncing");
         syncText.textContent = "已同步";
       }
     }
 
-        function initEvents() {
+    function updateDropdownSelected(attrName, val) {
+      document.querySelectorAll(`[${attrName}]`).forEach((btn) => {
+        btn.classList.toggle("is-selected", btn.getAttribute(attrName) === val);
+      });
+    }
+
+    function initEvents() {
       const filterInput = document.getElementById("stockFilterInput");
       const clearFilterBtn = document.getElementById("btnClearFilter");
       if (filterInput) {
@@ -1606,14 +2680,18 @@
       ["filterMarketAnchor", "filterRatingAnchor", "filterSortAnchor"].forEach((id) => {
         const anchor = document.getElementById(id);
         if (anchor) {
-          anchor.querySelector(".filter-trigger").addEventListener("click", () => toggleDropdown(anchor));
+          anchor.querySelector(".filter-trigger").addEventListener("click", (e) => {
+            e.stopPropagation();
+            toggleDropdown(anchor);
+          });
         }
       });
 
       document.querySelectorAll("[data-filter-market]").forEach((btn) => {
         btn.addEventListener("click", () => {
           state.filterMarket = btn.getAttribute("data-filter-market");
-          document.getElementById("filterMarketLabel").textContent = btn.textContent;
+          document.getElementById("filterMarketLabel").textContent = btn.textContent.trim();
+          updateDropdownSelected("data-filter-market", state.filterMarket);
           closeAllDropdowns();
           renderOverview();
         });
@@ -1623,13 +2701,23 @@
         btn.addEventListener("click", () => {
           state.filterRating = btn.getAttribute("data-filter-rating");
           state.filterThisWeekOnly = false;
-          document.getElementById("filterRatingLabel").textContent = btn.textContent;
+          document.getElementById("filterRatingLabel").textContent = btn.textContent.trim();
+          updateDropdownSelected("data-filter-rating", state.filterRating);
           closeAllDropdowns();
           renderOverview();
         });
       });
 
-      // 頁籤切換與排行榜市場切換事件
+      document.querySelectorAll("[data-filter-sort]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.filterSort = btn.getAttribute("data-filter-sort");
+          document.getElementById("filterSortLabel").textContent = btn.textContent.trim();
+          updateDropdownSelected("data-filter-sort", state.filterSort);
+          closeAllDropdowns();
+          renderOverview();
+        });
+      });
+
       const tabBtnRes = document.getElementById("tabBtnResults");
       const tabBtnLb = document.getElementById("tabBtnLeaderboard");
       if (tabBtnRes) tabBtnRes.addEventListener("click", () => setActiveTab("results"));
@@ -1640,7 +2728,6 @@
       if (lbBtnTw) lbBtnTw.addEventListener("click", () => setLeaderboardMarket("TW"));
       if (lbBtnUs) lbBtnUs.addEventListener("click", () => setLeaderboardMarket("US"));
 
-      // 快速統計卡片點擊篩選邏輯（停留在排行榜時點擊，自動切回分析結果並套用篩選）
       const cardTotal = document.getElementById("kpiCardTotal");
       if (cardTotal) {
         cardTotal.addEventListener("click", () => {
@@ -1648,80 +2735,59 @@
           if (fromLb) {
             state.filterThisWeekOnly = true;
             state.filterRating = "ALL";
-            const ratingLbl = document.getElementById("filterRatingLabel");
-            if (ratingLbl) ratingLbl.textContent = "全部評級";
+            document.getElementById("filterRatingLabel").textContent = "全部評級";
+            updateDropdownSelected("data-filter-rating", "ALL");
             setActiveTab("results");
           } else {
             state.filterThisWeekOnly = !state.filterThisWeekOnly;
             if (state.filterThisWeekOnly) {
               state.filterRating = "ALL";
-              const ratingLbl = document.getElementById("filterRatingLabel");
-              if (ratingLbl) ratingLbl.textContent = "全部評級";
+              document.getElementById("filterRatingLabel").textContent = "全部評級";
+              updateDropdownSelected("data-filter-rating", "ALL");
             }
           }
           renderOverview();
         });
       }
 
-      const cardBull = document.getElementById("kpiCardBull");
-      if (cardBull) {
-        cardBull.addEventListener("click", () => {
+      const kpiRatingMap = [
+        { id: "kpiCardBull", key: "BUY", label: "買進 / 偏多" },
+        { id: "kpiCardHold", key: "HOLD", label: "持有 / 觀望" },
+        { id: "kpiCardBear", key: "SELL", label: "減碼 / 賣出" }
+      ];
+      kpiRatingMap.forEach(({ id, key, label }) => {
+        const card = document.getElementById(id);
+        if (!card) return;
+        card.addEventListener("click", () => {
           const fromLb = state.activeTab !== "results";
-          if (!fromLb && state.filterRating === "BUY" && !state.filterThisWeekOnly) {
+          if (!fromLb && state.filterRating === key && !state.filterThisWeekOnly) {
             state.filterRating = "ALL";
             document.getElementById("filterRatingLabel").textContent = "全部評級";
           } else {
-            state.filterRating = "BUY";
+            state.filterRating = key;
             state.filterThisWeekOnly = false;
-            document.getElementById("filterRatingLabel").textContent = "買進 / 偏多";
+            document.getElementById("filterRatingLabel").textContent = label;
             if (fromLb) setActiveTab("results");
           }
-          renderOverview();
-        });
-      }
-
-      const cardHold = document.getElementById("kpiCardHold");
-      if (cardHold) {
-        cardHold.addEventListener("click", () => {
-          const fromLb = state.activeTab !== "results";
-          if (!fromLb && state.filterRating === "HOLD" && !state.filterThisWeekOnly) {
-            state.filterRating = "ALL";
-            document.getElementById("filterRatingLabel").textContent = "全部評級";
-          } else {
-            state.filterRating = "HOLD";
-            state.filterThisWeekOnly = false;
-            document.getElementById("filterRatingLabel").textContent = "持有 / 觀望";
-            if (fromLb) setActiveTab("results");
-          }
-          renderOverview();
-        });
-      }
-
-      const cardBear = document.getElementById("kpiCardBear");
-      if (cardBear) {
-        cardBear.addEventListener("click", () => {
-          const fromLb = state.activeTab !== "results";
-          if (!fromLb && state.filterRating === "SELL" && !state.filterThisWeekOnly) {
-            state.filterRating = "ALL";
-            document.getElementById("filterRatingLabel").textContent = "全部評級";
-          } else {
-            state.filterRating = "SELL";
-            state.filterThisWeekOnly = false;
-            document.getElementById("filterRatingLabel").textContent = "賣出 / 減碼";
-            if (fromLb) setActiveTab("results");
-          }
-          renderOverview();
-        });
-      }
-
-      document.querySelectorAll("[data-filter-sort]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          state.filterSort = btn.getAttribute("data-filter-sort");
-          document.getElementById("filterSortLabel").textContent = btn.textContent;
-          closeAllDropdowns();
+          updateDropdownSelected("data-filter-rating", state.filterRating);
           renderOverview();
         });
       });
+
+      const modal = document.getElementById("kronosModal");
+      const closeModalBtn = document.getElementById("btnCloseKronosModal");
+      if (closeModalBtn) {
+        closeModalBtn.addEventListener("click", closeKronosModal);
+      }
+      if (modal) {
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) closeKronosModal();
+        });
+        modal.addEventListener("cancel", (e) => {
+          e.preventDefault();
+          closeKronosModal();
+        });
+      }
 
       const btnSync = document.getElementById("btnSyncNow");
       if (btnSync) {
@@ -1749,7 +2815,7 @@
             window.location.reload();
           }
         });
-        navigator.serviceWorker.register("./sw.js?v=cake8").then((reg) => {
+        navigator.serviceWorker.register("./sw.js?v=cake9").then((reg) => {
           reg.update();
         }).catch(() => {});
       }
