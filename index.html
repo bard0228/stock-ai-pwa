@@ -1716,7 +1716,7 @@
       return `${y}-${m}-${day}`;
     }
 
-    function getThisWeekMondayFriday() {
+    function getThisWeekMondaySunday() {
       const now = new Date();
       const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
       const taipeiNow = new Date(utc + (3600000 * 8));
@@ -1724,8 +1724,8 @@
       const diffToMonday = day === 0 ? 6 : day - 1;
       const monday = new Date(taipeiNow);
       monday.setDate(taipeiNow.getDate() - diffToMonday);
-      const friday = new Date(monday);
-      friday.setDate(monday.getDate() + 4);
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
 
       const formatYMD = (d) => {
         const y = d.getFullYear();
@@ -1733,13 +1733,13 @@
         const date = String(d.getDate()).padStart(2, "0");
         return `${y}-${m}-${date}`;
       };
-      return { monday: formatYMD(monday), friday: formatYMD(friday) };
+      return { monday: formatYMD(monday), sunday: formatYMD(sunday) };
     }
 
     function isAnalyzedThisWeek(record) {
-      const { monday, friday } = getThisWeekMondayFriday();
+      const { monday, sunday } = getThisWeekMondaySunday();
       const analysisDate = getTaipeiDateStr(record.updated_at) || record.trade_date || "";
-      return analysisDate >= monday && analysisDate <= friday;
+      return analysisDate >= monday && analysisDate <= sunday;
     }
 
     function getDeduplicatedRecords(allRecords) {
