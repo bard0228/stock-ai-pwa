@@ -851,6 +851,14 @@
       line-height: 1.45;
     }
 
+    .sub-tile-subnote {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--ink-3);
+      margin-top: 2px;
+      line-height: 1.3;
+    }
+
     .model-header {
       display: flex;
       align-items: center;
@@ -2374,7 +2382,17 @@
                     </div>
                     <div class="sub-glass-tile">
                       <div class="sub-tile-label">本益比 / EPS</div>
-                      <div class="sub-tile-value num-col tabular-nums">PER ${r.per != null ? Number(r.per).toFixed(1) + "x" : "—"} ｜ EPS ${r.eps_this != null ? Number(r.eps_this).toFixed(2) : "—"}</div>
+                      ${(() => {
+                        const perVal = r.per != null && Number.isFinite(Number(r.per)) ? Number(Number(r.per).toFixed(1)) : null;
+                        const epsVal = r.eps_this != null && Number.isFinite(Number(r.eps_this)) ? Number(Number(r.eps_this).toFixed(2)) : null;
+                        const implied = (perVal !== null && epsVal !== null)
+                          ? (Math.round((perVal * epsVal + Number.EPSILON) * 100) / 100).toFixed(2)
+                          : null;
+                        return `
+                          <div class="sub-tile-value num-col tabular-nums">PER ${perVal !== null ? perVal.toFixed(1) + "x" : "—"} ｜ EPS ${epsVal !== null ? epsVal.toFixed(2) : "—"}</div>
+                          ${implied !== null ? `<div class="sub-tile-subnote num-col tabular-nums">相乘價：${implied}</div>` : ""}
+                        `;
+                      })()}
                     </div>
                     <div class="sub-glass-tile">
                       <div class="sub-tile-label">投資期間</div>
