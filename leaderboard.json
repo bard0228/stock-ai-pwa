@@ -1,11 +1,11 @@
 {
-  "updated_at": "2026-11-14T02:36:53+00:00",
+  "updated_at": "2026-11-16T16:23:04+00:00",
   "markets": {
     "TW": {
       "trade_date": "2026-11-13",
       "universe_total": 154,
       "eligible_count": 138,
-      "updated_at": "2026-11-13T14:53:42+00:00",
+      "updated_at": "2026-11-16T16:23:04+00:00",
       "top10": [
         {
           "rank": 1,
@@ -15,7 +15,7 @@
           "close": 85.1,
           "chg_1d_pct": 4.16,
           "percentile": 100.0,
-          "alpha_score": 1.9956,
+          "alpha_score": 2.0009,
           "roc20_pct": 35.73,
           "roc60_pct": 44.73,
           "is_etf": false
@@ -28,7 +28,7 @@
           "close": 386.5,
           "chg_1d_pct": 4.74,
           "percentile": 99.3,
-          "alpha_score": 1.8525,
+          "alpha_score": 1.8498,
           "roc20_pct": 19.29,
           "roc60_pct": 22.12,
           "is_etf": false
@@ -41,7 +41,7 @@
           "close": 8610.0,
           "chg_1d_pct": 9.54,
           "percentile": 98.5,
-          "alpha_score": 1.5628,
+          "alpha_score": 1.551,
           "roc20_pct": 12.26,
           "roc60_pct": 47.18,
           "is_etf": false
@@ -54,7 +54,7 @@
           "close": 23.2,
           "chg_1d_pct": 1.75,
           "percentile": 97.8,
-          "alpha_score": 1.4426,
+          "alpha_score": 1.4462,
           "roc20_pct": 12.9,
           "roc60_pct": 14.57,
           "is_etf": false
@@ -67,7 +67,7 @@
           "close": 47.75,
           "chg_1d_pct": 1.81,
           "percentile": 97.1,
-          "alpha_score": 1.4099,
+          "alpha_score": 1.4136,
           "roc20_pct": 9.9,
           "roc60_pct": 14.23,
           "is_etf": false
@@ -80,35 +80,35 @@
           "close": 78.7,
           "chg_1d_pct": 4.38,
           "percentile": 96.4,
-          "alpha_score": 1.3006,
+          "alpha_score": 1.3026,
           "roc20_pct": 7.96,
           "roc60_pct": 19.97,
           "is_etf": false
         },
         {
           "rank": 7,
-          "code": "3661",
-          "yf": "3661.TW",
-          "name": "世芯-KY",
-          "close": 4020.0,
-          "chg_1d_pct": 9.39,
-          "percentile": 95.6,
-          "alpha_score": 1.2211,
-          "roc20_pct": 8.5,
-          "roc60_pct": -0.21,
-          "is_etf": false
-        },
-        {
-          "rank": 8,
           "code": "2880",
           "yf": "2880.TW",
           "name": "華南金",
           "close": 51.9,
           "chg_1d_pct": 2.77,
-          "percentile": 94.9,
-          "alpha_score": 1.2039,
+          "percentile": 95.6,
+          "alpha_score": 1.205,
           "roc20_pct": 4.53,
           "roc60_pct": 32.4,
+          "is_etf": false
+        },
+        {
+          "rank": 8,
+          "code": "3661",
+          "yf": "3661.TW",
+          "name": "世芯-KY",
+          "close": 4020.0,
+          "chg_1d_pct": 9.39,
+          "percentile": 94.9,
+          "alpha_score": 1.1935,
+          "roc20_pct": 8.5,
+          "roc60_pct": -0.21,
           "is_etf": false
         },
         {
@@ -119,7 +119,7 @@
           "close": 1380.0,
           "chg_1d_pct": 1.1,
           "percentile": 94.2,
-          "alpha_score": 1.1931,
+          "alpha_score": 1.1918,
           "roc20_pct": 14.52,
           "roc60_pct": -2.13,
           "is_etf": false
@@ -132,7 +132,7 @@
           "close": 165.0,
           "chg_1d_pct": 1.85,
           "percentile": 93.4,
-          "alpha_score": 1.1394,
+          "alpha_score": 1.1406,
           "roc20_pct": 8.2,
           "roc60_pct": 21.32,
           "is_etf": false
