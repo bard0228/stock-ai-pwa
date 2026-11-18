@@ -1,7 +1,38 @@
 {
- "updated_at": "2026-11-17T10:03:12+00:00",
- "count": 25,
+ "updated_at": "2026-11-18T10:33:52+00:00",
+ "count": 26,
  "records": [
+  {
+   "id": "PCFgUmOiNfMkKZMcdA5mnQ",
+   "code": "0050",
+   "yf": "0050.TW",
+   "name": "元大台灣50",
+   "market": "TW",
+   "trade_date": "2026-11-18",
+   "updated_at": "2026-11-18T10:33:50+00:00",
+   "status": "done",
+   "rating": "賣出（Sell）",
+   "rating_note": "現價 94.10 元位於 20 日均線 101.60 與 60 日均線 106.96 元之下，建議優先避險出場",
+   "target_price": "116.60 元",
+   "stop_price": "91.39 元",
+   "horizon": "1～3 個月",
+   "confirm_price": "日線收盤站穩 106.96 元",
+   "close": 94.1,
+   "chg_1d_pct": 0.11,
+   "per": null,
+   "eps_this": null,
+   "eps_next": null,
+   "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
+   "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
+   "t_side": "偏空",
+   "k_side": "偏多",
+   "q_side": "偏空",
+   "k_median_20d_pct": 14.81,
+   "q_percentile": 12.0,
+   "summary_pdf_url": "https://drive.google.com/file/d/1J6T8nySDkM1QZA2RhzA3S5gIMQ8qt4Jw/view",
+   "full_pdf_url": "https://drive.google.com/file/d/1ATwZrDt6xBQE6WU7yLTbMLi2-vPPL9EA/view",
+   "kronos_png_url": "https://drive.google.com/file/d/1fR33YitRHCqx7VvhJA7SO7gQ5-Q6pcNc/view"
+  },
   {
    "id": "EzQ9QfXrTTlNElk0YJ4wDQ",
    "code": "0050",
@@ -589,7 +620,8 @@
    "q_percentile": 12.0,
    "summary_pdf_url": "https://drive.google.com/file/d/13ZpTSnRqAfEiVozamzXm0FmQ-RfkIwo2/view",
    "full_pdf_url": "https://drive.google.com/file/d/1fwB14iqAbgJGsc4H5hbAFbsM7Pikug_8/view",
-   "kronos_png_url": "https://drive.google.com/file/d/1wohlcdQd7VOqgvxhRaRUJhWDyd-Rf_G3/view"
+   "kronos_png_url": "https://drive.google.com/file/d/1wohlcdQd7VOqgvxhRaRUJhWDyd-Rf_G3/view",
+   "actual_close_5d": 94.1
   },
   {
    "id": "jO9lEDsu6dIGaEFS1s1H1g",
@@ -620,7 +652,8 @@
    "q_percentile": 9.0,
    "summary_pdf_url": "https://drive.google.com/file/d/19Ld7cercWZDStxgHjOQ386JjGgmuYAcY/view",
    "full_pdf_url": "https://drive.google.com/file/d/1lmtkQKxo5fuTZ0j0X-Tpbt4u3qqouzL6/view",
-   "kronos_png_url": "https://drive.google.com/file/d/1KfOcfWzidQV-tZ8FvhkKjzxV84G1MIiy/view"
+   "kronos_png_url": "https://drive.google.com/file/d/1KfOcfWzidQV-tZ8FvhkKjzxV84G1MIiy/view",
+   "actual_close_5d": 662.0
   },
   {
    "id": "Z-NrmsAFSuMBi3l1XfMo9w",
@@ -651,7 +684,8 @@
    "q_percentile": 26.0,
    "summary_pdf_url": "https://drive.google.com/file/d/1a5hFZvTX8AhjtZU8wekXL7iWUG9XRbZd/view",
    "full_pdf_url": "https://drive.google.com/file/d/1WGxbL2wnhQ3KxAImmW19nUbjqRigxmzf/view",
-   "kronos_png_url": "https://drive.google.com/file/d/1tlTdHxLXENapG8lf4HxTeAbo2z6Rr-PR/view"
+   "kronos_png_url": "https://drive.google.com/file/d/1tlTdHxLXENapG8lf4HxTeAbo2z6Rr-PR/view",
+   "actual_close_5d": 2175.0
   },
   {
    "id": "WqK1ha3gsQZTsqCT_tYQvw",
@@ -682,7 +716,8 @@
    "q_percentile": 3.0,
    "summary_pdf_url": "https://drive.google.com/file/d/1brbDj2bV0tovVf6EJdGYhBNtQdkay2Ug/view",
    "full_pdf_url": "https://drive.google.com/file/d/11GwI1iuUD6JYt7CI_3bXx-6IptazsX3j/view",
-   "kronos_png_url": "https://drive.google.com/file/d/1GDULtj2N-AIXGR76i70lCLviefpVYZhc/view"
+   "kronos_png_url": "https://drive.google.com/file/d/1GDULtj2N-AIXGR76i70lCLviefpVYZhc/view",
+   "actual_close_5d": 155.46
   },
   {
    "id": "LAfgZzTAVFWwZapGBKbqSQ",
@@ -713,7 +748,8 @@
    "q_percentile": 9.0,
    "summary_pdf_url": "https://drive.google.com/file/d/1BnlPy1ZnHXd58ASS-YkhGTauap-vMQb4/view",
    "full_pdf_url": "https://drive.google.com/file/d/1c2tPSaXVyVBfCo0-8W-Kt4QPgFoRTl_0/view",
-   "kronos_png_url": "https://drive.google.com/file/d/1b7U365qV8ZVr_XeMa2d29pnlaEgwxZPU/view"
+   "kronos_png_url": "https://drive.google.com/file/d/1b7U365qV8ZVr_XeMa2d29pnlaEgwxZPU/view",
+   "actual_close_5d": 637.0
   },
   {
    "id": "xP6ldTr3kkOTUw3dxAqJ3w",
@@ -744,7 +780,8 @@
    "q_percentile": 8.0,
    "summary_pdf_url": "https://drive.google.com/file/d/1MHscBWEdOTf_pJCMs6bEjrgmeb-EQmht/view",
    "full_pdf_url": "https://drive.google.com/file/d/1HvGokJex1-n6VjpKsCShCAoG_trVHyvg/view",
-   "kronos_png_url": "https://drive.google.com/file/d/1MCGiIb7bk2mV6ORYEYM98mTpIseEvx2z/view"
+   "kronos_png_url": "https://drive.google.com/file/d/1MCGiIb7bk2mV6ORYEYM98mTpIseEvx2z/view",
+   "actual_close_5d": 2170.0
   },
   {
    "id": "wvqmxliNQk15_2QW_OK4Mw",
@@ -775,7 +812,8 @@
    "q_percentile": 3.0,
    "summary_pdf_url": "https://drive.google.com/file/d/110M5e0g1S2IcC5YmxrOYWGWY1RE5rCHc/view",
    "full_pdf_url": "https://drive.google.com/file/d/15Db9BjwoBk3CbJh9lWLftUh8vPSp9HEt/view",
-   "kronos_png_url": "https://drive.google.com/file/d/1N2zaMeBffrbb_q0p9-__gKLG5qZCYi7i/view"
+   "kronos_png_url": "https://drive.google.com/file/d/1N2zaMeBffrbb_q0p9-__gKLG5qZCYi7i/view",
+   "actual_close_5d": 156.14
   }
  ]
 }
