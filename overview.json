@@ -1,6 +1,6 @@
 {
- "updated_at": "2026-11-18T10:35:10+00:00",
- "count": 27,
+ "updated_at": "2026-11-18T13:09:43+00:00",
+ "count": 28,
  "records": [
   {
    "id": "PCFgUmOiNfMkKZMcdA5mnQ",
@@ -32,6 +32,37 @@
    "summary_pdf_url": "https://drive.google.com/file/d/1J6T8nySDkM1QZA2RhzA3S5gIMQ8qt4Jw/view",
    "full_pdf_url": "https://drive.google.com/file/d/1ATwZrDt6xBQE6WU7yLTbMLi2-vPPL9EA/view",
    "kronos_png_url": "https://drive.google.com/file/d/1fR33YitRHCqx7VvhJA7SO7gQ5-Q6pcNc/view"
+  },
+  {
+   "id": "di8VSWxjlGOSgrPnkDQhUA",
+   "code": "AVGO",
+   "yf": "AVGO",
+   "name": "博通 (Broadcom)",
+   "market": "US",
+   "trade_date": "2026-11-17",
+   "updated_at": "2026-11-18T13:09:42+00:00",
+   "status": "done",
+   "rating": "加碼（Overweight）",
+   "rating_note": "現價 341.60 美元維持多頭結構，可於 20 日均線 331.26 美元附近偏多配置",
+   "target_price": "528.17 美元",
+   "stop_price": "296.14 美元",
+   "horizon": "1～3 個月",
+   "confirm_price": "日線收盤站穩 347.69 美元",
+   "close": 341.6,
+   "chg_1d_pct": 2.46,
+   "per": 43.63,
+   "eps_this": 11.66441,
+   "eps_next": 19.41404,
+   "consensus_badge": "【多空分歧・區間震盪觀望】",
+   "consensus_advice": "三模型訊號呈現中性或分歧，市場處於多空平衡整理階段，建議維持中性部位，於支撐與壓力區間內高出低進。",
+   "t_side": "偏多",
+   "k_side": "中性",
+   "q_side": "中性",
+   "k_median_20d_pct": -1.74,
+   "q_percentile": 61.0,
+   "summary_pdf_url": "https://drive.google.com/file/d/1jwU7pUe51dtxuBhGzaAf02JeF0w4WGKd/view",
+   "full_pdf_url": "https://drive.google.com/file/d/1jFO87Dop-H1_cdfzrJdoIfKptbNmknxW/view",
+   "kronos_png_url": "https://drive.google.com/file/d/1ZwZf7yYj7iBkrCYnIKQqum5Xon-9tNUu/view"
   },
   {
    "id": "bcgmeZkclvduX7o1I28q6w",
