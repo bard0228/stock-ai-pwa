@@ -1,6 +1,6 @@
 {
- "updated_at": "2026-11-23T07:46:21+00:00",
- "count": 36,
+ "updated_at": "2026-11-23T07:47:30+00:00",
+ "count": 37,
  "records": [
   {
    "id": "Ljv-azdksal0pKsDmO8NNw",
@@ -32,6 +32,37 @@
    "summary_pdf_url": "https://drive.google.com/file/d/1MMenAIdQsHCy-WKvWTOgv4jQWV-TLNs2/view",
    "full_pdf_url": "https://drive.google.com/file/d/1ugkgHGUIHmGa2KJTzFX2n-RI7bwCLtUX/view",
    "kronos_png_url": "https://drive.google.com/file/d/1bEBvBCirBBF9I0LXJeGejHtYR6L9qlRg/view"
+  },
+  {
+   "id": "abB0oz8EFSN8ETSWFrsyqg",
+   "code": "NVDA",
+   "yf": "NVDA",
+   "name": "輝達 (NVIDIA)",
+   "market": "US",
+   "trade_date": "2026-11-20",
+   "updated_at": "2026-11-23T07:47:28+00:00",
+   "status": "done",
+   "rating": "減碼／偏低配（Underweight）",
+   "rating_note": "現價 125.53 美元跌破 20 日均線 181.46 美元，動能轉弱建議逢反彈減碼",
+   "target_price": "244.18 美元",
+   "stop_price": "126.93 美元",
+   "horizon": "1～3 個月",
+   "confirm_price": "日線收盤站穩 209.58 美元",
+   "close": 125.53,
+   "chg_1d_pct": -14.01,
+   "per": 13.48,
+   "eps_this": 9.66925,
+   "eps_next": 16.60528,
+   "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
+   "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
+   "t_side": "偏空",
+   "k_side": "偏多",
+   "q_side": "偏空",
+   "k_median_20d_pct": 67.92,
+   "q_percentile": 3.0,
+   "summary_pdf_url": "https://drive.google.com/file/d/1vH_1K4PeJ3zeJnwA7LiQ8YtSM4G2kygD/view",
+   "full_pdf_url": "https://drive.google.com/file/d/1QG7Zn97ePjEr8gv09_SuhZnGV8NBz6-E/view",
+   "kronos_png_url": "https://drive.google.com/file/d/1hELO0dZfpJ3wdJJac79zkuF0pfBqM8-Z/view"
   },
   {
    "id": "I_NffqKSSz1Hq4i1exTViA",
