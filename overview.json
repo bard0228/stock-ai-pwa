@@ -1,6 +1,6 @@
 {
- "updated_at": "2026-11-23T07:47:30+00:00",
- "count": 37,
+ "updated_at": "2026-11-23T07:48:31+00:00",
+ "count": 38,
  "records": [
   {
    "id": "Ljv-azdksal0pKsDmO8NNw",
@@ -32,6 +32,37 @@
    "summary_pdf_url": "https://drive.google.com/file/d/1MMenAIdQsHCy-WKvWTOgv4jQWV-TLNs2/view",
    "full_pdf_url": "https://drive.google.com/file/d/1ugkgHGUIHmGa2KJTzFX2n-RI7bwCLtUX/view",
    "kronos_png_url": "https://drive.google.com/file/d/1bEBvBCirBBF9I0LXJeGejHtYR6L9qlRg/view"
+  },
+  {
+   "id": "TWfSQqxGQXfNhnaLf6ZDkA",
+   "code": "MRVL",
+   "yf": "MRVL",
+   "name": "邁威爾 (Marvell)",
+   "market": "US",
+   "trade_date": "2026-11-20",
+   "updated_at": "2026-11-23T07:48:30+00:00",
+   "status": "done",
+   "rating": "減碼／偏低配（Underweight）",
+   "rating_note": "現價 122.28 美元跌破 20 日均線 171.05 美元，動能轉弱建議逢反彈減碼",
+   "target_price": "309.14 美元",
+   "stop_price": "95.60 美元",
+   "horizon": "1～3 個月",
+   "confirm_price": "日線收盤站穩 220.24 美元",
+   "close": 122.28,
+   "chg_1d_pct": -11.69,
+   "per": 40.22,
+   "eps_this": 4.21961,
+   "eps_next": 7.37109,
+   "consensus_badge": "【短線動能強但基本面保守・嚴設停利】",
+   "consensus_advice": "Q/K 顯示短期價量動能偏強，但 T 模型提醒基本面或評價面風險，若參與短線操作務必嚴格設定移動停利與停損。",
+   "t_side": "偏空",
+   "k_side": "偏多",
+   "q_side": "偏空",
+   "k_median_20d_pct": 37.68,
+   "q_percentile": 8.0,
+   "summary_pdf_url": "https://drive.google.com/file/d/1TdVLgfpoEjocBvNvZDHfScqpxW-bDmmP/view",
+   "full_pdf_url": "https://drive.google.com/file/d/1bO5jzIBlOiUpisu479LmGk7umztY05kL/view",
+   "kronos_png_url": "https://drive.google.com/file/d/1VHk0l8TAcc1e78yd3VfT9SKbFPpJ4I25/view"
   },
   {
    "id": "abB0oz8EFSN8ETSWFrsyqg",
