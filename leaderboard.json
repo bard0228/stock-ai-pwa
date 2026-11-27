@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-26T17:17:17+00:00",
+  "updated_at": "2026-11-27T04:25:56+00:00",
   "markets": {
     "TW": {
       "trade_date": "2026-11-25",
@@ -142,8 +142,8 @@
     "US": {
       "trade_date": "2026-11-25",
       "universe_total": 168,
-      "eligible_count": 166,
-      "updated_at": "2026-11-26T04:16:31+00:00",
+      "eligible_count": 167,
+      "updated_at": "2026-11-27T04:25:56+00:00",
       "top10": [
         {
           "rank": 1,
@@ -153,7 +153,7 @@
           "close": 709.46,
           "chg_1d_pct": -0.37,
           "percentile": 100.0,
-          "alpha_score": 1.3915,
+          "alpha_score": 1.3954,
           "roc20_pct": 26.03,
           "roc60_pct": 30.14,
           "is_etf": false
@@ -166,7 +166,7 @@
           "close": 125.6,
           "chg_1d_pct": 2.52,
           "percentile": 99.4,
-          "alpha_score": 1.3227,
+          "alpha_score": 1.3256,
           "roc20_pct": 15.19,
           "roc60_pct": 18.25,
           "is_etf": false
@@ -179,7 +179,7 @@
           "close": 378.95,
           "chg_1d_pct": -0.57,
           "percentile": 98.8,
-          "alpha_score": 1.3101,
+          "alpha_score": 1.3124,
           "roc20_pct": 45.77,
           "roc60_pct": 21.56,
           "is_etf": false
@@ -192,7 +192,7 @@
           "close": 981.87,
           "chg_1d_pct": -0.53,
           "percentile": 98.2,
-          "alpha_score": 1.2326,
+          "alpha_score": 1.2363,
           "roc20_pct": 20.85,
           "roc60_pct": 19.31,
           "is_etf": false
@@ -205,7 +205,7 @@
           "close": 1086.81,
           "chg_1d_pct": -0.45,
           "percentile": 97.6,
-          "alpha_score": 1.1921,
+          "alpha_score": 1.1952,
           "roc20_pct": 13.87,
           "roc60_pct": 19.05,
           "is_etf": false
@@ -218,7 +218,7 @@
           "close": 361.26,
           "chg_1d_pct": 2.14,
           "percentile": 97.0,
-          "alpha_score": 1.1754,
+          "alpha_score": 1.1779,
           "roc20_pct": 13.76,
           "roc60_pct": 13.81,
           "is_etf": false
@@ -231,7 +231,7 @@
           "close": 87.42,
           "chg_1d_pct": 0.23,
           "percentile": 96.4,
-          "alpha_score": 1.1665,
+          "alpha_score": 1.169,
           "roc20_pct": 12.84,
           "roc60_pct": 5.11,
           "is_etf": false
@@ -244,7 +244,7 @@
           "close": 173.23,
           "chg_1d_pct": 0.44,
           "percentile": 95.8,
-          "alpha_score": 1.1196,
+          "alpha_score": 1.1226,
           "roc20_pct": 9.46,
           "roc60_pct": 19.26,
           "is_etf": false
@@ -257,7 +257,7 @@
           "close": 235.65,
           "chg_1d_pct": 2.0,
           "percentile": 95.2,
-          "alpha_score": 1.0978,
+          "alpha_score": 1.101,
           "roc20_pct": 18.78,
           "roc60_pct": 18.54,
           "is_etf": false
@@ -269,8 +269,8 @@
           "name": "沃爾瑪 (Walmart)",
           "close": 131.94,
           "chg_1d_pct": -0.28,
-          "percentile": 94.5,
-          "alpha_score": 1.0902,
+          "percentile": 94.6,
+          "alpha_score": 1.0934,
           "roc20_pct": 11.09,
           "roc60_pct": 24.57,
           "is_etf": false
